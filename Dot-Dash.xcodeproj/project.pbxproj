@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2BD62E6C2CCD7A9C00B86F14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BD62E6B2CCD7A9C00B86F14 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2BD62E752CCD7A9C00B86F14 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -25,6 +29,7 @@
 
 /* Begin PBXFileReference section */
 		2BD62E642CCD7A9900B86F14 /* Dot-Dash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dot-Dash.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BD62E6B2CCD7A9C00B86F14 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2BD62E742CCD7A9C00B86F14 /* Dot-DashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BD62E7E2CCD7A9C00B86F14 /* Dot-DashUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -43,6 +48,11 @@
 		2BD62E812CCD7A9C00B86F14 /* Dot-DashUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Dot-DashUITests";
+			sourceTree = "<group>";
+		};
+		2BD62E9B2CCD808C00B86F14 /* Base */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Base;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +85,9 @@
 		2BD62E5B2CCD7A9900B86F14 = {
 			isa = PBXGroup;
 			children = (
+				2BD62E9B2CCD808C00B86F14 /* Base */,
+				2BD62E9A2CCD808600B86F14 /* Assets */,
+				2BD62E992CCD808100B86F14 /* Code */,
 				2BD62E662CCD7A9900B86F14 /* Dot-Dash */,
 				2BD62E772CCD7A9C00B86F14 /* Dot-DashTests */,
 				2BD62E812CCD7A9C00B86F14 /* Dot-DashUITests */,
@@ -90,6 +103,21 @@
 				2BD62E7E2CCD7A9C00B86F14 /* Dot-DashUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2BD62E992CCD808100B86F14 /* Code */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Code;
+			sourceTree = "<group>";
+		};
+		2BD62E9A2CCD808600B86F14 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				2BD62E6B2CCD7A9C00B86F14 /* Assets.xcassets */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -109,6 +137,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				2BD62E662CCD7A9900B86F14 /* Dot-Dash */,
+				2BD62E9B2CCD808C00B86F14 /* Base */,
 			);
 			name = "Dot-Dash";
 			packageProductDependencies = (
@@ -212,6 +241,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BD62E6C2CCD7A9C00B86F14 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
