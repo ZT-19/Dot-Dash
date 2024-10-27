@@ -7,11 +7,11 @@
 
 import GameplayKit
 
-class TTGameIdleState: GKState {
-    weak var scene: TTGameScene?
-    weak var context: TTGameContext?
+class DDGameIdleState: GKState {
+    weak var scene: DDGameScene?
+    weak var context: DDGameContext?
     
-    init(scene: TTGameScene, context: TTGameContext) {
+    init(scene: DDGameScene, context: DDGameContext) {
         self.scene = scene
         self.context = context
         super.init()
