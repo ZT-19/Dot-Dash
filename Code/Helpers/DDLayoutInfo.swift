@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TTLayoutInfo {
+struct DDLayoutInfo {
     let screenSize: CGSize
     let boxSize: CGSize = .init(width: 100, height: 100)
 }

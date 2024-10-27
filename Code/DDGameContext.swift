@@ -8,18 +8,18 @@
 import Combine
 import GameplayKit
 
-class TTGameContext: GameContext {
-    var gameScene: TTGameScene? {
-        scene as? TTGameScene
+class DDGameContext: GameContext {
+    var gameScene: DDGameScene? {
+        scene as? DDGameScene
     }
     let gameMode: GameModeType
-    let gameInfo: TTGameInfo
-    var layoutInfo: TTLayoutInfo = .init(screenSize: .zero)
+    let gameInfo: DDGameInfo
+    var layoutInfo: DDLayoutInfo = .init(screenSize: .zero)
     
     private(set) var stateMachine: GKStateMachine?
     
     init(dependencies: Dependencies, gameMode: GameModeType) {
-        self.gameInfo = TTGameInfo()
+        self.gameInfo = DDGameInfo()
         self.gameMode = gameMode
         super.init(dependencies: dependencies)
     }
@@ -28,7 +28,7 @@ class TTGameContext: GameContext {
         guard let gameScene else { return }
         print("did configure states")
         stateMachine = GKStateMachine(states: [
-            TTGameIdleState(scene: gameScene, context: self)
+            DDGameIdleState(scene: gameScene, context: self)
         ])
     }
 

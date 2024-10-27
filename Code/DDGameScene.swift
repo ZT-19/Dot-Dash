@@ -8,12 +8,12 @@
 import SpriteKit
 import GameplayKit
 
-class TTGameScene: SKScene {
-    weak var context: TTGameContext?
+class DDGameScene: SKScene {
+    weak var context: DDGameContext?
     
-    var box: TTBoxNode?
+    var box: DDBoxNode?
     
-    init(context: TTGameContext, size: CGSize) {
+    init(context: DDGameContext, size: CGSize) {
         self.context = context
         super.init(size: size)
     }
@@ -29,36 +29,36 @@ class TTGameScene: SKScene {
         context.scene = self
         context.configureStates()
 
-        context.layoutInfo = TTLayoutInfo(screenSize: size)
+        context.layoutInfo = DDLayoutInfo(screenSize: size)
         let center = CGPoint(x: size.width / 2.0 - context.layoutInfo.boxSize.width / 2.0,
                              y: size.height / 2.0)
-        let box = TTBoxNode()
+        let box = DDBoxNode()
         box.setup(screenSize: size, layoutInfo: context.layoutInfo)
         box.position = center
         addChild(box)
         self.box = box
         
         
-        context.stateMachine?.enter(TTGameIdleState.self)
+        context.stateMachine?.enter(DDGameIdleState.self)
         
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first, let state = context?.stateMachine?.currentState as? TTGameIdleState else {
+        guard let touch = touches.first, let state = context?.stateMachine?.currentState as? DDGameIdleState else {
             return
         }
         state.handleTouch(touch)
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first, let state = context?.stateMachine?.currentState as? TTGameIdleState else {
+        guard let touch = touches.first, let state = context?.stateMachine?.currentState as? DDGameIdleState else {
             return
         }
         state.handleTouchMoved(touch)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first, let state = context?.stateMachine?.currentState as? TTGameIdleState else {
+        guard let touch = touches.first, let state = context?.stateMachine?.currentState as? DDGameIdleState else {
             return
         }
         state.handleTouchEnded(touch)
