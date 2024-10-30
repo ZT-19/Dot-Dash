@@ -1,12 +1,13 @@
 //
-//  TTGameInfo.swift
+//  DDGameInfo.swift
 //  Test
 //
-//  Created by Hyung Lee on 10/20/24.
+//  Created by Justin Chen on 10/29/24.
 //
 
 import Foundation
 
 struct DDGameInfo {
     var score = 0
+    var level: Int = 1
 }
