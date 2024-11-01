@@ -26,7 +26,7 @@ class GameContext {
         stateMachine = GKStateMachine(
             states: [
                 SwipingState(scene: scene, context: self),
-                FallingState(scene: scene, context: self),
+                SlidingState(scene: scene, context: self),
                 GameOverState(scene: scene, context: self)
             ]
         )

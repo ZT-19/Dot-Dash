@@ -32,6 +32,8 @@
 		2BD62E6B2CCD7A9C00B86F14 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2BD62E742CCD7A9C00B86F14 /* Dot-DashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BD62E7E2CCD7A9C00B86F14 /* Dot-DashUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		87B667B32CD2A79F00A97815 /* GameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameContext.swift; sourceTree = "<group>"; };
+		87B667B42CD2A79F00A97815 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -132,6 +134,7 @@
 				87E6C1D12CCDB61500C76A1D /* Nodes */,
 				87E6C1D02CCDB60E00C76A1D /* Helpers */,
 				87E6C1CF2CCDB60B00C76A1D /* Models */,
+				87B667B52CD2A79F00A97815 /* Core */,
 			);
 			path = Code;
 			sourceTree = "<group>";
@@ -142,6 +145,15 @@
 				2BD62E6B2CCD7A9C00B86F14 /* Assets.xcassets */,
 			);
 			path = Assets;
+			sourceTree = "<group>";
+		};
+		87B667B52CD2A79F00A97815 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				87B667B32CD2A79F00A97815 /* GameContext.swift */,
+				87B667B42CD2A79F00A97815 /* GameScene.swift */,
+			);
+			path = Core;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -14,7 +14,6 @@ class GameScene: SKScene {
     private lazy var contactResovler = ContactResolver(scene: self)
 
     let backgroundNode = BackgroundNode()
-    let boxNode = BoxNode()
     let scoreNode = ScoreNode()
     let evolutionNode = EvolutionNode()
     let targetLineNode = TargetLineNode()
@@ -37,7 +36,7 @@ class GameScene: SKScene {
 
     override func didMove(to view: SKView) {
         isUserInteractionEnabled = true
-        applyGravity()
+       // applyGravity()
 
         backgroundNode.setup(screenSize: size)
         backgroundNode.zPosition = 0
@@ -74,11 +73,6 @@ class GameScene: SKScene {
         context.stateMachine?.enter(SwipingState.self)
     }
 
-    private func applyGravity() {
-        physicsWorld.gravity = CGVector(dx: 0, dy: -5)
-        physicsWorld.contactDelegate = self
-    }
-    
     override func update(_ currentTime: TimeInterval) {
         //let's check for
         children
@@ -151,7 +145,7 @@ extension GameScene: SKPhysicsContactDelegate {
             context.gameInfo.score += score
             scoreNode.updateScore(with: context.gameInfo.score)
         }
-        guard let state = context.stateMachine?.currentState as? FallingState else {
+        guard let state = context.stateMachine?.currentState as? SlidingState else {
             return
         }
         state.handleContact(contact)
