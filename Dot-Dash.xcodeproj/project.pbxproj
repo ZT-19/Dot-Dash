@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2BAEE8182CD9A9E70070ECFD /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BAEE8162CD9A6870070ECFD /* GameScene.swift */; };
+		2BAEE8192CD9AB0D0070ECFD /* DotNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BAEE8172CD9A6C30070ECFD /* DotNode.swift */; };
+		2BAEE81B2CD9AD510070ECFD /* GameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BAEE81A2CD9AD4F0070ECFD /* GameContext.swift */; };
 		2BD62E6C2CCD7A9C00B86F14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BD62E6B2CCD7A9C00B86F14 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +31,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2BAEE8162CD9A6870070ECFD /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		2BAEE8172CD9A6C30070ECFD /* DotNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotNode.swift; sourceTree = "<group>"; };
+		2BAEE81A2CD9AD4F0070ECFD /* GameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameContext.swift; sourceTree = "<group>"; };
 		2BD62E642CCD7A9900B86F14 /* Dot-Dash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dot-Dash.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BD62E6B2CCD7A9C00B86F14 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2BD62E742CCD7A9C00B86F14 /* Dot-DashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -48,11 +54,6 @@
 		2BD62E812CCD7A9C00B86F14 /* Dot-DashUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Dot-DashUITests";
-			sourceTree = "<group>";
-		};
-		2BD62E9B2CCD808C00B86F14 /* Base */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Base;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -82,10 +83,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2BAEE8122CD9A5F50070ECFD /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				2BAEE81A2CD9AD4F0070ECFD /* GameContext.swift */,
+				2BAEE8162CD9A6870070ECFD /* GameScene.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		2BAEE8132CD9A5FB0070ECFD /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		2BAEE8142CD9A6060070ECFD /* Nodes */ = {
+			isa = PBXGroup;
+			children = (
+				2BAEE8172CD9A6C30070ECFD /* DotNode.swift */,
+			);
+			path = Nodes;
+			sourceTree = "<group>";
+		};
+		2BAEE8152CD9A60F0070ECFD /* States */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = States;
+			sourceTree = "<group>";
+		};
 		2BD62E5B2CCD7A9900B86F14 = {
 			isa = PBXGroup;
 			children = (
-				2BD62E9B2CCD808C00B86F14 /* Base */,
 				2BD62E9A2CCD808600B86F14 /* Assets */,
 				2BD62E992CCD808100B86F14 /* Code */,
 				2BD62E662CCD7A9900B86F14 /* Dot-Dash */,
@@ -108,6 +139,10 @@
 		2BD62E992CCD808100B86F14 /* Code */ = {
 			isa = PBXGroup;
 			children = (
+				2BAEE8152CD9A60F0070ECFD /* States */,
+				2BAEE8142CD9A6060070ECFD /* Nodes */,
+				2BAEE8132CD9A5FB0070ECFD /* Helpers */,
+				2BAEE8122CD9A5F50070ECFD /* Core */,
 			);
 			path = Code;
 			sourceTree = "<group>";
@@ -137,7 +172,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				2BD62E662CCD7A9900B86F14 /* Dot-Dash */,
-				2BD62E9B2CCD808C00B86F14 /* Base */,
 			);
 			name = "Dot-Dash";
 			packageProductDependencies = (
@@ -266,6 +300,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BAEE81B2CD9AD510070ECFD /* GameContext.swift in Sources */,
+				2BAEE8192CD9AB0D0070ECFD /* DotNode.swift in Sources */,
+				2BAEE8182CD9A9E70070ECFD /* GameScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
