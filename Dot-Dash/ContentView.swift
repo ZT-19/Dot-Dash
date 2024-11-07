@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     public var body: some View {
-        GameScene()
+        DOGameScene()
     }
 }
 

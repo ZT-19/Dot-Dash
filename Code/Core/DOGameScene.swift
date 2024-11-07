@@ -1,15 +1,15 @@
-// Code/Core/GameScene.swift
+// Code/Core/DOGameScene.swift
 
 import SwiftUI
 import SpriteKit
 
-public struct GameScene: View {
+public struct DOGameScene: View {
     public var body: some View {
-        SpriteView(scene: createGameScene())
+        SpriteView(scene: createDOGameScene())
             .ignoresSafeArea()
     }
 
-    private func createGameScene() -> SKScene {
+    private func createDOGameScene() -> SKScene {
         let scene = GameSKScene()
         scene.size = UIScreen.main.bounds.size
         scene.scaleMode = .resizeFill
@@ -18,30 +18,49 @@ public struct GameScene: View {
 }
 
 class GameSKScene: SKScene, SKPhysicsContactDelegate {
-    private let grid = GameContext.shared.grid
-    private let dotSpacing = GameContext.shared.dotSpacing
-    private let gridSize = GameContext.shared.gridSize
+    private let grid = DOGameContext.shared.grid
+    private let dotSpacing = DOGameContext.shared.dotSpacing
+    private let gridSize = DOGameContext.shared.gridSize
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
+    let backgroundNode = DOBackgroundNode()
+    let scoreNode = DOScoreNode()
+    var playerNode = DOPlayerNode()
+
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
         self.physicsWorld.contactDelegate = self
-        
+
+        backgroundNode.setup(screenSize: size)
+        backgroundNode.zPosition = 0
+        addChild(backgroundNode)
+
+        scoreNode.setup(screenSize: size)
+        addChild(scoreNode)
+
         // center grid on screen
         let gridWidth = CGFloat(gridSize) * dotSpacing
         offsetX = (size.width - gridWidth) / 2
         offsetY = (size.height - gridWidth) / 2
+       
+        var playerXPosition =  offsetX + CGFloat(gridSize / 2 + 1) * dotSpacing
+        var playerYPosition =  offsetY + CGFloat(gridSize / 2 + 1) * dotSpacing
         
+        playerNode = DOPlayerNode(position: CGPoint(x:playerXPosition,y:playerYPosition),gridPosition: CGPoint(x: gridSize / 2 + 1, y: gridSize / 2 + 1))
+        self.addChild(playerNode)
         // init
-        
+
         // test dot generation
-        
+
         // TEST: uncomment to draw the grid with a given difficulty rating of 25
-        // drawGrid(difficultyRating: 25, initX: 0, initY: 0)
         
+         drawGrid(difficultyRating: 25, initX: 0, initY: 0)
+        // Goal: move all of this code into setupState
+        
+        // context.stateMachine?.enter(DOSetupState.self) // turn on statemachine drawgrid here
+
     }
-    
     // TODO: all current touch override functions are placeholders (these were implemented in the watermelon game)
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {
@@ -66,11 +85,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private func handleTouch(_ touch: UITouch) {
         // TEST: uncomment to place dots randomly with a click to see how the placeDot function works
         /*
-        let (i, j) = GameContext.shared.getRandomPosition()
+        let (i, j) = DOGameContext.shared.getRandomPosition()
         
         if !grid[i][j] {
             placeDot(at: (i, j), offsetX: offsetX, offsetY: offsetY)
-            GameContext.shared.grid[i][j] = true // Mark the position as occupied
+            DOGameContext.shared.grid[i][j] = true // Mark the position as occupied
         }
         */
     }
@@ -127,7 +146,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         let yPosition = offsetY + CGFloat(j) * dotSpacing
         
         // create a dot and add it to the scene
-        let dotNode = DotNode(position: CGPoint(x: xPosition, y: yPosition))
+        let dotNode = DODotNode(position: CGPoint(x: xPosition, y: yPosition))
         self.addChild(dotNode)
     }
     
