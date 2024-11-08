@@ -154,7 +154,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     // translates matrix index to position on screen
     func coordCalculate(indices: CGPoint) -> CGPoint{
-        return CGPoint(x:offsetX + CGFloat(indices.x),y:offsetY + CGFloat(indices.y))
+        return CGPoint(x:offsetX + CGFloat(indices.x) * dotSpacing,y:offsetY + CGFloat(indices.y)*dotSpacing)
         
     }
     
