@@ -18,6 +18,7 @@ public struct DOGameScene: View {
 }
 
 class GameSKScene: SKScene, SKPhysicsContactDelegate {
+    
     private let grid = DOGameContext.shared.grid
     private let dotSpacing = DOGameContext.shared.dotSpacing
     private let gridSize = DOGameContext.shared.gridSize
@@ -44,11 +45,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         offsetX = (size.width - gridWidth) / 2
         offsetY = (size.height - gridWidth) / 2
        
-        var playerXPosition =  offsetX + CGFloat(gridSize / 2 + 1) * dotSpacing
-        var playerYPosition =  offsetY + CGFloat(gridSize / 2 + 1) * dotSpacing
         
-        playerNode = DOPlayerNode(position: CGPoint(x:playerXPosition,y:playerYPosition),gridPosition: CGPoint(x: gridSize / 2 + 1, y: gridSize / 2 + 1))
-        self.addChild(playerNode)
+       
         // init
 
         // test dot generation
@@ -56,6 +54,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         // TEST: uncomment to draw the grid with a given difficulty rating of 25
         
          drawGrid(difficultyRating: 25, initX: 0, initY: 0)
+         
         // Goal: move all of this code into setupState
         
         // context.stateMachine?.enter(DOSetupState.self) // turn on statemachine drawgrid here
@@ -103,6 +102,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private func drawGrid(difficultyRating: Int, initX: Int, initY: Int) {
             var rng = SystemRandomNumberGenerator()
             var randomDifficulty = Int.random(in: (difficultyRating - 1)...(difficultyRating + 1), using: &rng)
+        print (randomDifficulty)
             var tempGrid = grid
             tempGrid[initX][initY] = true
             var currentX = initX
@@ -137,6 +137,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     randomDifficulty -= 1
                 }
             }
+        playerNode = DOPlayerNode(position: coordCalculate(indices: CGPoint(x:gridSize/2+1,y:gridSize/2+1)),gridPosition: CGPoint(x: gridSize / 2 + 1, y: gridSize / 2 + 1))
+        self.addChild(playerNode)
         }
     private func placeDot(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
         let (i, j) = gridPosition
@@ -146,8 +148,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         let yPosition = offsetY + CGFloat(j) * dotSpacing
         
         // create a dot and add it to the scene
-        let dotNode = DODotNode(position: CGPoint(x: xPosition, y: yPosition))
+        let dotNode = DODotNode(position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x:i,y:j))
         self.addChild(dotNode)
+    }
+    
+    // translates matrix index to position on screen
+    func coordCalculate(indices: CGPoint) -> CGPoint{
+        return CGPoint(x:offsetX + CGFloat(indices.x),y:offsetY + CGFloat(indices.y))
+        
     }
     
     func didBegin(_ contact: SKPhysicsContact) {

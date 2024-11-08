@@ -17,9 +17,10 @@ public class DOGameContext {
     // define parameters for the grid, which will track positions of DODotNodes
     var grid: [[Bool]]
     let gridSize = 13
-    let dotSpacing: CGFloat = 35  // space between dots for layout on screen, remove hardcode later
+    let dotSpacing: CGFloat = 20  // space between dots for layout on screen, remove hardcode later
 
-    // initialize array to be of size gridSize x gridSize
+    // initialize array to be of size gridSize + 2 x gridSize + 2
+    // outermost row and column have nothing in them, used to detect out-o-bounds
     init() {
         grid = Array(repeating: Array(repeating: false, count: gridSize+2), count: gridSize+2)
     }
@@ -31,4 +32,5 @@ public class DOGameContext {
         let j = Int.random(in: 1..<gridSize+1)
         return (i, j)
     }
+    
 }
