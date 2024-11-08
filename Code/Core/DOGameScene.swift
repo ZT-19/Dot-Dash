@@ -60,7 +60,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         // TEST: uncomment to draw the grid with a given difficulty rating of 25
         
-         drawGrid(difficultyRating: 25, initX: 0, initY: 0)
+         drawGrid(difficultyRating: 5, initX: 6, initY: 6)
          
         // Goal: move all of this code into setupState
         
@@ -137,7 +137,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     print("found a dot")
                     grid[currentX][currentY] = false
                     self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))?.removeFromParent()
-                    dotCount = dotCount-1
+                    self.dotCount -= 1
                     
                     self.childNode(withName: "player")?.removeFromParent()
                     playerNode = DOPlayerNode(position: coordCalculate(indices: CGPoint(x:currentX,y:currentY)),gridPosition: CGPoint(x: currentX, y: currentY))
@@ -158,7 +158,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         //}
         if dotCount==0{
             print("Round finished! ggs")
-            drawGrid(difficultyRating: 25, initX: 0, initY: 0)
+            levelClear()
         }
     }
     
@@ -167,7 +167,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             var rng = SystemRandomNumberGenerator()
             var randomDifficulty = Int.random(in: (difficultyRating - 1)...(difficultyRating + 1), using: &rng)
         print (randomDifficulty)
+        
         dotCount = randomDifficulty
+        randomDifficulty += 1
             var tempGrid = grid
             tempGrid[initX][initY] = true
             var currentX = initX
@@ -245,8 +247,16 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(backgroundNode)
         addChild(scoreNode)
         grid = Array(repeating: Array(repeating: false, count: self.gridSize+2), count: self.gridSize+2)
-        drawGrid(difficultyRating: 25, initX: 0, initY: 0)
+        drawGrid(difficultyRating: 5, initX: 6, initY: 6)
         
+    }
+    
+    func levelClear(){
+        self.removeAllChildren()
+        addChild(backgroundNode)
+        addChild(scoreNode)
+        grid = Array(repeating: Array(repeating: false, count: self.gridSize+2), count: self.gridSize+2)
+        drawGrid(difficultyRating: 25, initX: 6, initY: 6)
     }
     
     // translates matrix index to position on screen
