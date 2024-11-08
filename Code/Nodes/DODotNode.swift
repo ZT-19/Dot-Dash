@@ -32,7 +32,10 @@ class DODotNode: SKShapeNode {
         self.physicsBody?.contactTestBitMask = 0x1 << 2 // detect collision with another category
         self.physicsBody?.collisionBitMask = 0x1 << 2 // collide with the other category
     }
-
+    
+    func getLoc() -> (Int, Int){
+        return (gridX,gridY)
+    }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
