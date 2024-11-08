@@ -244,6 +244,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         self.removeAllChildren()
         tempScoreVar = 0
         scoreNode.updateScore(with: tempScoreVar)
+        backgroundNode.setRandomTexture()
         addChild(backgroundNode)
         addChild(scoreNode)
         grid = Array(repeating: Array(repeating: false, count: self.gridSize+2), count: self.gridSize+2)
@@ -253,6 +254,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     func levelClear(){
         self.removeAllChildren()
+        backgroundNode.setRandomTexture()
         addChild(backgroundNode)
         addChild(scoreNode)
         grid = Array(repeating: Array(repeating: false, count: self.gridSize+2), count: self.gridSize+2)
