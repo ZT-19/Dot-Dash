@@ -9,7 +9,7 @@ import SpriteKit
 
 class DOBackgroundNode: SKSpriteNode {
     init() {
-        let texture = SKTexture(imageNamed: "blue")
+        let texture = SKTexture(imageNamed: "green")
         super.init(texture: texture, color: .clear, size: texture.size())
     }
 

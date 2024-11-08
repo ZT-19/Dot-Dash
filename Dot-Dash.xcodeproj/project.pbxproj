@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		87BF02C72CDD4738002A1821 /* DotNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02C32CDD4738002A1821 /* DotNode.swift */; };
 		87BF02C92CDD4738002A1821 /* DOPlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */; };
 		87BF02CC2CDD476A002A1821 /* DOGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CB2CDD476A002A1821 /* DOGameScene.swift */; };
 		87BF02CD2CDD476A002A1821 /* DOGameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CA2CDD476A002A1821 /* DOGameContext.swift */; };
@@ -19,6 +18,7 @@
 		87BF02E12CDD4C80002A1821 /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02DB2CDD4C80002A1821 /* Dependencies.swift */; };
 		87BF02E22CDD4C80002A1821 /* GameType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02DE2CDD4C80002A1821 /* GameType.swift */; };
 		87BF02E32CDD4C80002A1821 /* GameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02DC2CDD4C80002A1821 /* GameContext.swift */; };
+		87BF02F02CDD8E89002A1821 /* DODotNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02EF2CDD8E89002A1821 /* DODotNode.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,7 +43,6 @@
 		2BD62E742CCD7A9C00B86F14 /* Dot-DashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BD62E7E2CCD7A9C00B86F14 /* Dot-DashUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOPlayerNode.swift; sourceTree = "<group>"; };
-		87BF02C32CDD4738002A1821 /* DotNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotNode.swift; sourceTree = "<group>"; };
 		87BF02CA2CDD476A002A1821 /* DOGameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameContext.swift; sourceTree = "<group>"; };
 		87BF02CB2CDD476A002A1821 /* DOGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameScene.swift; sourceTree = "<group>"; };
 		87BF02CE2CDD48C1002A1821 /* DOBackgroundNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOBackgroundNode.swift; sourceTree = "<group>"; };
@@ -54,6 +53,7 @@
 		87BF02DC2CDD4C80002A1821 /* GameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameContext.swift; sourceTree = "<group>"; };
 		87BF02DD2CDD4C80002A1821 /* GameModeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModeType.swift; sourceTree = "<group>"; };
 		87BF02DE2CDD4C80002A1821 /* GameType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameType.swift; sourceTree = "<group>"; };
+		87BF02EF2CDD8E89002A1821 /* DODotNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DODotNode.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -135,9 +135,9 @@
 			isa = PBXGroup;
 			children = (
 				87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */,
-				87BF02C32CDD4738002A1821 /* DotNode.swift */,
 				87BF02CE2CDD48C1002A1821 /* DOBackgroundNode.swift */,
 				87BF02D02CDD48C8002A1821 /* DOScoreNode.swift */,
+				87BF02EF2CDD8E89002A1821 /* DODotNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -325,12 +325,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				87BF02D72CDD4A4A002A1821 /* DOGameInfo.swift in Sources */,
-				87BF02C72CDD4738002A1821 /* DotNode.swift in Sources */,
 				87BF02E02CDD4C80002A1821 /* GameModeType.swift in Sources */,
 				87BF02E12CDD4C80002A1821 /* Dependencies.swift in Sources */,
 				87BF02E22CDD4C80002A1821 /* GameType.swift in Sources */,
 				87BF02E32CDD4C80002A1821 /* GameContext.swift in Sources */,
 				87BF02D12CDD48C8002A1821 /* DOScoreNode.swift in Sources */,
+				87BF02F02CDD8E89002A1821 /* DODotNode.swift in Sources */,
 				87BF02C92CDD4738002A1821 /* DOPlayerNode.swift in Sources */,
 				87BF02CC2CDD476A002A1821 /* DOGameScene.swift in Sources */,
 				87BF02CD2CDD476A002A1821 /* DOGameContext.swift in Sources */,

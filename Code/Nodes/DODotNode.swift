@@ -15,11 +15,11 @@ class DODotNode: SKShapeNode {
         self.gridY = Int(gridPosition.y)
         
         super.init()
-        
+        self.path = CGPath(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 0.5, height: radius * 0.5), transform: nil) 
       
         // set the position and color
         self.position = position
-        self.fillTexture = SKTexture(imageNamed: "closed")
+        //self.fillTexture = SKTexture(imageNamed: "closed")
         self.fillColor = .white
         
         // physics for collision detection
