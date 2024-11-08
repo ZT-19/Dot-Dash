@@ -29,7 +29,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
     var playerNode = DOPlayerNode()
+    let gameOverNode = DOGameOverNode()
     var gameInfo = DOGameInfo()
+    var gameOverScreen = false
 
     private var lastPosition: CGPoint = .zero
     private var firstPosition: CGPoint = .zero
@@ -41,6 +43,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         self.physicsWorld.contactDelegate = self
 
         backgroundNode.setup(screenSize: size)
+        gameOverNode.setup(screenSize: size)
         backgroundNode.zPosition = 0
         addChild(backgroundNode)
 
@@ -97,8 +100,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         lastPosition = touch.location(in: self)
     }
     func handleTouchEnd() {
+        if gameOverScreen{
+            gameInfo.score = 0
+            gameInfo.level = 0
+            gameOverScreen = false
+            levelClear()
+            return
+        }
         let deltaX = lastPosition.x - firstPosition.x
         let deltaY = lastPosition.y - firstPosition.y
+        // hardcoded dead zone
+        if sqrt( (deltaX * deltaX + deltaY * deltaY))<55.0{
+            return
+           
+        }
         if deltaX > 0 && abs(deltaX) > abs(deltaY) {
             yv = 0
             xv = 1
@@ -238,18 +253,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     func gameOver() {
         self.removeAllChildren()
+       // gameOverNode.updateMessage()
+        addChild(gameOverNode)
+        gameOverScreen=true
+        
         gameInfo.score = 0
-        gameInfo.level = 1
-        levelNode.updateLevel(with: gameInfo.level)
-        scoreNode.updateScore(with: gameInfo.score)
-        backgroundNode.setRandomTexture()
-        addChild(backgroundNode)
-        addChild(scoreNode)
-        addChild(levelNode)
-        grid = Array(
-            repeating: Array(repeating: false, count: self.gridSize + 2), count: self.gridSize + 2)
-        drawGrid(difficultyRating: 5, initX: 6, initY: 6)
-
+        gameInfo.level = 0
     }
 
     func levelClear() {
@@ -262,7 +271,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(levelNode)
         grid = Array(
             repeating: Array(repeating: false, count: self.gridSize + 2), count: self.gridSize + 2)
-        drawGrid(difficultyRating: 25, initX: 6, initY: 6)
+        drawGrid(difficultyRating: 10, initX: 6, initY: 6)
     }
 
     // translates matrix index to position on screen
