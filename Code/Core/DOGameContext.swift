@@ -13,11 +13,11 @@ public class DOGameContext {
     static let shared = DOGameContext()  // singleton instance
     private(set) var scene: DOGameScene!
     private(set) var stateMachine: GKStateMachine?  // needed to manage states
-    var gameInfo = DOGameInfo()
+    
     // define parameters for the grid, which will track positions of DODotNodes
     var grid: [[Bool]]
     let gridSize = 13
-    let dotSpacing: CGFloat = 20  // space between dots for layout on screen, remove hardcode later
+    let dotSpacing: CGFloat = 25  // space between dots for layout on screen, remove hardcode later
 
     // initialize array to be of size gridSize + 2 x gridSize + 2
     // outermost row and column have nothing in them, used to detect out-o-bounds

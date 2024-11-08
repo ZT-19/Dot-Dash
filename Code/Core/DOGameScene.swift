@@ -27,9 +27,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     var dotCount: Int = 0
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
+    let levelNode = DOLevelNode()
     var playerNode = DOPlayerNode()
-    
-    var tempScoreVar: Int = 0
+    var gameInfo = DOGameInfo()
+   
 
     private var lastPosition: CGPoint = .zero
     private var firstPosition: CGPoint = .zero
@@ -46,28 +47,21 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         scoreNode.setup(screenSize: size)
         addChild(scoreNode)
+        
+        levelNode.setup(screenSize: size)
+        addChild(levelNode)
 
         // center grid on screen
         let gridWidth = CGFloat(gridSize) * dotSpacing
         offsetX = (size.width - gridWidth) / 2
         offsetY = (size.height - gridWidth) / 2
-       
-        
-       
-        // init
 
-        // test dot generation
-
-        // TEST: uncomment to draw the grid with a given difficulty rating of 25
         
          drawGrid(difficultyRating: 5, initX: 6, initY: 6)
-         
-        // Goal: move all of this code into setupState
         
         // context.stateMachine?.enter(DOSetupState.self) // turn on statemachine drawgrid here
 
     }
-    // TODO: all current touch override functions are placeholders (these were implemented in the watermelon game)
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {
             return
@@ -143,8 +137,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     playerNode = DOPlayerNode(position: coordCalculate(indices: CGPoint(x:currentX,y:currentY)),gridPosition: CGPoint(x: currentX, y: currentY))
                     playerNode.name = "player"
                     self.addChild(playerNode)
-                    tempScoreVar+=100
-                    scoreNode.updateScore(with: tempScoreVar)
+                    gameInfo.score+=100
+                    scoreNode.updateScore(with: gameInfo.score)
                     
                     break;
                     
@@ -152,12 +146,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         if  currentX == 0 || currentY == 0 || currentX==self.gridSize + 1 || currentY == self.gridSize+1{
-                print("game over, try again")
+               // print("game over, try again")
             gameOver()
             }
         //}
         if dotCount==0{
-            print("Round finished! ggs")
+           // print("Round finished! ggs")
             levelClear()
         }
     }
@@ -242,10 +236,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     func gameOver(){
         self.removeAllChildren()
-        tempScoreVar = 0
-        scoreNode.updateScore(with: tempScoreVar)
+        gameInfo.score = 0
+        gameInfo.level = 1
+        levelNode.updateLevel(with: gameInfo.level)
+        scoreNode.updateScore(with: gameInfo.score)
+        backgroundNode.setRandomTexture()
         addChild(backgroundNode)
         addChild(scoreNode)
+        addChild(levelNode)
         grid = Array(repeating: Array(repeating: false, count: self.gridSize+2), count: self.gridSize+2)
         drawGrid(difficultyRating: 5, initX: 6, initY: 6)
         
@@ -253,8 +251,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     func levelClear(){
         self.removeAllChildren()
+        backgroundNode.setRandomTexture()
+        gameInfo.level += 1
+        levelNode.updateLevel(with: gameInfo.level)
         addChild(backgroundNode)
         addChild(scoreNode)
+        addChild(levelNode)
         grid = Array(repeating: Array(repeating: false, count: self.gridSize+2), count: self.gridSize+2)
         drawGrid(difficultyRating: 25, initX: 6, initY: 6)
     }
