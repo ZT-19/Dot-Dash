@@ -1,22 +1,23 @@
 //
-//  DOScoreNode.swift
-//  Dot Dash Score 
+//  DOLevelNode.swift
+//  Dot-Dash Level Node
 //
-//  Created by Justin Chen, 11/4/2024
+//  Created by Justin Chen on 11/7/24.
+//
 
 
 
 import SpriteKit
 
-class DOScoreNode: SKNode {
+class DOLevelNode: SKNode {
 
     private let textNode = SKLabelNode()
 
     func setup(screenSize: CGSize) {
-        position = CGPoint(x: screenSize.width / 2, y: screenSize.height - 69 - Constants.size.height / 2)
+        position = CGPoint(x: screenSize.width / 2, y: screenSize.height - 120 - Constants.size.height / 2)
 
       
-        updateScore(with: 0)
+        updateLevel(with: 1)
         textNode.verticalAlignmentMode = .center
         addChild(textNode)
     }
@@ -26,9 +27,9 @@ class DOScoreNode: SKNode {
         position = CGPoint(x: 50, y: cameraPosition.y + screenSize.height / 2 - 70)
     }
 
-    func updateScore(with score: Int) {
+    func updateLevel(with level: Int) {
         textNode.attributedText = NSAttributedString(
-            string: "\(score)",
+            string: "Level \(level)",
             attributes: [
                 .foregroundColor: UIColor.white,
                 .font: UIFont.systemFont(ofSize: 40, weight: .bold)
@@ -38,7 +39,7 @@ class DOScoreNode: SKNode {
     
 }
 
-extension DOScoreNode {
+extension DOLevelNode {
     enum Constants {
         static let size = CGSize(width: 140, height: 45)
     }

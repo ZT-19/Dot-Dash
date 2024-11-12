@@ -8,11 +8,22 @@
 import SpriteKit
 
 class DOBackgroundNode: SKSpriteNode {
+    private var backgrounds = [
+        "blue",
+        "green",
+        "red",
+        "black"
+    ]
+    var rng = SystemRandomNumberGenerator()
     init() {
-        let texture = SKTexture(imageNamed: "blue")
+        let texture = SKTexture(imageNamed: backgrounds[2])
         super.init(texture: texture, color: .clear, size: texture.size())
+        setRandomTexture()
     }
 
+    func setRandomTexture(){
+        self.texture = SKTexture(imageNamed: backgrounds[Int.random(in: (0)...(3), using: &rng)])
+    }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
