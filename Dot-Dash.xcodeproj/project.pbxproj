@@ -19,6 +19,7 @@
 		87BF02E22CDD4C80002A1821 /* GameType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02DE2CDD4C80002A1821 /* GameType.swift */; };
 		87BF02E32CDD4C80002A1821 /* GameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02DC2CDD4C80002A1821 /* GameContext.swift */; };
 		87BF02F02CDD8E89002A1821 /* DODotNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02EF2CDD8E89002A1821 /* DODotNode.swift */; };
+		87C1A7112CDEC7FF0033FDD1 /* DOGameOverNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87C1A7102CDEC7FF0033FDD1 /* DOGameOverNode.swift */; };
 		87DB9B712CDDF1AB0096130C /* DOLevelNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87DB9B702CDDF1A60096130C /* DOLevelNode.swift */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,7 @@
 		87BF02DD2CDD4C80002A1821 /* GameModeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModeType.swift; sourceTree = "<group>"; };
 		87BF02DE2CDD4C80002A1821 /* GameType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameType.swift; sourceTree = "<group>"; };
 		87BF02EF2CDD8E89002A1821 /* DODotNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DODotNode.swift; sourceTree = "<group>"; };
+		87C1A7102CDEC7FF0033FDD1 /* DOGameOverNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameOverNode.swift; sourceTree = "<group>"; };
 		87DB9B702CDDF1A60096130C /* DOLevelNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOLevelNode.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,6 +143,7 @@
 				87BF02CE2CDD48C1002A1821 /* DOBackgroundNode.swift */,
 				87BF02D02CDD48C8002A1821 /* DOScoreNode.swift */,
 				87BF02EF2CDD8E89002A1821 /* DODotNode.swift */,
+				87C1A7102CDEC7FF0033FDD1 /* DOGameOverNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -331,6 +334,7 @@
 				87DB9B712CDDF1AB0096130C /* DOLevelNode.swift in Sources */,
 				87BF02E02CDD4C80002A1821 /* GameModeType.swift in Sources */,
 				87BF02E12CDD4C80002A1821 /* Dependencies.swift in Sources */,
+				87C1A7112CDEC7FF0033FDD1 /* DOGameOverNode.swift in Sources */,
 				87BF02E22CDD4C80002A1821 /* GameType.swift in Sources */,
 				87BF02E32CDD4C80002A1821 /* GameContext.swift in Sources */,
 				87BF02D12CDD48C8002A1821 /* DOScoreNode.swift in Sources */,
