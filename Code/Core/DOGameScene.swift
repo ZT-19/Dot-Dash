@@ -174,7 +174,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     private func drawGrid(difficultyRating: Int, initX: Int, initY: Int) {
         var rng = SystemRandomNumberGenerator()
-        //var randomDifficulty = Int.random(in: (difficultyRating - 1)...(difficultyRating + 1), using: &rng)
+        //var randomDifficulty = Int.random(in: (difficultyRating - 1)...(difficultyRating + 1), using: &rng) // difficulty range
         var randomDifficulty = difficultyRating
         print(randomDifficulty)
         
