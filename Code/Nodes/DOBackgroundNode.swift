@@ -12,7 +12,10 @@ class DOBackgroundNode: SKSpriteNode {
         "blue",
         "green",
         "red",
-        "black"
+        "black",
+        "navy",
+        "yellow",
+        "pink"
     ]
     var rng = SystemRandomNumberGenerator()
     init() {
@@ -22,7 +25,7 @@ class DOBackgroundNode: SKSpriteNode {
     }
 
     func setRandomTexture(){
-        self.texture = SKTexture(imageNamed: backgrounds[Int.random(in: (0)...(3), using: &rng)])
+        self.texture = SKTexture(imageNamed: backgrounds[Int.random(in: (0)...(6), using: &rng)])
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
