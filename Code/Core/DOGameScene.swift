@@ -174,52 +174,71 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     private func drawGrid(difficultyRating: Int, initX: Int, initY: Int) {
         var rng = SystemRandomNumberGenerator()
-        var randomDifficulty = Int.random(
-            in: (difficultyRating - 1)...(difficultyRating + 1), using: &rng)
+        //var randomDifficulty = Int.random(in: (difficultyRating - 1)...(difficultyRating + 1), using: &rng)
+        var randomDifficulty = difficultyRating
         print(randomDifficulty)
-
+        
         dotCount = randomDifficulty
         randomDifficulty += 1
         var tempGrid = grid
         tempGrid[initX][initY] = true
         var currentX = initX
         var currentY = initY
-
+        
+        // vars to handle unsolvable levels
+        var prevDir = -1
+        let inverseDir = [1, 0, 3, 2]
+        
+        // TEST: manually set difficulty for testing
+        /*
+        var difficultyRating = 10
+        var initX = 7
+        var initY = 7
+        */
+        
         while randomDifficulty > 0 {
-            let direction = Int.random(in: 0..<4, using: &rng)
+            var direction = Int.random(in: 0..<4, using: &rng)
+            while (prevDir >= 0 && direction == inverseDir[prevDir]) {
+                direction = Int.random(in: 0..<4, using: &rng)
+            }
+            
             switch direction {
-            case 0:  // right
+            case 0: // right
                 if currentX < gridSize - 1 {
-                    currentX += 1
+                    currentX += Int.random(in: 1...(gridSize - currentX), using: &rng)
                 }
-            case 1:  //  left
+            case 1: // left
                 if currentX > 0 {
-                    currentX -= 1
+                    currentX -= Int.random(in: 1...currentX, using: &rng)
                 }
-            case 2:  // down
+            case 2: // down
                 if currentY < gridSize - 1 {
-                    currentY += 1
+                    currentY += Int.random(in: 1...(gridSize - currentY), using: &rng)
                 }
-            case 3:  // up
+            case 3: // up
                 if currentY > 0 {
-                    currentY -= 1
+                    currentY -= Int.random(in: 1...currentY, using: &rng)
                 }
             default:
                 break
             }
-
+            
             if !tempGrid[currentX][currentY] {
+                print(currentX)
+                print(currentY)
                 tempGrid[currentX][currentY] = true
                 if randomDifficulty == 1 {
                     placePlayer(at: (currentX, currentY), offsetX: offsetX, offsetY: offsetY)
-                } else {
+                }
+                else {
                     placeDot(at: (currentX, currentY), offsetX: offsetX, offsetY: offsetY)
                 }
+                
                 randomDifficulty -= 1
-
+                prevDir = direction
             }
         }
-
+        
     }
     private func placeDot(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
         let (i, j) = gridPosition
