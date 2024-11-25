@@ -8,15 +8,16 @@
 import SpriteKit
 
 class DOPlayerNode: DODotNode {
+    var gridPosition: CGPoint
     override init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero) {
       
-        
+        self.gridPosition = gridPosition
         super.init(position: position , gridPosition: gridPosition)
         
         // create a circle
         self.path = CGPath(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 0.5, height: radius * 0.5), transform: nil)
         
-        self.fillColor = .red
+        self.fillColor = .white
 
         self.fillTexture = SKTexture(imageNamed: "open")
         
