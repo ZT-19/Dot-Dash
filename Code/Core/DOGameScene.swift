@@ -176,24 +176,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 
                 // move player
                 
-                let destinationPosition = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
-
-                if let playerNode = self.childNode(withName: "player") as? DOPlayerNode {
-                    let slideTween = SKAction.move(to: destinationPosition, duration: 0.1)
-                    playerNode.run(slideTween) {
-                        playerNode.gridPosition = CGPoint(x: currentX, y: currentY)
-                    }
-                }
-                else {
-                    let newPlayerNode = DOPlayerNode(
-                        position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)),
-                        gridPosition: CGPoint(x: currentX, y: currentY)
-                    )
-                    newPlayerNode.name = "player"
-                    self.addChild(newPlayerNode)
-                }
-                /*
-                
                 self.childNode(withName: "player")?.removeFromParent()
                 playerNode = DOPlayerNode(
                     position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)),
@@ -201,7 +183,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.name = "player"
                 self.addChild(playerNode)
             
-                 */
+                 
                 
                 // update score
                 gameInfo.score += 100
