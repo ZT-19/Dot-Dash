@@ -24,7 +24,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private let gridSize = DOGameContext.shared.gridSize
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
-    private var difficulty = 5
+    private var difficulty = 10
     var dotCount: Int = 0
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
@@ -40,9 +40,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var yv: Int = .zero
     
     // time vars
-    private var bonusTime = 10.0
+    private var bonusTime = 30.0
     private var lastUpdateTime: TimeInterval = 0
-    private var remainingTime: TimeInterval = 300
+    private var remainingTime: TimeInterval = 60
     private var timerLabel = SKLabelNode(fontNamed: "Arial")
 
     override func didMove(to view: SKView) {
