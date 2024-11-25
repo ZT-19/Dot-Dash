@@ -42,7 +42,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     // time vars
     private var bonusTime = 10.0
     private var lastUpdateTime: TimeInterval = 0
-    private var remainingTime: TimeInterval = 30
+    private var remainingTime: TimeInterval = 300
     private var timerLabel = SKLabelNode(fontNamed: "Arial")
 
     override func didMove(to view: SKView) {
@@ -134,12 +134,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             levelClear()
             return
         }
+        
         let deltaX = lastPosition.x - firstPosition.x
         let deltaY = lastPosition.y - firstPosition.y
+        
         // hardcoded dead zone
-        if sqrt( (deltaX * deltaX + deltaY * deltaY))<35.0{
+        if sqrt((deltaX * deltaX + deltaY * deltaY)) < 35.0{
             return
         }
+        
         if deltaX > 0 && abs(deltaX) > abs(deltaY) {
             print("Swipe right")
             yv = 0
@@ -157,16 +160,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             yv = -1
             xv = 0
         }
-        // could add dead zone to stop misclicks
-        //  if yv != .zero && xv != .zero{
 
         var (currentX, currentY) = playerNode.getLoc()
+        
         while currentX > 0 && currentY > 0 && currentX < self.gridSize + 1 && currentY < self.gridSize + 1 {
             currentX = currentX + xv
             currentY = currentY + yv
             
             if grid[currentX][currentY] {
-                print("found a dot")
+                print("DOT HIT | X: \(currentX) Y: \(currentY)")
                 
                 // remove dot
                 grid[currentX][currentY] = false
@@ -194,12 +196,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         if currentX == 0 || currentY == 0 || currentX == self.gridSize + 1 || currentY == self.gridSize + 1 {
-            print("Level failed, try again")
+            print("LEVEL RESET | X: \(currentX) Y: \(currentY)")
             levelLoad(restart: true)
         }
-        //}
         if dotCount == 0 {
-            print("Round finished! ggs")
+            print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
             levelLoad(restart: false)
         }
     }
@@ -233,7 +234,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             //var direction = Int.random(in: 0..<4, using: &rng)
             //while (prevDir >= 0 && direction == inverseDir[prevDir]) direction = Int.random(in: 0..<4, using: &rng)
             
-            
+            /*
             switch direction {
             case 0: // right
                 if currentX < gridSize - 1 {
@@ -253,11 +254,31 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 }
             default:
                 break
+            }*/
+            switch direction {
+            case 0: // right
+                if currentX < gridSize - 2 { // Avoid last column
+                    currentX += Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                }
+            case 1: // left
+                if currentX > 1 { // Avoid first column
+                    currentX -= Int.random(in: 1...(currentX - 1), using: &rng)
+                }
+            case 2: // down
+                if currentY < gridSize - 2 { // Avoid last row
+                    currentY += Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                }
+            case 3: // up
+                if currentY > 1 { // Avoid first row
+                    currentY -= Int.random(in: 1...(currentY - 1), using: &rng)
+                }
+            default:
+                break
             }
+
             
             if !tempGrid[currentX][currentY] {
-                //print(currentX)
-                //print(currentY)
+                print("X: \(currentX) Y: \(currentY)")
                 tempGrid[currentX][currentY] = true
                 if randomDifficulty == 1 {
                     placePlayer(at: (currentX, currentY), offsetX: offsetX, offsetY: offsetY)
@@ -320,8 +341,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(backgroundNode)
         addChild(scoreNode)
         addChild(levelNode)
-        grid = Array(
-            repeating: Array(repeating: false, count: self.gridSize + 2), count: self.gridSize + 2)
+        grid = Array(repeating: Array(repeating: false, count: self.gridSize + 2), count: self.gridSize + 2)
         drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
     }
  
