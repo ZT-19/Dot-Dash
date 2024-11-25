@@ -335,7 +335,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     func levelClear() {
         self.removeAllChildren()
-        backgroundNode.setRandomTexture()
+        backgroundNode.setRandomTexture(secret: false)
         gameInfo.level += 1
         levelNode.updateLevel(with: gameInfo.level)
         addChild(backgroundNode)
@@ -359,7 +359,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
 
         // set a new random background
-        backgroundNode.setRandomTexture()
+        backgroundNode.setRandomTexture(secret: false)
 
         // if we are not restarting (we go to next level)
         if (!restart) {
