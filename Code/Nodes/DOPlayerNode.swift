@@ -8,9 +8,10 @@
 import SpriteKit
 
 class DOPlayerNode: DODotNode {
+    var gridPosition: CGPoint
     override init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero) {
       
-        
+        self.gridPosition = gridPosition
         super.init(position: position , gridPosition: gridPosition)
         
         // create a circle

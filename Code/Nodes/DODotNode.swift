@@ -21,6 +21,10 @@ class DODotNode: SKShapeNode {
         self.position = position
         //self.fillTexture = SKTexture(imageNamed: "closed")
         self.fillColor = .white
+        self.alpha = 0.0
+        
+        let fadeInAction = SKAction.fadeAlpha(to: 0.8, duration: 0.5) // Fade to 80% opacity over 1 second
+        self.run(fadeInAction)
         
         // physics for collision detection
         // try to remove dependnece on physics
