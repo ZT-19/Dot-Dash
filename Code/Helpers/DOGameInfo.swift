@@ -19,7 +19,6 @@ struct DOGameInfo {
         "navy2",
         "blue2",
         "orange",
-       
     ]
     var secretBackgrounds = [
         
@@ -34,7 +33,7 @@ struct DOGameInfo {
         false,
         false,
         false,
-        true
+        true,
     ]
     var score = 0
     var level: Int = 1
