@@ -17,6 +17,8 @@ class DOBackgroundNode: SKSpriteNode {
         "yellow",
         "navy2",
         "blue2",
+    ]
+    private var siloBackgrounds = [
         "orange"
     ]
     private var secretBackgrounds = [
