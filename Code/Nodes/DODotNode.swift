@@ -19,9 +19,8 @@ class DODotNode: SKShapeNode {
    
     ]
     var rng = SystemRandomNumberGenerator()
-    private var siloSkin = "planetSilo"
     
-    init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero) {
+    init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero, silo: Bool) {
         self.gridX = Int(gridPosition.x)
         self.gridY = Int(gridPosition.y)
         
@@ -31,11 +30,17 @@ class DODotNode: SKShapeNode {
       
         // set the position and color
         self.position = position
-        self.fillColor = .white
         self.lineWidth = 0.0
-        self.fillTexture = SKTexture(imageNamed: skins[Int.random(in: (0)...(skins.count-1), using: &rng)])
+        if !silo{
+            self.fillColor = .white
+           
+            self.fillTexture = SKTexture(imageNamed: skins[Int.random(in: (0)...(skins.count-1), using: &rng)])
+        }
+        else{
+            self.fillColor = .black
+        }
+      
         self.alpha = 0.0
-        
         let fadeInAction = SKAction.fadeAlpha(to: 0.8, duration: 0.5) // Fade to 80% opacity over 1 second
         self.run(fadeInAction)
         

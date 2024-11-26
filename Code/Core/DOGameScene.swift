@@ -25,11 +25,13 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
     private var difficulty = 10
+    private var theme = 0
     var dotCount: Int = 0
+    var rng = SystemRandomNumberGenerator()
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
-    var playerNode = DOPlayerNode()
+    var playerNode = DOPlayerNode(silo: false)
     let gameOverNode = DOGameOverNode()
     var gameInfo = DOGameInfo()
     var gameOverScreen = false
@@ -181,7 +183,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 self.childNode(withName: "player")?.removeFromParent()
                 playerNode = DOPlayerNode(
                     position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)),
-                    gridPosition: CGPoint(x: currentX, y: currentY))
+                    gridPosition: CGPoint(x: currentX, y: currentY),silo:gameInfo.silo[theme])
                 playerNode.name = "player"
                 self.addChild(playerNode)
             
@@ -206,7 +208,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     }
 
     private func drawGrid(difficultyRating: Int, initX: Int, initY: Int) {
-        var rng = SystemRandomNumberGenerator()
+        
         var randomDifficulty = difficultyRating
         
         // uncomment to use difficulty range instead of set difficulty
@@ -302,7 +304,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         // create a dot and add it to the scene
         let dotNode = DODotNode(
-            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j))
+            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j), silo:gameInfo.silo[theme])
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
         self.grid[i][j] = true
@@ -317,7 +319,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         // create a player and add it to the scene
         playerNode = DOPlayerNode(
-            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j))
+            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j),silo:gameInfo.silo[theme])
         playerNode.name = "player"
         self.addChild(playerNode)
 
@@ -335,7 +337,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     func levelClear() {
         self.removeAllChildren()
-        backgroundNode.setRandomTexture(secret: false)
+        theme = Int.random(in: (0)...(gameInfo.themeCount-1), using: &rng)
+        backgroundNode.setDeterminedTexture(id:theme, secret: false)
         gameInfo.level += 1
         levelNode.updateLevel(with: gameInfo.level)
         addChild(backgroundNode)
@@ -358,8 +361,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
 
-        // set a new random background
-        backgroundNode.setRandomTexture(secret: false)
+        // set a new random background, non secret for now
+        theme = Int.random(in: (0)...(gameInfo.themeCount-1), using: &rng)
+        backgroundNode.setDeterminedTexture(id: theme, secret: false)
 
         // if we are not restarting (we go to next level)
         if (!restart) {

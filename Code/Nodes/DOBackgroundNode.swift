@@ -17,13 +17,13 @@ class DOBackgroundNode: SKSpriteNode {
         "yellow",
         "navy2",
         "blue2",
-    ]
-    private var siloBackgrounds = [
         "orange"
     ]
+
     private var secretBackgrounds = [
         "secret1"
     ]
+    
     var rng = SystemRandomNumberGenerator()
     init() {
         let texture = SKTexture(imageNamed: backgrounds[0])
@@ -38,6 +38,15 @@ class DOBackgroundNode: SKSpriteNode {
         else{
             
             self.texture = SKTexture(imageNamed: secretBackgrounds[Int.random(in: (0)...(secretBackgrounds.count-1), using: &rng)])
+        }
+    }
+    func setDeterminedTexture(id:Int, secret: Bool){
+        if !secret{
+            self.texture = SKTexture(imageNamed: backgrounds[id])
+        }
+        else{
+            
+            self.texture = SKTexture(imageNamed: secretBackgrounds[id])
         }
     }
     required init?(coder aDecoder: NSCoder) {
