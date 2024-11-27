@@ -20,7 +20,7 @@ class DODotNode: SKShapeNode {
     ]
     var rng = SystemRandomNumberGenerator()
     
-    init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero, silo: Bool) {
+    init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero, silo: Bool = false) {
         self.gridX = Int(gridPosition.x)
         self.gridY = Int(gridPosition.y)
         
