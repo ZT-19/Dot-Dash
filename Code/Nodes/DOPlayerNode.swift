@@ -51,17 +51,26 @@ import SpriteKit
 
 class DOPlayerNode: DODotNode {
     var gridPosition: CGPoint
-    override init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero) {
+    override init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero,silo:Bool) {
       
         self.gridPosition = gridPosition
-        super.init(position: position , gridPosition: gridPosition)
+        super.init(position: position , gridPosition: gridPosition, silo:silo)
         
         // create a circle
         self.path = CGPath(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 0.5, height: radius * 0.5), transform: nil)
         
-        self.fillColor = .white
+        if !silo{
+            self.fillColor = .white
+           
+            self.fillTexture = SKTexture(imageNamed: "player")
+        }
+        else{
+            self.fillColor = .white
+           
+            self.fillTexture = SKTexture(imageNamed: "playerSilo")
+        }
 
-        self.fillTexture = SKTexture(imageNamed: "open")
+      
         
         // physics for collision detection
         self.physicsBody = SKPhysicsBody(circleOfRadius: radius)
