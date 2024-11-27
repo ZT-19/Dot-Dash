@@ -33,9 +33,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
-    //var playerNode = DOPlayerNode(silo: false)
     let gameOverNode = DOGameOverNode()
-    var playerNode = DOPlayerNode(silo: false)
+    var playerNode = DOPlayerNode()
     private var gameInfo = DOGameInfo()
     private var gameOverScreen = false
     
