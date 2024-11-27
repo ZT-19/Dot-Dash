@@ -25,25 +25,39 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
     private var difficulty = 10
-    var dotCount: Int = 0
+    private var dotCount: Int = 0
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
-    var playerNode = DOPlayerNode()
     let gameOverNode = DOGameOverNode()
-    var gameInfo = DOGameInfo()
-    var gameOverScreen = false
-
+    private var playerNode = DOPlayerNode()
+    private var gameInfo = DOGameInfo()
+    private var gameOverScreen = false
+    
+    // player position
     private var lastPosition: CGPoint = .zero
     private var firstPosition: CGPoint = .zero
     private var xv: Int = .zero
     private var yv: Int = .zero
     
-    // time vars
-    private var bonusTime = 30.0
-    private var lastUpdateTime: TimeInterval = 0
+    // timer
     private var remainingTime: TimeInterval = 60
-    private var timerLabel = SKLabelNode(fontNamed: "Arial")
+    private var bonusTime = 30.0
+    private var timerNode: DOTimerNode!
+    private var explodingTimer: DOTimerNode!
+    
+    // modifier states
+    private var modCode: Int? // -1 is inactive, anything above 0 represents a modifier
+    //private var modSuddenDeath = false
+    //private var modExplodingTimer = false
+    //private var modDoubleDots = false //2
+    
+    // powerups
+    /*
+    private var powerupNode: DOPowerUpNode!
+    private var dotBonus = 1
+    private var lvlBonus = 1
+    */
 
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
@@ -66,26 +80,33 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         offsetY = max(30, (size.height - gridWidth) / 2)
         drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
         
-        // setup timer label
-        timerLabel.text = "Time: \(Int(remainingTime))"
-        timerLabel.fontSize = 24
-        timerLabel.fontColor = .white
-        timerLabel.position = CGPoint(x: size.width / 2, y: size.height / 4)
-        addChild(timerLabel)
-
+        // setup timer node
+        
+        timerNode = DOTimerNode(initialTime: remainingTime)
+        timerNode.setPosition(CGPoint(x: size.width / 2, y: size.height / 4))
+        addChild(timerNode)
+        
+        //powerupNode = DOPowerUpNode(type: .doubleScorePerNode, position: CGPoint(x: 100, y: 100))
+        //addChild(powerupNode)
     }
+    
+    override func update(_ currentTime: TimeInterval) {
+        if timerNode.update(currentTime) {
+            gameOver()
+        }
+        if let explodingTimer = explodingTimer {
+            if explodingTimer.update(currentTime) {
+                gameOver()
+            }
+        }
+        // modifier states
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {
             return
         }
         handleTouch(touch)
-    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else {
-            return
-        }
-        handleTouchMoved(touch)
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -94,35 +115,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
         handleTouchEnd(touch)
     }
-    
-    override func update(_ currentTime: TimeInterval) {
-            // initialize lastUpdateTime during the first frame
-            if lastUpdateTime == 0 {
-                lastUpdateTime = currentTime
-            }
-
-            // calculate time difference as deltaTime
-            let deltaTime = currentTime - lastUpdateTime
-            lastUpdateTime = currentTime
-
-            // update the time remaining and check if game ends
-            remainingTime -= deltaTime
-            if remainingTime <= 0 {
-                remainingTime = 0
-                gameOver()
-            }
-
-            // ppdate the label
-            timerLabel.text = "Time: \(Int(remainingTime))"
-    }
 
     private func handleTouch(_ touch: UITouch) {
         firstPosition = touch.location(in: self)
-    }
-
-    private func handleTouchMoved(_ touch: UITouch) {
-        // placeholder
-        // lastPosition = touch.location(in: self)
     }
     
     private func handleTouchEnd(_ touch: UITouch) {
@@ -139,24 +134,24 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         let deltaY = lastPosition.y - firstPosition.y
         
         // hardcoded dead zone
-        if sqrt((deltaX * deltaX + deltaY * deltaY)) < 35.0{
+        if sqrt((deltaX * deltaX + deltaY * deltaY)) < 35.0 {
             return
         }
         
         if deltaX > 0 && abs(deltaX) > abs(deltaY) {
-            print("Swipe right")
+            //print("Swipe right")
             yv = 0
             xv = 1
         } else if deltaX < 0 && abs(deltaX) > abs(deltaY) {
-            print("Swipe left")
+            //print("Swipe left")
             yv = 0
             xv = -1
         } else if deltaY > 0 && abs(deltaX) < abs(deltaY) {
-            print("Swipe up")
+            //print("Swipe up")
             yv = 1
             xv = 0
         } else if deltaY < 0 && abs(deltaX) < abs(deltaY) {
-            print("Swipe down")
+            //print("Swipe down")
             yv = -1
             xv = 0
         }
@@ -168,15 +163,13 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             currentY = currentY + yv
             
             if grid[currentX][currentY] {
-                print("DOT HIT | X: \(currentX) Y: \(currentY)")
+                //print("DOT HIT | X: \(currentX) Y: \(currentY)")
                 
                 // remove dot
                 grid[currentX][currentY] = false
                 self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))?
                     .removeFromParent()
                 self.dotCount -= 1
-                
-                // move player
                 
                 self.childNode(withName: "player")?.removeFromParent()
                 playerNode = DOPlayerNode(
@@ -185,22 +178,24 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.name = "player"
                 self.addChild(playerNode)
             
-                 
-                
                 // update score
-                gameInfo.score += 100
+                gameInfo.score += 10
                 scoreNode.updateScore(with: gameInfo.score)
 
                 break
-
             }
         }
         if currentX == 0 || currentY == 0 || currentX == self.gridSize + 1 || currentY == self.gridSize + 1 {
-            print("LEVEL RESET | X: \(currentX) Y: \(currentY)")
-            levelLoad(restart: true)
+            //print("LEVEL RESET | X: \(currentX) Y: \(currentY)")
+            if (modCode == 1) {
+                gameOver()
+            }
+            else {
+                levelLoad(restart: true)
+            }
         }
         if dotCount == 0 {
-            print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
+            //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
             levelLoad(restart: false)
         }
     }
@@ -231,45 +226,22 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 validDirections = allDirections.filter { $0 != inverseDir[prevDir] }
             }
             let direction = validDirections.randomElement(using: &rng)!
-            //var direction = Int.random(in: 0..<4, using: &rng)
-            //while (prevDir >= 0 && direction == inverseDir[prevDir]) direction = Int.random(in: 0..<4, using: &rng)
             
-            /*
             switch direction {
             case 0: // right
-                if currentX < gridSize - 1 {
-                    currentX += Int.random(in: 1...(gridSize - currentX), using: &rng)
-                }
-            case 1: // left
-                if currentX > 0 {
-                    currentX -= Int.random(in: 1...currentX, using: &rng)
-                }
-            case 2: // down
-                if currentY < gridSize - 1 {
-                    currentY += Int.random(in: 1...(gridSize - currentY), using: &rng)
-                }
-            case 3: // up
-                if currentY > 0 {
-                    currentY -= Int.random(in: 1...currentY, using: &rng)
-                }
-            default:
-                break
-            }*/
-            switch direction {
-            case 0: // right
-                if currentX < gridSize - 2 { // Avoid last column
+                if currentX < gridSize - 2 {
                     currentX += Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
                 }
             case 1: // left
-                if currentX > 1 { // Avoid first column
+                if currentX > 1 {
                     currentX -= Int.random(in: 1...(currentX - 1), using: &rng)
                 }
             case 2: // down
-                if currentY < gridSize - 2 { // Avoid last row
+                if currentY < gridSize - 2 {
                     currentY += Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
                 }
             case 3: // up
-                if currentY > 1 { // Avoid first row
+                if currentY > 1 {
                     currentY -= Int.random(in: 1...(currentY - 1), using: &rng)
                 }
             default:
@@ -278,7 +250,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
             
             if !tempGrid[currentX][currentY] {
-                print("X: \(currentX) Y: \(currentY)")
+                //print("X: \(currentX) Y: \(currentY)")
                 tempGrid[currentX][currentY] = true
                 if randomDifficulty == 1 {
                     placePlayer(at: (currentX, currentY), offsetX: offsetX, offsetY: offsetY)
@@ -356,34 +328,58 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 dotNodeD.removeFromParent()
                 //print("Player removed")
             }
+            if let explodeNodeD = child as? DOExplodingTimerNode {
+                explodeNodeD.removeFromParent()
+                //print("Exploding Timer removed")
+            }
         }
 
         // set a new random background
         backgroundNode.setRandomTexture()
 
-        // if we are not restarting (we go to next level)
+        // if we are not restarting, we go to the next level
         if (!restart) {
-            // level increments and receive level completion bonuses
             gameInfo.level += 1
-            gameInfo.score += 300
-            remainingTime += bonusTime
+            gameInfo.score += 100
+            timerNode.addTime(bonusTime)
         }
         levelNode.updateLevel(with: gameInfo.level)
         scoreNode.updateScore(with: gameInfo.score)
 
-        // clear the grid and redraw it
+        // clear the grid
         grid = Array(
             repeating: Array(repeating: false, count: self.gridSize + 2),
             count: self.gridSize + 2
         )
-        drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
+        
+        if gameInfo.level % 3 == 0 && !restart {
+            modCode = Int.random(in: 0...2) // random inclusive
+            print("Modifier Active: modCode = \(modCode!)")
+        } else if gameInfo.level % 3 != 0 {
+            modCode = nil // Clear the modifier
+            print("No Modifier Active")
+        }
+        
+        if (modCode == 0 && !restart) {
+            explodingTimer = DOTimerNode(initialTime: bonusTime)
+            explodingTimer.setPosition(CGPoint(x: size.width / 2, y: size.height / 5))
+            addChild(explodingTimer)
+        }
+        
+        // mod: double difficulty
+        if (modCode == 2) {
+            drawGrid(difficultyRating: difficulty * 2, initX: 6, initY: 6)
+        }
+        else {
+            drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
+        }
     }
+    
     // translates matrix index to position on screen
     func coordCalculate(indices: CGPoint) -> CGPoint {
         return CGPoint(
             x: offsetX + CGFloat(indices.x) * dotSpacing,
             y: offsetY + CGFloat(indices.y) * dotSpacing)
-
     }
 
     func didBegin(_ contact: SKPhysicsContact) {
