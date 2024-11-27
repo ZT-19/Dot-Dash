@@ -25,22 +25,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
     private var difficulty = 10
-<<<<<<< HEAD
     private var dotCount: Int = 0
-    let backgroundNode = DOBackgroundNode()
-    let scoreNode = DOScoreNode()
-    let levelNode = DOLevelNode()
-=======
+    //let backgroundNode = DOBackgroundNode()
+    
     private var theme = 0
-    var dotCount: Int = 0
     var rng = SystemRandomNumberGenerator()
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
-    var playerNode = DOPlayerNode(silo: false)
->>>>>>> beta
+    //var playerNode = DOPlayerNode(silo: false)
     let gameOverNode = DOGameOverNode()
-    private var playerNode = DOPlayerNode()
+    var playerNode = DOPlayerNode(silo: false)
     private var gameInfo = DOGameInfo()
     private var gameOverScreen = false
     
