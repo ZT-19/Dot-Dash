@@ -20,7 +20,7 @@ class DODotNode: SKShapeNode {
     ]
     var rng = SystemRandomNumberGenerator()
     
-    init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero, silo: Bool = false) {
+    init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero, fadeAni: Bool = true) {
         self.gridX = Int(gridPosition.x)
         self.gridY = Int(gridPosition.y)
         
@@ -31,18 +31,14 @@ class DODotNode: SKShapeNode {
         // set the position and color
         self.position = position
         self.lineWidth = 0.0
-        if !silo{
+        
             self.fillColor = .white
            
             self.fillTexture = SKTexture(imageNamed: skins[Int.random(in: (0)...(skins.count-1), using: &rng)])
+       
+        if fadeAni{
+            fadeIn()
         }
-        else{
-            self.fillColor = .black
-        }
-      
-        self.alpha = 0.0
-        let fadeInAction = SKAction.fadeAlpha(to: 0.8, duration: 0.5) // Fade to 80% opacity over 1 second
-        self.run(fadeInAction)
         
         // physics for collision detection
         // try to remove dependnece on physics
@@ -57,6 +53,12 @@ class DODotNode: SKShapeNode {
     
     func getLoc() -> (Int, Int){
         return (gridX,gridY)
+    }
+    func fadeIn(){
+        self.alpha = 0.0
+        let fadeInAction = SKAction.fadeAlpha(to: 0.8, duration: 0.5) // Fade to 80% opacity over 1 second
+        self.run(fadeInAction)
+        
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

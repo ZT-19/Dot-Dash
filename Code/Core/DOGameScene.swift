@@ -28,7 +28,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var dotCount: Int = 0
     //let backgroundNode = DOBackgroundNode()
     
-    private var theme = 0
     var rng = SystemRandomNumberGenerator()
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
@@ -45,7 +44,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var yv: Int = .zero
     
     // timer
-    private var remainingTime: TimeInterval = 60
+    private var remainingTime: TimeInterval = 64440
     private var bonusTime = 30.0
     private var timerNode: DOTimerNode!
     private var explodingTimer: DOTimerNode!
@@ -55,6 +54,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     //private var modSuddenDeath = false
     //private var modExplodingTimer = false
     //private var modDoubleDots = false //2
+    
+    // animations
+    let transitionAni = SKAction.moveBy(x: 0, y: -UIScreen.main.bounds.size.height, duration: 1.5)
     
     // powerups
     /*
@@ -170,6 +172,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 //print("DOT HIT | X: \(currentX) Y: \(currentY)")
                 
                 // remove dot
+              
                 grid[currentX][currentY] = false
                 self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))?
                     .removeFromParent()
@@ -178,7 +181,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 self.childNode(withName: "player")?.removeFromParent()
                 playerNode = DOPlayerNode(
                     position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)),
-                    gridPosition: CGPoint(x: currentX, y: currentY),silo:gameInfo.silo[theme])
+                    gridPosition: CGPoint(x: currentX, y: currentY))
                 playerNode.name = "player"
                 self.addChild(playerNode)
             
@@ -278,7 +281,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         // create a dot and add it to the scene
         let dotNode = DODotNode(
-            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j), silo:gameInfo.silo[theme])
+            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
         self.grid[i][j] = true
@@ -293,7 +296,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         // create a player and add it to the scene
         playerNode = DOPlayerNode(
-            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j),silo:gameInfo.silo[theme])
+            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j))
         playerNode.name = "player"
         self.addChild(playerNode)
 
@@ -309,21 +312,35 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         gameInfo.level = 0
     }
 
+    //this seems to be a useless duplicate of levelload
     func levelClear() {
-        self.removeAllChildren()
-        theme = Int.random(in: (0)...(gameInfo.themeCount-1), using: &rng)
-        backgroundNode.setDeterminedTexture(id:theme, secret: false)
+        
+        levelTransition()
         gameInfo.level += 1
         levelNode.updateLevel(with: gameInfo.level)
-        addChild(backgroundNode)
-        addChild(scoreNode)
-        addChild(levelNode)
+       
         grid = Array(repeating: Array(repeating: false, count: self.gridSize + 2), count: self.gridSize + 2)
         drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
     }
- 
+    func levelTransition(){
+        let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y, duration: 2.0)
+        playerNode.run(playerTransition1)
+        self.removeAllChildren()
+        addChild(backgroundNode)
+        addChild(scoreNode)
+        addChild(levelNode)
+    
+    }
     func levelLoad(restart: Bool) {
         // remove all dots and players from the scene
+        //levelTransition()
+        if (!restart){
+            print("animation should start")
+            let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y + 10, duration: 2.0)
+            playerNode.run(playerTransition1){
+                print("kjlsadkfa")
+            }
+        }
         for child in self.children {
             if let dotNodeD = child as? DODotNode {
                 dotNodeD.removeFromParent()
@@ -340,11 +357,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
 
         // set a new random background, non secret for now
-        theme = Int.random(in: (0)...(gameInfo.themeCount-1), using: &rng)
-        backgroundNode.setDeterminedTexture(id: theme, secret: false)
+       
+    
 
         // if we are not restarting, we go to the next level
         if (!restart) {
+          
             gameInfo.level += 1
             gameInfo.score += 100
             timerNode.addTime(bonusTime)
