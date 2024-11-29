@@ -1,59 +1,71 @@
 //
 //  DOBackgroundNode.swift
-//  watermelon
-//
-//  Created by Oleksii Andriushchenko on 30.10.2023.
-//
 
 import SpriteKit
 
 class DOBackgroundNode: SKSpriteNode {
     private var backgrounds = [
-        "blue",
-        "green",
-        "red",
-        "black",
-        "navy",
-        "yellow",
-        "navy2",
-        "blue2",
-        "orange"
+        "black"
     ]
-
-    private var secretBackgrounds = [
-        "secret1"
-    ]
-    
-    var rng = SystemRandomNumberGenerator()
+    private var rng = SystemRandomNumberGenerator()
     init() {
         let texture = SKTexture(imageNamed: backgrounds[0])
         super.init(texture: texture, color: .clear, size: texture.size())
-        setRandomTexture(secret: false)
+        //setRandomTexture(secret: false)
     }
+    private func addStars() {
+        // Generate random number of stars (40-50)
+        let starCount = Int.random(in: 40...50, using: &rng)
+    
+        for _ in 0..<starCount {
+            let xPos = CGFloat.random(in: -size.width/2...size.width/2, using: &rng)
+            let yPos = CGFloat.random(in: -size.height/2...size.height/2, using: &rng)
+            
+            // Pass screen height to star node
+            let star = DOStarNode(position: CGPoint(x: xPos, y: yPos), screenHeight: size.height)
+            addChild(star)
+        }
+    }
+    private func animateCurrentStarsDown() {
+    let slideDown = SKAction.moveBy(x: 0, y: -size.height * 2, duration: 2.0)
+    children.forEach { node in
+        if let star = node as? DOStarNode {
+            let sequence = SKAction.sequence([
+                slideDown,
+                SKAction.removeFromParent()
+            ])
+            star.run(sequence)
+        }
+    }
+}
 
-    func setRandomTexture(secret: Bool){
-        if !secret{
-            self.texture = SKTexture(imageNamed: backgrounds[Int.random(in: (0)...(backgrounds.count-1), using: &rng)])
-        }
-        else{
-            
-            self.texture = SKTexture(imageNamed: secretBackgrounds[Int.random(in: (0)...(secretBackgrounds.count-1), using: &rng)])
-        }
+func setDeterminedTexture(id:Int, secret: Bool = false) {
+    // Start sliding existing stars down
+    animateCurrentStarsDown()
+    
+    // Add new stars immediately to maintain continuity
+    let changeBackground = SKAction.run { [weak self] in
+        self?.texture = SKTexture(imageNamed: self?.backgrounds[id] ?? "")
+        self?.addStars()
     }
-    func setDeterminedTexture(id:Int, secret: Bool){
-        if !secret{
-            self.texture = SKTexture(imageNamed: backgrounds[id])
-        }
-        else{
-            
-            self.texture = SKTexture(imageNamed: secretBackgrounds[id])
-        }
-    }
+    
+    run(changeBackground) // Remove wait time completely
+}
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     func setup(screenSize: CGSize) {
         position = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
+        animateCurrentStarsDown()
+        
+        let wait = SKAction.wait(forDuration: 0.01)
+        let setupAction = SKAction.run { [weak self] in
+            self?.removeAllChildren()
+            self?.addStars()
+        }
+        
+        run(SKAction.sequence([wait, setupAction]))
     }
 }

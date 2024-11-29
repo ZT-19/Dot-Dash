@@ -430,9 +430,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     func levelClear() {
         self.removeAllChildren()
-        theme = Int.random(in: (0)...(gameInfo.themeCount-1), using: &rng)
-        backgroundNode.setDeterminedTexture(id:theme, secret: false)
-        gameInfo.level += 1
+        backgroundNode.setDeterminedTexture(id: theme, secret: false) // Use fixed theme        gameInfo.level += 1
         levelNode.updateLevel(with: gameInfo.level)
         addChild(backgroundNode)
         addChild(scoreNode)
@@ -457,14 +455,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 //print("Player removed")
             }
         }
-
-        // set a new random background, non secret for now
-        theme = Int.random(in: (0)...(gameInfo.themeCount-1), using: &rng)
-        backgroundNode.setDeterminedTexture(id: theme, secret: false)
-
+        
         // if we are not restarting, we go to the next level
         if (!restart) {
-            
+            backgroundNode.setDeterminedTexture(id: theme, secret: false)
             gameInfo.level += 1
             if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
                 gameInfo.score += 150
