@@ -10,7 +10,7 @@ import SpriteKit
 class DOPlayerNode: SKShapeNode {
     var gridX: Int
     var gridY: Int
-    init(radius: CGFloat = 20, position: CGPoint = .zero, gridPosition: CGPoint = .zero, fadeAni: Bool = true) {
+    init(radius: CGFloat = 27, position: CGPoint = .zero, gridPosition: CGPoint = .zero, fadeAni: Bool = true) {
         self.gridX = Int(gridPosition.x)
         self.gridY = Int(gridPosition.y)
         

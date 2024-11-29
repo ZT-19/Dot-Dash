@@ -24,7 +24,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private let gridSize = DOGameContext.shared.gridSize
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
-    private var difficulty = 8
+    private var difficulty = 1//TEST
     private var dotCount: Int = 0
     
     //private let seed: UInt64 = 12345 // used for testing to seed rng
@@ -226,8 +226,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var randomDifficulty = difficultyRating
         
         // uncomment to use difficulty range instead of set difficulty
-        let randomRange = 2
-        randomDifficulty = Int.random(in: (difficultyRating - randomRange)...(difficultyRating + randomRange), using: &rng)
+        //let randomRange = 2
+        //randomDifficulty = Int.random(in: (difficultyRating - randomRange)...(difficultyRating + randomRange), using: &rng)
         //print("Curr Difficulty: \(randomDifficulty)")
         dotCount = randomDifficulty
         randomDifficulty += 1
@@ -477,7 +477,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             backgroundNode.setDeterminedTexture(id: theme, secret: false)
             gameInfo.level += 1
             
-            if (gameInfo.level % 6 == 0) { // gradually increase difficulty every 6 levels
+            if (gameInfo.level % 1 == 0) { // gradually increase difficulty every 6 levels //TEST
                 difficulty += 1
             }
             if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
