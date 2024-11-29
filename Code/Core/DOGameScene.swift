@@ -35,6 +35,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     var playerNode = DOPlayerNode()
     private var gameInfo = DOGameInfo()
     private var gameOverScreen = false
+    private var theme = 0
     
     // player position
     private var lastPosition: CGPoint = .zero
@@ -43,7 +44,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var yv: Int = .zero
     
     // timer
-    private var remainingTime: TimeInterval = 64440
+    private var remainingTime: TimeInterval = 60
     private var bonusTime = 30.0
     private var timerNode: DOTimerNode!
     private var explodingTimer: DOExplodingTimerNode!

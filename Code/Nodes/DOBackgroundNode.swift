@@ -39,7 +39,7 @@ class DOBackgroundNode: SKSpriteNode {
     }
 }
 
-func setDeterminedTexture(id:Int, secret: Bool = false) {
+func setDeterminedTexture(id:Int = 0, secret: Bool = false) {
     // Start sliding existing stars down
     animateCurrentStarsDown()
     
