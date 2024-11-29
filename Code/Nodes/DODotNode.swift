@@ -10,19 +10,37 @@ import SpriteKit
 class DODotNode: SKShapeNode {
     var gridX: Int
     var gridY: Int
-    init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero) {
+    private var skins = [
+        "planet1",
+        "planet2",
+        "planet3",
+        "planet4",
+        "planet5"
+   
+    ]
+    var rng = SystemRandomNumberGenerator()
+    
+    init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero, silo: Bool = false) {
         self.gridX = Int(gridPosition.x)
         self.gridY = Int(gridPosition.y)
         
+        
         super.init()
-        self.path = CGPath(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 0.5, height: radius * 0.5), transform: nil) 
+        self.path = CGPath(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 0.5, height: radius * 0.5), transform: nil)
       
         // set the position and color
         self.position = position
-        //self.fillTexture = SKTexture(imageNamed: "closed")
-        self.fillColor = .white
+        self.lineWidth = 0.0
+        if !silo{
+            self.fillColor = .white
+           
+            self.fillTexture = SKTexture(imageNamed: skins[Int.random(in: (0)...(skins.count-1), using: &rng)])
+        }
+        else{
+            self.fillColor = .black
+        }
+      
         self.alpha = 0.0
-        
         let fadeInAction = SKAction.fadeAlpha(to: 0.8, duration: 0.5) // Fade to 80% opacity over 1 second
         self.run(fadeInAction)
         
