@@ -23,7 +23,7 @@ class DOTimerNode: SKNode {
     }
 
     private func setup() {
-        timerLabel.text = "Time: \(Int(remainingTime))"
+        timerLabel.text = "\(Int(remainingTime))"
         timerLabel.fontSize = 24
         timerLabel.fontColor = .white
         addChild(timerLabel)
@@ -52,5 +52,8 @@ class DOTimerNode: SKNode {
     }
     func setPosition(_ position: CGPoint) {
         timerLabel.position = position
+    }
+    func getPosition() -> CGPoint {
+        return position
     }
 }
