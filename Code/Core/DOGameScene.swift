@@ -26,7 +26,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var offsetY: CGFloat = 0
     private var difficulty = 10
     private var dotCount: Int = 0
-    //let backgroundNode = DOBackgroundNode()
     
     private var theme = 0
     var rng = SystemRandomNumberGenerator()
@@ -48,20 +47,31 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var remainingTime: TimeInterval = 60
     private var bonusTime = 30.0
     private var timerNode: DOTimerNode!
-    private var explodingTimer: DOTimerNode!
+    private var explodingTimer: DOExplodingTimerNode!
     
-    // modifier states
+    /*
+    MODIFIER STATES:
+    modeCode is -1: inactive
+    modCode is 0: exploding timer
+    modCode is 1: sudden death
+    modCode is 2: double difficulty
+     */
+    private let modInterval = 5
     private var modCode: Int? // -1 is inactive, anything above 0 represents a modifier
-    //private var modSuddenDeath = false
-    //private var modExplodingTimer = false
-    //private var modDoubleDots = false //2
+    private var modNotificationLabel: SKLabelNode?
     
     // powerups
-    /*
+    private let powerupRadius = 20.0
+    private let powerupTypes: [PowerUpType] = [
+        .doubleDotScore,
+        .levelScoreBonus,
+        .freezeTime
+    ]
     private var powerupNode: DOPowerUpNode!
-    private var dotBonus = 1
-    private var lvlBonus = 1
-    */
+    private var powerupEligible = true
+    private var powerupNotificationLabel: SKLabelNode?
+    private var powerupCurr = PowerUpType.doubleDotScore
+    
 
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
@@ -85,22 +95,22 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
         
         // setup timer node
-        
         timerNode = DOTimerNode(initialTime: remainingTime)
-        timerNode.setPosition(CGPoint(x: size.width / 2, y: size.height / 4))
+        timerNode.setPosition(CGPoint(x: size.width / 2, y: size.height / 5))
         addChild(timerNode)
-        
-        //powerupNode = DOPowerUpNode(type: .doubleScorePerNode, position: CGPoint(x: 100, y: 100))
-        //addChild(powerupNode)
     }
     
     override func update(_ currentTime: TimeInterval) {
-        if timerNode.update(currentTime) {
-            gameOver()
+        if !(powerupNode != nil && powerupNode.isFreezeTime() && powerupNode.isActive()) {
+            if timerNode.update(currentTime) {
+                gameOver()
+            }
         }
         if let explodingTimer = explodingTimer {
-            if explodingTimer.update(currentTime) {
-                gameOver()
+            if !(powerupNode != nil && powerupNode.isFreezeTime() && powerupNode.isActive()) {
+                if explodingTimer.update(currentTime) {
+                    gameOver()
+                }
             }
         }
         // modifier states
@@ -183,14 +193,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 self.addChild(playerNode)
             
                 // update score
-                gameInfo.score += 10
-                scoreNode.updateScore(with: gameInfo.score)
-
+                if (powerupNode != nil && powerupNode.isActive() && powerupNode.isDoubleDotScore()) {
+                    gameInfo.score += 20
+                }
+                else {
+                    gameInfo.score += 10
+                }
+                scoreNode.updateScore(with: gameInfo.score, mode: dotCount > 0 ? 1 : 0)
                 break
             }
         }
         if currentX == 0 || currentY == 0 || currentX == self.gridSize + 1 || currentY == self.gridSize + 1 {
             //print("LEVEL RESET | X: \(currentX) Y: \(currentY)")
+            powerupEligible = false
+            print("\(powerupEligible)")
             if (modCode == 1) {
                 gameOver()
             }
@@ -201,6 +217,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
             levelLoad(restart: false)
+            powerupEligible = true
+            print("\(powerupEligible)")
         }
     }
 
@@ -299,6 +317,107 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     }
 
+    private func showPowerupNotification() {
+        // Remove existing notification
+        powerupNotificationLabel?.removeFromParent()
+        
+        // Create notification at center
+        let notification = SKLabelNode(fontNamed: "Arial")
+        notification.fontSize = 20 // hardcode size
+        notification.fontColor = .white
+        
+        switch powerupCurr {
+        case .doubleDotScore:
+            notification.text = "Powerup: 2X Score!"
+        case .levelScoreBonus:
+            notification.text = "Powerup: Level Bonus!"
+        case .freezeTime:
+            notification.text = "Powerup: Time Freeze!"
+        }
+        notification.position = CGPoint(x: levelNode.getPosition().x , y: levelNode.getPosition().y - 40) // hardcoded constant
+        notification.alpha = 0
+        powerupNotificationLabel = notification
+        addChild(notification)
+        
+        // Pop in animation
+        let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
+        let fadeIn = SKAction.fadeIn(withDuration: 0.3)
+        
+        // Slide to corner while shrinking
+        let moveToCorner = SKAction.move(to: powerupNode.getPosition(), duration: 0.5)
+        let shrink = SKAction.scale(to: 0.5, duration: 0.5)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+        
+        // Combine animations
+        let popIn = SKAction.group([scaleUp, fadeIn])
+        let exitGroup = SKAction.group([moveToCorner, shrink, fadeOut])
+        
+        // Full sequence
+        let sequence = SKAction.sequence([
+            popIn,
+            scaleDown,
+            SKAction.wait(forDuration: 0.3),
+            exitGroup,
+            SKAction.removeFromParent()
+        ])
+        
+        notification.run(sequence)
+    }
+
+    private func showModNotification(code: Int) {
+        // Remove existing notification
+        modNotificationLabel?.removeFromParent()
+        
+        // Create notification above timer
+        let notification = SKLabelNode(fontNamed: "Arial")
+        notification.fontSize = 20
+        notification.fontColor = .white
+        
+        // Set text based on mod code
+        switch code {
+        case 0:
+            notification.text = "Challenge: Exploding Timer!"
+        case 1:
+            notification.text = "Challenge: Sudden Death!"
+        case 2:
+            notification.text = "Challenge: Double Difficulty!"
+        default:
+            return // Don't show notification for invalid codes
+        }
+        
+        // Position centered above timer
+        notification.position = (CGPoint(x: size.width / 2, y: size.height / 5 + 40))
+        notification.alpha = 0
+        modNotificationLabel = notification
+        addChild(notification)
+        
+        
+        // Pop in animation
+        let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
+        let fadeIn = SKAction.fadeIn(withDuration: 0.3)
+        
+        // Pop out animation
+        let popOut = SKAction.scale(to: 0.8, duration: 0.3)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.3)
+        
+        // Combine animations
+        let popIn = SKAction.group([scaleUp, fadeIn])
+        let exitGroup = SKAction.group([popOut, fadeOut])
+        
+        // Full sequence
+        let sequence = SKAction.sequence([
+            popIn,
+            scaleDown,
+            SKAction.wait(forDuration: 1.0),
+            exitGroup,
+            SKAction.removeFromParent()
+        ])
+        
+        notification.run(sequence)
+    }
+
     func gameOver() {
         self.removeAllChildren()
         // gameOverNode.updateMessage()
@@ -323,6 +442,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     }
  
     func levelLoad(restart: Bool) {
+        if !restart, let explodingTimer = explodingTimer {
+            explodingTimer.removeFromParent()
+            self.explodingTimer = nil
+        }
         // remove all dots and players from the scene
         for child in self.children {
             if let dotNodeD = child as? DODotNode {
@@ -333,10 +456,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 dotNodeD.removeFromParent()
                 //print("Player removed")
             }
-            if let explodeNodeD = child as? DOExplodingTimerNode {
-                explodeNodeD.removeFromParent()
-                //print("Exploding Timer removed")
-            }
         }
 
         // set a new random background, non secret for now
@@ -345,12 +464,18 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         // if we are not restarting, we go to the next level
         if (!restart) {
+            
             gameInfo.level += 1
-            gameInfo.score += 100
+            if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
+                gameInfo.score += 150
+            }
+            else {
+                gameInfo.score += 100
+            }
             timerNode.addTime(bonusTime)
         }
         levelNode.updateLevel(with: gameInfo.level)
-        scoreNode.updateScore(with: gameInfo.score)
+        scoreNode.updateScore(with: gameInfo.score, mode: powerupCurr == PowerUpType.levelScoreBonus ? 2 : 1)
 
         // clear the grid
         grid = Array(
@@ -358,17 +483,18 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             count: self.gridSize + 2
         )
         
-        if gameInfo.level % 3 == 0 && !restart {
+        if gameInfo.level % modInterval == 0 && !restart {
             modCode = Int.random(in: 0...2) // random inclusive
+            showModNotification(code: modCode ?? -1)
             print("Modifier Active: modCode = \(modCode!)")
-        } else if gameInfo.level % 3 != 0 {
+        } else if gameInfo.level % modInterval != 0 {
             modCode = nil // Clear the modifier
             print("No Modifier Active")
         }
         
         if (modCode == 0 && !restart) {
-            explodingTimer = DOTimerNode(initialTime: bonusTime)
-            explodingTimer.setPosition(CGPoint(x: size.width / 2, y: size.height / 5))
+            explodingTimer = DOExplodingTimerNode(initialTime: bonusTime)
+            explodingTimer.setPosition(CGPoint(x: size.width / 2, y: size.height / 6))
             addChild(explodingTimer)
         }
         
@@ -378,6 +504,21 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
         else {
             drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
+        }
+        if (powerupEligible) {print("powerUpEligible")}
+        if powerupNode == nil || !powerupNode.isActive() {print("No Powerup Active")}
+        if powerupEligible && (powerupNode == nil || !powerupNode.isActive()) {
+            let powerUpNodeRadius: CGFloat = 20
+            let position = CGPoint(x: powerUpNodeRadius + 15, y: size.height - powerUpNodeRadius - 70)
+            powerupCurr = powerupTypes.randomElement(using: &rng)!
+            print("Powerup gained: \(powerupCurr)")
+            powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
+            addChild(powerupNode!)
+            showPowerupNotification()
+        }
+        if let existingPowerup = powerupNode, !existingPowerup.isActive() {
+            existingPowerup.removeFromParent()
+            powerupNode = nil
         }
     }
     
