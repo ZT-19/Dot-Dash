@@ -27,6 +27,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var difficulty = 8
     private var dotCount: Int = 0
     
+    //private let seed: UInt64 = 12345 // used for testing to seed rng
     var rng = SystemRandomNumberGenerator()
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
@@ -71,7 +72,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var powerupEligible = true
     private var powerupNotificationLabel: SKLabelNode?
     private var powerupCurr = PowerUpType.doubleDotScore
-    
 
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
@@ -207,7 +207,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if currentX == 0 || currentY == 0 || currentX == self.gridSize + 1 || currentY == self.gridSize + 1 {
             //print("LEVEL RESET | X: \(currentX) Y: \(currentY)")
             powerupEligible = false
-            print("\(powerupEligible)")
             if (modCode == 1) {
                 gameOver()
             }
@@ -219,7 +218,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
             levelLoad(restart: false)
             powerupEligible = true
-            print("\(powerupEligible)")
         }
     }
 
@@ -228,9 +226,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var randomDifficulty = difficultyRating
         
         // uncomment to use difficulty range instead of set difficulty
-        var randomRange = 2
+        let randomRange = 2
         randomDifficulty = Int.random(in: (difficultyRating - randomRange)...(difficultyRating + randomRange), using: &rng)
-        
+        //print("Curr Difficulty: \(randomDifficulty)")
         dotCount = randomDifficulty
         randomDifficulty += 1
         var tempGrid = grid
@@ -334,6 +332,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             notification.text = "Powerup: Level Bonus!"
         case .freezeTime:
             notification.text = "Powerup: Time Freeze!"
+        default:
+            return
         }
         notification.position = CGPoint(x: levelNode.getPosition().x , y: levelNode.getPosition().y - 40) // hardcoded constant
         notification.alpha = 0
@@ -456,10 +456,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         // remove all dots and players from the scene
         //levelTransition()
         if (!restart){
-            print("animation should start")
+            //print("animation should start")
             let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y + 10, duration: 2.0)
             playerNode.run(playerTransition1){
-                print("kjlsadkfa")
+                //print("kjlsadkfa")
             }
         }
         for child in self.children {
@@ -477,7 +477,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             backgroundNode.setDeterminedTexture(id: theme, secret: false)
             gameInfo.level += 1
             
-            if (gameInfo.level % 7 == 0) { // gradually increase difficulty
+            if (gameInfo.level % 6 == 0) { // gradually increase difficulty every 6 levels
                 difficulty += 1
             }
             if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
@@ -489,7 +489,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             timerNode.addTime(bonusTime)
         }
         levelNode.updateLevel(with: gameInfo.level)
-        scoreNode.updateScore(with: gameInfo.score, mode: powerupCurr == PowerUpType.levelScoreBonus ? 2 : 1)
+        if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
+            scoreNode.updateScore(with: gameInfo.score, mode: 2)
+        }
+        else {
+            scoreNode.updateScore(with: gameInfo.score, mode: 1)
+        }
 
         // clear the grid
         grid = Array(
@@ -500,10 +505,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if gameInfo.level % modInterval == 0 && !restart {
             modCode = Int.random(in: 0...2) // random inclusive
             showModNotification(code: modCode ?? -1)
-            print("Modifier Active: modCode = \(modCode!)")
+            //print("Modifier Active: modCode = \(modCode!)")
         } else if gameInfo.level % modInterval != 0 {
             modCode = nil // Clear the modifier
-            print("No Modifier Active")
+            //print("No Modifier Active")
         }
         
         if (modCode == 0 && !restart) {
@@ -525,13 +530,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             let powerUpNodeRadius: CGFloat = 20
             let position = CGPoint(x: powerUpNodeRadius + 15, y: size.height - powerUpNodeRadius - 70)
             powerupCurr = powerupTypes.randomElement(using: &rng)!
-            print("Powerup gained: \(powerupCurr)")
+            //print("Powerup gained: \(powerupCurr)")
             powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
             addChild(powerupNode!)
             showPowerupNotification()
         }
         if let existingPowerup = powerupNode, !existingPowerup.isActive() {
             existingPowerup.removeFromParent()
+            powerupCurr = .inactive
             powerupNode = nil
         }
     }

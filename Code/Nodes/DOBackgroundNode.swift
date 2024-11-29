@@ -11,17 +11,15 @@ class DOBackgroundNode: SKSpriteNode {
     init() {
         let texture = SKTexture(imageNamed: backgrounds[0])
         super.init(texture: texture, color: .clear, size: texture.size())
-        //setRandomTexture(secret: false)
     }
     private func addStars() {
-        // Generate random number of stars (40-50)
+        // generate random number of stars (40-50)
         let starCount = Int.random(in: 40...50, using: &rng)
     
         for _ in 0..<starCount {
             let xPos = CGFloat.random(in: -size.width/2...size.width/2, using: &rng)
             let yPos = CGFloat.random(in: -size.height/2...size.height/2, using: &rng)
             
-            // Pass screen height to star node
             let star = DOStarNode(position: CGPoint(x: xPos, y: yPos), screenHeight: size.height)
             addChild(star)
         }
@@ -40,16 +38,16 @@ class DOBackgroundNode: SKSpriteNode {
 }
 
 func setDeterminedTexture(id:Int = 0, secret: Bool = false) {
-    // Start sliding existing stars down
+    // start sliding existing stars down
     animateCurrentStarsDown()
     
-    // Add new stars immediately to maintain continuity
+    // add new stars immediately to maintain continuity
     let changeBackground = SKAction.run { [weak self] in
         self?.texture = SKTexture(imageNamed: self?.backgrounds[id] ?? "")
         self?.addStars()
     }
     
-    run(changeBackground) // Remove wait time completely
+    run(changeBackground)
 }
 
     required init?(coder aDecoder: NSCoder) {

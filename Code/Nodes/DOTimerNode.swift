@@ -28,6 +28,24 @@ class DOTimerNode: SKNode {
         timerLabel.fontColor = .white
         addChild(timerLabel)
     }
+    private func emitTimeParticle(seconds: TimeInterval) {
+    let particle = SKLabelNode(fontNamed: "Arial")
+    particle.text = "+\(Int(seconds))"
+    particle.fontSize = 12
+    particle.fontColor = .white
+    particle.position = CGPoint(x: timerLabel.frame.maxX + 10, y: timerLabel.frame.midY)
+    addChild(particle)
+    
+    // Animation sequence
+    let moveUp = SKAction.moveBy(x: 10, y: 15, duration: 0.7)
+    let fadeOut = SKAction.fadeOut(withDuration: 0.7)
+    let scale = SKAction.scale(to: 0.7, duration: 0.7)
+    let group = SKAction.group([moveUp, fadeOut, scale])
+    let remove = SKAction.removeFromParent()
+    let sequence = SKAction.sequence([group, remove])
+    
+    particle.run(sequence)
+}
 
     func update(_ currentTime: TimeInterval) -> Bool {
         if lastUpdateTime == 0 {
@@ -49,6 +67,7 @@ class DOTimerNode: SKNode {
     func addTime(_ seconds: TimeInterval) {
         remainingTime += seconds
         timerLabel.text = "Time: \(Int(remainingTime))"
+        emitTimeParticle(seconds: seconds)
     }
     func setPosition(_ position: CGPoint) {
         timerLabel.position = position

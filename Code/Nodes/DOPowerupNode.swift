@@ -4,10 +4,10 @@ enum PowerUpType {
     case doubleDotScore
     case levelScoreBonus
     case freezeTime
+    case inactive
 }
 
 class DOPowerUpNode: SKNode {
-    // MARK: - Properties
     private let circleShape: SKShapeNode
     private let countdownLabel: SKLabelNode
     private let powerupLabel: SKLabelNode
@@ -21,7 +21,7 @@ class DOPowerUpNode: SKNode {
     let attributes: [NSAttributedString.Key: Any] = [
         .foregroundColor: UIColor.white,
         .strokeColor: UIColor.black,
-        .strokeWidth: 3.0,  // Negative value for outer stroke
+        .strokeWidth: 3.0,
         .font: UIFont(name: "Arial-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
     ]
 
@@ -30,25 +30,22 @@ class DOPowerUpNode: SKNode {
         self.countdownDuration = duration
         self.remainingTime = duration
         self.maskHeight = radius * 2
-
-        // Initialize circle shape
+        
         circleShape = SKShapeNode(circleOfRadius: radius)
         circleShape.fillColor = .yellow
         circleShape.strokeColor = .darkGray
         circleShape.lineWidth = 1
 
-        // Initialize powerup label
+        // powerup label
         powerupLabel = SKLabelNode(fontNamed: "Arial-Bold")
         powerupLabel.fontSize = 16
         powerupLabel.fontColor = .white
         powerupLabel.verticalAlignmentMode = .center
         powerupLabel.position = CGPoint(x: 0, y: 0)
-
-        // Add stroke using NSAttributedString
         
         powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
 
-        // Initialize countdown label
+        // initialize countdown label
         countdownLabel = SKLabelNode(fontNamed: "Arial")
         countdownLabel.fontSize = 12
         countdownLabel.fontColor = .white
@@ -56,17 +53,17 @@ class DOPowerUpNode: SKNode {
         countdownLabel.verticalAlignmentMode = .center
         countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.5))
 
-        // Initialize crop node and mask
+        // initialize crop node and mask for draining animation
         cropNode = SKCropNode()
         maskNode = SKShapeNode(rectOf: CGSize(width: radius * 2, height: radius * 4))
         maskNode.fillColor = .darkGray
         maskNode.strokeColor = .darkGray
-        // Set anchor point at top by positioning
+        // set anchor point at top by positioning
         maskNode.position = CGPoint(x: 0, y: -radius)
 
         super.init()
 
-        // Setup node hierarchy
+        // setup node hierarchy
         cropNode.maskNode = maskNode
         cropNode.addChild(circleShape)
         self.position = position
@@ -82,7 +79,6 @@ class DOPowerUpNode: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Private Methods
     private func configureAppearance() {
         switch type {
         case .doubleDotScore:
@@ -97,32 +93,33 @@ class DOPowerUpNode: SKNode {
             circleShape.fillColor = .cyan
             powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
             countdownLabel.fontSize = 10
+        default:
+            return
         }
     }
 
     private func startCountdown() {
-        // Create draining animation
+        // create draining animation
         let scaleAction = SKAction.scaleY(to: 0, duration: countdownDuration)
         maskNode.run(scaleAction)
         
-        // Update countdown label
+        // update countdown label
         let countdownAction = SKAction.customAction(withDuration: countdownDuration) { [weak self] _, elapsedTime in
             guard let self = self else { return }
             self.remainingTime = max(0, self.countdownDuration - elapsedTime)
             self.countdownLabel.text = "\(Int(ceil(self.remainingTime)))"
         }
         
-        // Remove node when complete
+        // remove node when complete
         let removeAction = SKAction.run { [weak self] in
             self?.removeFromParent()
-            print("Removed powerup from node")
+            //print("Removed powerup from node")
         }
         
-        // Run countdown and removal sequence
+        // run countdown and removal sequence
         self.run(SKAction.sequence([countdownAction, removeAction]))
     }
 
-    // MARK: - Public Methods
     func getPosition() -> CGPoint {
         return position
     }
