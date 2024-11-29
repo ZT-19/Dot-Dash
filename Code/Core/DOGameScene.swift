@@ -471,14 +471,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 //print("Player removed")
             }
         }
-
-        // set a new random background, non secret for now
-       
-    
-
         // if we are not restarting, we go to the next level
         if (!restart) {
-            
+            backgroundNode.setDeterminedTexture(id: theme, secret: false)
             gameInfo.level += 1
             if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
                 gameInfo.score += 150
