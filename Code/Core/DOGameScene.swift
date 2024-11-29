@@ -24,7 +24,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private let gridSize = DOGameContext.shared.gridSize
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
-    private var difficulty = 10
+    private var difficulty = 4//TEST
     private var dotCount: Int = 0
     
     var rng = SystemRandomNumberGenerator()
