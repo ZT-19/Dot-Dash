@@ -24,7 +24,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private let gridSize = DOGameContext.shared.gridSize
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
-    private var difficulty = 4//TEST
+    private var difficulty = 8
     private var dotCount: Int = 0
     
     var rng = SystemRandomNumberGenerator()
@@ -228,8 +228,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var randomDifficulty = difficultyRating
         
         // uncomment to use difficulty range instead of set difficulty
-        // randomRange = 1
-        // randomDifficulty = Int.random(in: (difficultyRating - randomRange)...(difficultyRating + randomRange), using: &rng)
+        var randomRange = 2
+        randomDifficulty = Int.random(in: (difficultyRating - randomRange)...(difficultyRating + randomRange), using: &rng)
         
         dotCount = randomDifficulty
         randomDifficulty += 1
@@ -476,6 +476,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if (!restart) {
             backgroundNode.setDeterminedTexture(id: theme, secret: false)
             gameInfo.level += 1
+            
+            if (gameInfo.level % 7 == 0) { // gradually increase difficulty
+                difficulty += 1
+            }
             if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
                 gameInfo.score += 150
             }
