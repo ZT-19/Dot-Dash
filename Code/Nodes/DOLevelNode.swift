@@ -11,30 +11,22 @@ import SpriteKit
 
 class DOLevelNode: SKNode {
 
-    private let textNode = SKLabelNode()
+    private let textNode = SKLabelNode(fontNamed: "Arial")
 
     func setup(screenSize: CGSize) {
         position = CGPoint(x: screenSize.width / 2, y: screenSize.height - 120 - Constants.size.height / 2)
 
-      
         updateLevel(with: 1)
         textNode.verticalAlignmentMode = .center
         addChild(textNode)
     }
-
-    func adjustPosition(cameraNode: SKNode, screenSize: CGSize) {
-        let cameraPosition = cameraNode.position
-        position = CGPoint(x: 50, y: cameraPosition.y + screenSize.height / 2 - 70)
+    
+    func getPosition() -> CGPoint {
+        return position
     }
 
     func updateLevel(with level: Int) {
-        textNode.attributedText = NSAttributedString(
-            string: "Level \(level)",
-            attributes: [
-                .foregroundColor: UIColor.white,
-                .font: UIFont.systemFont(ofSize: 40, weight: .bold)
-            ]
-        )
+        textNode.text = "Level \(level)"
     }
     
 }

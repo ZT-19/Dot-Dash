@@ -23,8 +23,8 @@ class DOExplodingTimerNode: SKNode {
     }
 
     private func setup() {
-        timerLabel.text = "Time: \(Int(remainingTime))"
-        timerLabel.fontSize = 24
+        timerLabel.text = "Explodes in \(Int(remainingTime))!"
+        timerLabel.fontSize = 20
         timerLabel.fontColor = .white
         addChild(timerLabel)
     }
@@ -43,12 +43,12 @@ class DOExplodingTimerNode: SKNode {
             return true // signals game over
         }
 
-        timerLabel.text = "Time: \(Int(remainingTime))"
+        timerLabel.text = "Explodes in \(Int(remainingTime))!"
         return false
     }
     func addTime(_ seconds: TimeInterval) {
         remainingTime += seconds
-        timerLabel.text = "Time: \(Int(remainingTime))"
+        timerLabel.text = "Explodes in \(Int(remainingTime))!"
     }
     func setPosition(_ position: CGPoint) {
         timerLabel.position = position
