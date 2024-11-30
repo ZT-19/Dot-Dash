@@ -90,7 +90,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         // center grid on screen and draw it
         let gridWidth = CGFloat(gridSize) * dotSpacing
-        offsetX = max(30, (size.width - gridWidth) / 2)
+        offsetX = (max(30, (size.width - gridWidth) / 2))/3
         offsetY = max(30, (size.height - gridWidth) / 2)
         drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
         
