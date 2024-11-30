@@ -172,7 +172,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         var (currentX, currentY) = playerNode.getLoc()
         
+        var steps = 0
         while currentX > 0 && currentY > 0 && currentX < self.gridSize + 1 && currentY < self.gridSize + 1 {
+            if steps>0{
+                if xv==0{
+                    self.addChild(DOTrailNode(position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)), vertical: true))
+                }
+                else{
+                    self.addChild(DOTrailNode(position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)), vertical: false))
+                }
+            }
+            steps += 1
             currentX = currentX + xv
             currentY = currentY + yv
             
@@ -181,9 +191,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 
                 // remove dot
               
+                
                 grid[currentX][currentY] = false
-                self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))?
-                    .removeFromParent()
+                //self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))?
+                 //  .removeFromParent()
+                let onnode:DODotNode = self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))! as! DODotNode
+                onnode.destroySelf()// since we're pretty sure its a dot node
+                
+                   
                 self.dotCount -= 1
                 
                 self.childNode(withName: "player")?.removeFromParent()
@@ -470,6 +485,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             if let dotNodeD = child as? DOPlayerNode {
                 dotNodeD.removeFromParent()
                 //print("Player removed")
+            }
+            if let trailNode = child as? DOTrailNode{
+                trailNode.removeFromParent()
+                
             }
         }
         // if we are not restarting, we go to the next level
