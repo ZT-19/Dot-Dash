@@ -20,14 +20,15 @@ public struct DOGameScene: View {
 class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     private var grid = DOGameContext.shared.grid
+    private var baseGrid = DOGameContext.shared.grid
     private let dotSpacing = DOGameContext.shared.dotSpacing
     private let gridSize = DOGameContext.shared.gridSize
+    private let gridCenter = DOGameContext.shared.gridCenter
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
-    private var difficulty = 1//TEST
+    private var difficulty = 1
     private var dotCount: Int = 0
     
-    //private let seed: UInt64 = 12345 // used for testing to seed rng
     var rng = SystemRandomNumberGenerator()
     let backgroundNode = DOBackgroundNode()
     let scoreNode = DOScoreNode()
@@ -36,13 +37,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     var playerNode = DOPlayerNode()
     private var gameInfo = DOGameInfo()
     private var gameOverScreen = false
-    private var theme = 0
     
     // player position
     private var lastPosition: CGPoint = .zero
     private var firstPosition: CGPoint = .zero
     private var xv: Int = .zero
     private var yv: Int = .zero
+    private var isPlayerAnimating = false
+    private var queuedLevelLoad: (Bool, Bool)? // (restart, isPending)
+
     
     // timer
     private var remainingTime: TimeInterval = 60
@@ -92,7 +95,16 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         let gridWidth = CGFloat(gridSize) * dotSpacing
         offsetX = max(30, (size.width - gridWidth) / 2)
         offsetY = max(30, (size.height - gridWidth) / 2)
-        drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
+        
+        // clear grid
+        grid = Array(
+            repeating: Array(repeating: 0, count: self.gridSize + 2),
+            count: self.gridSize + 2
+        )
+        // initialize first level
+        grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter)
+        baseGrid = grid
+        placeDotsFromGrid(grid: grid)
         
         // setup timer node
         timerNode = DOTimerNode(initialTime: remainingTime)
@@ -176,22 +188,31 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             currentX = currentX + xv
             currentY = currentY + yv
             
-            if grid[currentX][currentY] {
-                //print("DOT HIT | X: \(currentX) Y: \(currentY)")
+            if grid[currentX][currentY] == 1 {
+                let newPlayerPosition = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
+                let slideAction = SKAction.move(to: newPlayerPosition, duration: 0.2)
+                slideAction.timingMode = .easeOut
+                
+                isPlayerAnimating = true
+                
+                playerNode.gridX = currentX
+                playerNode.gridY = currentY
+                playerNode.run(slideAction) { [weak self] in
+                    guard let self = self else { return }
+                    self.isPlayerAnimating = false
+                    
+                    // Execute queued level load if exists
+                    if let (restart, _) = self.queuedLevelLoad {
+                        self.queuedLevelLoad = nil
+                        self.levelLoad(restart: restart)
+                    }
+                }
                 
                 // remove dot
-              
-                grid[currentX][currentY] = false
+                grid[currentX][currentY] = 0
                 self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))?
                     .removeFromParent()
                 self.dotCount -= 1
-                
-                self.childNode(withName: "player")?.removeFromParent()
-                playerNode = DOPlayerNode(
-                    position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)),
-                    gridPosition: CGPoint(x: currentX, y: currentY))
-                playerNode.name = "player"
-                self.addChild(playerNode)
             
                 // update score
                 if (powerupNode != nil && powerupNode.isActive() && powerupNode.isDoubleDotScore()) {
@@ -205,7 +226,64 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         if currentX == 0 || currentY == 0 || currentX == self.gridSize + 1 || currentY == self.gridSize + 1 {
-            //print("LEVEL RESET | X: \(currentX) Y: \(currentY)")
+            if yv == 0 && xv == 1 {
+                // Slide right offscreen
+                let rightEdge = UIScreen.main.bounds.width + playerNode.frame.width
+                let slideRight = SKAction.moveTo(x: rightEdge, duration: 0.25)
+                slideRight.timingMode = .easeIn
+                isPlayerAnimating = true
+                playerNode.run(slideRight) { [weak self] in
+                    guard let self = self else { return }
+                    self.isPlayerAnimating = false
+                    if let (restart, _) = self.queuedLevelLoad {
+                        self.queuedLevelLoad = nil
+                        self.levelLoad(restart: restart)
+                    }
+                }
+            } else if yv == 0 && xv == -1 {
+                // Slide left offscreen
+                let leftEdge = -playerNode.frame.width
+                let slideLeft = SKAction.moveTo(x: leftEdge, duration: 0.25)
+                slideLeft.timingMode = .easeIn
+                isPlayerAnimating = true
+                playerNode.run(slideLeft) { [weak self] in
+                    guard let self = self else { return }
+                    self.isPlayerAnimating = false
+                    if let (restart, _) = self.queuedLevelLoad {
+                        self.queuedLevelLoad = nil
+                        self.levelLoad(restart: restart)
+                    }
+                }
+            } else if yv == 1 && xv == 0 {
+                // Slide up offscreen
+                let topEdge = UIScreen.main.bounds.height + playerNode.frame.height
+                let slideUp = SKAction.moveTo(y: topEdge, duration: 0.25)
+                slideUp.timingMode = .easeIn
+                isPlayerAnimating = true
+                playerNode.run(slideUp) { [weak self] in
+                    guard let self = self else { return }
+                    self.isPlayerAnimating = false
+                    if let (restart, _) = self.queuedLevelLoad {
+                        self.queuedLevelLoad = nil
+                        self.levelLoad(restart: restart)
+                    }
+                }
+            } else if yv == -1 && xv == 0 {
+                // Slide down offscreen
+                let bottomEdge = -playerNode.frame.height
+                let slideDown = SKAction.moveTo(y: bottomEdge, duration: 0.25)
+                slideDown.timingMode = .easeIn
+                isPlayerAnimating = true
+                playerNode.run(slideDown) { [weak self] in
+                    guard let self = self else { return }
+                    self.isPlayerAnimating = false
+                    if let (restart, _) = self.queuedLevelLoad {
+                        self.queuedLevelLoad = nil
+                        self.levelLoad(restart: restart)
+                    }
+                }
+            }
+            
             powerupEligible = false
             if (modCode == 1) {
                 gameOver()
@@ -220,21 +298,21 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             powerupEligible = true
         }
     }
-
-    private func drawGrid(difficultyRating: Int, initX: Int, initY: Int) {
-        
+    
+    private func drawGridArray(difficultyRating: Int, initX: Int, initY: Int) -> [[Int]] {
         var randomDifficulty = difficultyRating
+        var tempGrid = Array(repeating: Array(repeating: 0, count: gridSize + 2), count: gridSize + 2)
         
-        // uncomment to use difficulty range instead of set difficulty
-        //let randomRange = 2
-        //randomDifficulty = Int.random(in: (difficultyRating - randomRange)...(difficultyRating + randomRange), using: &rng)
-        //print("Curr Difficulty: \(randomDifficulty)")
-        dotCount = randomDifficulty
-        randomDifficulty += 1
-        var tempGrid = grid
-        tempGrid[initX][initY] = true
+        // uncomment below to use difficulty range instead of set difficulty
+        /*
+        let randomRange = 2
+        randomDifficulty = Int.random(in: (difficultyRating - randomRange)...(difficultyRating + randomRange), using: &rng)
+        print("Curr Difficulty: \(randomDifficulty)")
+        */
+        
         var currentX = initX
         var currentY = initY
+        tempGrid[initX][initY] = 1 // first dot
         
         // vars to handle unsolvable levels
         var prevDir = -1
@@ -268,25 +346,39 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             default:
                 break
             }
-
             
-            if !tempGrid[currentX][currentY] {
-                //print("X: \(currentX) Y: \(currentY)")
-                tempGrid[currentX][currentY] = true
+            if tempGrid[currentX][currentY] == 0 {
                 if randomDifficulty == 1 {
-                    placePlayer(at: (currentX, currentY), offsetX: offsetX, offsetY: offsetY)
+                    tempGrid[currentX][currentY] = 2 // last dot is player position
+                } else {
+                    tempGrid[currentX][currentY] = 1 // dot position
                 }
-                else {
-                    placeDot(at: (currentX, currentY), offsetX: offsetX, offsetY: offsetY)
-                }
-                
                 randomDifficulty -= 1
                 prevDir = direction
             }
         }
         
+        return tempGrid
     }
-    private func placeDot(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
+    private func placeDotsFromGrid(grid: [[Int]]) {
+        dotCount = 0
+        
+        for i in 1...gridSize {
+            for j in 1...gridSize {
+                switch grid[i][j] {
+                case 1: // dot
+                    addDot(at: (i, j), offsetX: offsetX, offsetY: offsetY)
+                    dotCount += 1
+                case 2: // player
+                    addPlayer(at: (i, j), offsetX: offsetX, offsetY: offsetY)
+                default:
+                    continue
+                }
+            }
+        }
+    }
+
+    private func addDot(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
         let (i, j) = gridPosition
 
         // calculate screen position from grid coordinates
@@ -298,10 +390,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-        self.grid[i][j] = true
     }
 
-    private func placePlayer(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
+    private func addPlayer(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
         let (i, j) = gridPosition
 
         // calculate screen position from grid coordinates
@@ -313,14 +404,13 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j))
         playerNode.name = "player"
         self.addChild(playerNode)
-
     }
 
     private func showPowerupNotification() {
-        // Remove existing notification
+        // remove any existing notification
         powerupNotificationLabel?.removeFromParent()
         
-        // Create notification at center
+        // create notification at center
         let notification = SKLabelNode(fontNamed: "Arial")
         notification.fontSize = 20 // hardcode size
         notification.fontColor = .white
@@ -340,21 +430,21 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         powerupNotificationLabel = notification
         addChild(notification)
         
-        // Pop in animation
+        // pop-in animation
         let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
         let fadeIn = SKAction.fadeIn(withDuration: 0.3)
         
-        // Slide to corner while shrinking
+        // slide to corner while shrinking
         let moveToCorner = SKAction.move(to: powerupNode.getPosition(), duration: 0.5)
         let shrink = SKAction.scale(to: 0.5, duration: 0.5)
         let fadeOut = SKAction.fadeOut(withDuration: 0.5)
         
-        // Combine animations
+        // combine pop-in and slide animations
         let popIn = SKAction.group([scaleUp, fadeIn])
         let exitGroup = SKAction.group([moveToCorner, shrink, fadeOut])
         
-        // Full sequence
+        // build and run full sequence
         let sequence = SKAction.sequence([
             popIn,
             scaleDown,
@@ -362,20 +452,19 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             exitGroup,
             SKAction.removeFromParent()
         ])
-        
         notification.run(sequence)
     }
 
     private func showModNotification(code: Int) {
-        // Remove existing notification
+        // remove any existing notification
         modNotificationLabel?.removeFromParent()
         
-        // Create notification above timer
+        // create notification above timer
         let notification = SKLabelNode(fontNamed: "Arial")
         notification.fontSize = 20
         notification.fontColor = .white
         
-        // Set text based on mod code
+        // set modifier(challenge) text based on mod code
         switch code {
         case 0:
             notification.text = "Challenge: Exploding Timer!"
@@ -387,27 +476,27 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             return // Don't show notification for invalid codes
         }
         
-        // Position centered above timer
+        // position centered above timer
         notification.position = (CGPoint(x: size.width / 2, y: size.height / 5 + 40))
         notification.alpha = 0
         modNotificationLabel = notification
         addChild(notification)
         
         
-        // Pop in animation
+        // pop-in animation
         let scaleUp = SKAction.scale(to: 1.2, duration: 0.3)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
         let fadeIn = SKAction.fadeIn(withDuration: 0.3)
         
-        // Pop out animation
+        // pop-out animation
         let popOut = SKAction.scale(to: 0.8, duration: 0.3)
         let fadeOut = SKAction.fadeOut(withDuration: 0.3)
         
-        // Combine animations
+        // combine pop-in and pop-out animations
         let popIn = SKAction.group([scaleUp, fadeIn])
         let exitGroup = SKAction.group([popOut, fadeOut])
         
-        // Full sequence
+        // build and run full sequence
         let sequence = SKAction.sequence([
             popIn,
             scaleDown,
@@ -415,7 +504,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             exitGroup,
             SKAction.removeFromParent()
         ])
-        
         notification.run(sequence)
     }
 
@@ -431,14 +519,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     //this seems to be a useless duplicate of levelload
     func levelClear() {
-        
         levelTransition()
         gameInfo.level += 1
         levelNode.updateLevel(with: gameInfo.level)
-       
-        grid = Array(repeating: Array(repeating: false, count: self.gridSize + 2), count: self.gridSize + 2)
-        drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
     }
+    
     func levelTransition(){
         let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y, duration: 2.0)
         playerNode.run(playerTransition1)
@@ -446,15 +531,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(backgroundNode)
         addChild(scoreNode)
         addChild(levelNode)
-    
     }
+    
     func levelLoad(restart: Bool) {
+        
+        if isPlayerAnimating {
+            queuedLevelLoad = (restart, true)
+            return
+        }
+        
         if !restart, let explodingTimer = explodingTimer {
             explodingTimer.removeFromParent()
             self.explodingTimer = nil
         }
-        // remove all dots and players from the scene
-        //levelTransition()
+        
         if (!restart){
             //print("animation should start")
             let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y + 10, duration: 2.0)
@@ -462,6 +552,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 //print("kjlsadkfa")
             }
         }
+        
+        // remove all dots and players from the scene
         for child in self.children {
             if let dotNodeD = child as? DODotNode {
                 dotNodeD.removeFromParent()
@@ -472,43 +564,55 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 //print("Player removed")
             }
         }
-        // if we are not restarting, we go to the next level
+        
+        // determine if modifer is active
+        if gameInfo.level % modInterval == 0 && !restart { // new level and modifier is eligible for new lvl
+            modCode = Int.random(in: 0...2)
+            showModNotification(code: modCode ?? -1)
+            //print("Modifier Active: modCode = \(modCode!)")
+        } else if gameInfo.level % modInterval != 0 { // lvl not eligible for modifier
+            modCode = nil
+            //print("No Modifier Active")
+        }
+        
+        // if we don't restarting, we go to the next level
         if (!restart) {
-            backgroundNode.setDeterminedTexture(id: theme, secret: false)
+            backgroundNode.setDeterminedTexture()
             gameInfo.level += 1
             
-            if (gameInfo.level % 1 == 0) { // gradually increase difficulty every 6 levels //TEST
-                difficulty += 1
-            }
-            if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
+            difficulty += 1 // constant increase every lvl
+            // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls
+            
+            if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) { // bonus level score powerup
                 gameInfo.score += 150
             }
             else {
                 gameInfo.score += 100
             }
+            
             timerNode.addTime(bonusTime)
+            
+            // draw new 2D Int Array for new level
+            if (modCode == 2) { // mod: double difficulty
+                grid = drawGridArray(difficultyRating: difficulty * 2, initX: gridCenter, initY: gridCenter)
+                baseGrid = grid
+            }
+            else {
+                grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter)
+                baseGrid = grid
+            }
+            
+        }
+        else {
+            grid = baseGrid
         }
         levelNode.updateLevel(with: gameInfo.level)
-        if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) {
+        
+        if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus() && !restart) { // double dot score powerup
             scoreNode.updateScore(with: gameInfo.score, mode: 2)
         }
         else {
             scoreNode.updateScore(with: gameInfo.score, mode: 1)
-        }
-
-        // clear the grid
-        grid = Array(
-            repeating: Array(repeating: false, count: self.gridSize + 2),
-            count: self.gridSize + 2
-        )
-        
-        if gameInfo.level % modInterval == 0 && !restart {
-            modCode = Int.random(in: 0...2) // random inclusive
-            showModNotification(code: modCode ?? -1)
-            //print("Modifier Active: modCode = \(modCode!)")
-        } else if gameInfo.level % modInterval != 0 {
-            modCode = nil // Clear the modifier
-            //print("No Modifier Active")
         }
         
         if (modCode == 0 && !restart) {
@@ -517,23 +621,16 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             addChild(explodingTimer)
         }
         
-        // mod: double difficulty
-        if (modCode == 2) {
-            drawGrid(difficultyRating: difficulty * 2, initX: 6, initY: 6)
-        }
-        else {
-            drawGrid(difficultyRating: difficulty, initX: 6, initY: 6)
-        }
-        if (powerupEligible) {print("powerUpEligible")}
-        if powerupNode == nil || !powerupNode.isActive() {print("No Powerup Active")}
+        placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
+
         if powerupEligible && (powerupNode == nil || !powerupNode.isActive()) {
             let powerUpNodeRadius: CGFloat = 20
             let position = CGPoint(x: powerUpNodeRadius + 15, y: size.height - powerUpNodeRadius - 70)
             powerupCurr = powerupTypes.randomElement(using: &rng)!
-            //print("Powerup gained: \(powerupCurr)")
             powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
             addChild(powerupNode!)
             showPowerupNotification()
+            //print("Powerup gained: \(powerupCurr)")
         }
         if let existingPowerup = powerupNode, !existingPowerup.isActive() {
             existingPowerup.removeFromParent()
@@ -547,9 +644,5 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         return CGPoint(
             x: offsetX + CGFloat(indices.x) * dotSpacing,
             y: offsetY + CGFloat(indices.y) * dotSpacing)
-    }
-
-    func didBegin(_ contact: SKPhysicsContact) {
-        //print("Dot has collided with another body!")
     }
 }
