@@ -82,7 +82,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         backgroundNode.setup(screenSize: size)
         gameOverNode.setup(screenSize: size)
-        backgroundNode.zPosition = 0
+        backgroundNode.zPosition = -CGFloat.greatestFiniteMagnitude // hardcoded to the back layer
         addChild(backgroundNode)
 
         scoreNode.setup(screenSize: size)
@@ -184,20 +184,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         var (currentX, currentY) = playerNode.getLoc()
         
-        var steps = 0
+
         while currentX > 0 && currentY > 0 && currentX < self.gridSize + 1 && currentY < self.gridSize + 1 {
-            
-            if steps > 0 {
-                let startPoint = coordCalculate(indices: CGPoint(x: currentX - xv, y: currentY - yv))
-                let endPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
-                self.addChild(DOTrailNode(position: endPoint,
-                                         vertical: xv == 0,
-                                         startPoint: startPoint))
-            }
-            steps += 1
             
             currentX = currentX + xv
             currentY = currentY + yv
+            
+         
+            let startPoint = coordCalculate(indices: CGPoint(x: currentX - xv, y: currentY - yv))
+            let endPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
+            self.addChild(DOTrailNode(position: endPoint,
+                                         vertical: xv == 0,
+                                         startPoint: startPoint))
+          
+            
             
             if grid[currentX][currentY] == 1 {
                 let newPlayerPosition = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
