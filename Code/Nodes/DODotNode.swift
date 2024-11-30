@@ -49,6 +49,15 @@ class DODotNode: SKShapeNode {
     func getLoc() -> (Int, Int){
         return (gridX,gridY)
     }
+    
+    func destroySelf(){
+        self.fillTexture = SKTexture(imageNamed: "brokenplanet")
+        
+        self.zRotation =  CGFloat(Float.random(in: (-.pi)...(.pi), using: &rng))// rotate doesnt work
+                                          
+       
+    }
+    
     func fadeIn(){
         self.setScale(0)
     
