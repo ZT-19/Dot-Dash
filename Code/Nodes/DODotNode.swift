@@ -52,7 +52,8 @@ class DODotNode: SKShapeNode {
     
     func destroySelf(){
         self.fillTexture = SKTexture(imageNamed: "brokenplanet")
-        self.zRotation =  CGFloat(Float.random(in: (0)...(2*3.1416), using: &rng))
+        
+        self.zRotation =  CGFloat(Float.random(in: (-.pi)...(.pi), using: &rng))// rotate doesnt work
                                           
        
     }
