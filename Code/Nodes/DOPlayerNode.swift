@@ -7,37 +7,31 @@
 
 import SpriteKit
 
-class DOPlayerNode: DODotNode {
-    var gridPosition: CGPoint
-    override init(radius: CGFloat = 30, position: CGPoint = .zero, gridPosition: CGPoint = .zero,silo:Bool = false) {
-      
-        self.gridPosition = gridPosition
-        super.init(position: position , gridPosition: gridPosition, silo:silo)
+class DOPlayerNode: SKShapeNode {
+    var gridX: Int
+    var gridY: Int
+    init(radius: CGFloat = 27, position: CGPoint = .zero, gridPosition: CGPoint = .zero, fadeAni: Bool = true) {
+        self.gridX = Int(gridPosition.x)
+        self.gridY = Int(gridPosition.y)
         
-        // create a circle
-        self.path = CGPath(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 0.5, height: radius * 0.5), transform: nil)
+        super.init()
         
-        if !silo{
-            self.fillColor = .white
-           
-            self.fillTexture = SKTexture(imageNamed: "player")
-        }
-        else{
-            self.fillColor = .white
-           
-            self.fillTexture = SKTexture(imageNamed: "playerSilo")
-        }
-
-      
+        // Fix: Make rect dimensions match the radius
+        let rect = CGRect(
+                x: -radius/2,  // Center the rect
+                y: -radius/2,  // Center the rect
+                width: radius,  // Use full radius for width
+                height: radius  // Use full radius for height
+            )
+        self.path = CGPath(ellipseIn: rect, transform: nil)
         
-        // physics for collision detection
-        self.physicsBody = SKPhysicsBody(circleOfRadius: radius)
-        self.physicsBody?.isDynamic = false // disable gravity
-        self.physicsBody?.categoryBitMask = 0x1 << 2 // category (key) for the player
-        
-        // TODO: can be updated (or not use bitmasks altogether) to detect collision with other categories
-        self.physicsBody?.contactTestBitMask = 0x1 << 2 // detect collision with another category
-        self.physicsBody?.collisionBitMask = 0x1 << 2 // collide with the other category
+        self.position = position
+        self.lineWidth = 0.0
+        self.fillColor = .white
+        self.fillTexture = SKTexture(imageNamed: "player")
+    }
+    func getLoc() -> (Int, Int){
+        return (gridX,gridY)
     }
  
     required init?(coder aDecoder: NSCoder) {

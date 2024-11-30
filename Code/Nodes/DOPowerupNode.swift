@@ -4,45 +4,70 @@ enum PowerUpType {
     case doubleDotScore
     case levelScoreBonus
     case freezeTime
+    case inactive
 }
 
 class DOPowerUpNode: SKNode {
     private let circleShape: SKShapeNode
     private let countdownLabel: SKLabelNode
     private let powerupLabel: SKLabelNode
+    private let cropNode: SKCropNode
+    private let maskNode: SKShapeNode
+    private let maskHeight: CGFloat
+    
     private var countdownDuration: TimeInterval
     private var type: PowerUpType
     private var remainingTime: TimeInterval
+    let attributes: [NSAttributedString.Key: Any] = [
+        .foregroundColor: UIColor.white,
+        .strokeColor: UIColor.black,
+        .strokeWidth: 3.0,
+        .font: UIFont(name: "Arial-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
+    ]
 
     init(radius: CGFloat, type: PowerUpType, position: CGPoint, duration: TimeInterval = 15.0) {
         self.type = type
         self.countdownDuration = duration
         self.remainingTime = duration
-
-        // circular base
+        self.maskHeight = radius * 2
+        
         circleShape = SKShapeNode(circleOfRadius: radius)
         circleShape.fillColor = .yellow
         circleShape.strokeColor = .darkGray
         circleShape.lineWidth = 1
 
-        powerupLabel = SKLabelNode(fontNamed: "Arial")
+        // powerup label
+        powerupLabel = SKLabelNode(fontNamed: "Arial-Bold")
         powerupLabel.fontSize = 16
-        powerupLabel.fontColor = .darkGray
+        powerupLabel.fontColor = .white
         powerupLabel.verticalAlignmentMode = .center
         powerupLabel.position = CGPoint(x: 0, y: 0)
+        
+        powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
 
-        // countdown label (below circle)
+        // initialize countdown label
         countdownLabel = SKLabelNode(fontNamed: "Arial")
-        countdownLabel.fontSize = 12 // Smaller size
+        countdownLabel.fontSize = 12
         countdownLabel.fontColor = .white
         countdownLabel.text = "\(Int(duration))"
         countdownLabel.verticalAlignmentMode = .center
-        countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.5)) // hardcode offset below
+        countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.5))
+
+        // initialize crop node and mask for draining animation
+        cropNode = SKCropNode()
+        maskNode = SKShapeNode(rectOf: CGSize(width: radius * 2, height: radius * 4))
+        maskNode.fillColor = .darkGray
+        maskNode.strokeColor = .darkGray
+        // set anchor point at top by positioning
+        maskNode.position = CGPoint(x: 0, y: -radius)
 
         super.init()
-        
+
+        // setup node hierarchy
+        cropNode.maskNode = maskNode
+        cropNode.addChild(circleShape)
         self.position = position
-        self.addChild(circleShape)
+        self.addChild(cropNode)
         self.addChild(powerupLabel)
         self.addChild(countdownLabel)
 
@@ -58,48 +83,50 @@ class DOPowerUpNode: SKNode {
         switch type {
         case .doubleDotScore:
             circleShape.fillColor = .green
-            powerupLabel.text = "2X"
-            countdownLabel.fontSize = 10 // hardcoded constant: small for 2 characters
-        case  .levelScoreBonus:
+            powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
+            countdownLabel.fontSize = 10
+        case .levelScoreBonus:
             circleShape.fillColor = .yellow
-            powerupLabel.text = "+"
-            countdownLabel.fontSize = 10 // hardcoded constant
+            powerupLabel.attributedText = NSAttributedString(string: "+", attributes: attributes)
+            countdownLabel.fontSize = 10
         case .freezeTime:
             circleShape.fillColor = .cyan
-            powerupLabel.text = "❆"
-            countdownLabel.fontSize = 10 // hardcoded constant
+            powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
+            countdownLabel.fontSize = 10
+        default:
+            return
         }
     }
+
     private func startCountdown() {
+        // create draining animation
+        let scaleAction = SKAction.scaleY(to: 0, duration: countdownDuration)
+        maskNode.run(scaleAction)
+        
+        // update countdown label
         let countdownAction = SKAction.customAction(withDuration: countdownDuration) { [weak self] _, elapsedTime in
             guard let self = self else { return }
-
-            // Update label with remaining seconds
-            remainingTime = max(0, self.countdownDuration - elapsedTime)
-            self.countdownLabel.text = "\(Int(ceil(remainingTime)))"
+            self.remainingTime = max(0, self.countdownDuration - elapsedTime)
+            self.countdownLabel.text = "\(Int(ceil(self.remainingTime)))"
         }
-
-        // fade out animation for entire node
-        let fadeOutAction = SKAction.fadeOut(withDuration: countdownDuration)
-
-        // remove node from parent after countdown
+        
+        // remove node when complete
         let removeAction = SKAction.run { [weak self] in
             self?.removeFromParent()
-            print("Removed powerup from node")
+            //print("Removed powerup from node")
         }
-
-        // group the fade-out with the countdown timer
-        let fadeAndCountdownGroup = SKAction.group([countdownAction, fadeOutAction])
-
-        // run the grouped actions together followed by removal
-        self.run(SKAction.sequence([fadeAndCountdownGroup, removeAction]))
+        
+        // run countdown and removal sequence
+        self.run(SKAction.sequence([countdownAction, removeAction]))
     }
+
     func getPosition() -> CGPoint {
         return position
     }
+    
     func islevelScoreBonus() -> Bool {
         return type == .levelScoreBonus
-        }
+    }
 
     func isDoubleDotScore() -> Bool {
         return type == .doubleDotScore
