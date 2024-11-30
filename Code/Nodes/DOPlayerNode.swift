@@ -29,6 +29,7 @@ class DOPlayerNode: SKShapeNode {
         self.lineWidth = 0.0
         self.fillColor = .white
         self.fillTexture = SKTexture(imageNamed: "player")
+        self.zPosition = 34
     }
     func getLoc() -> (Int, Int){
         return (gridX,gridY)

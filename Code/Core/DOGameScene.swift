@@ -93,7 +93,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         // center grid on screen and draw it
         let gridWidth = CGFloat(gridSize) * dotSpacing
-        offsetX = max(30, (size.width - gridWidth) / 2)
+        offsetX = (max(30, (size.width - gridWidth) / 2))/3
         offsetY = max(30, (size.height - gridWidth) / 2)
         
         // clear grid
@@ -184,7 +184,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         var (currentX, currentY) = playerNode.getLoc()
         
+        var steps = 0
         while currentX > 0 && currentY > 0 && currentX < self.gridSize + 1 && currentY < self.gridSize + 1 {
+            if steps>0{
+                if xv==0{
+                    self.addChild(DOTrailNode(position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)), vertical: true))
+                }
+                else{
+                    self.addChild(DOTrailNode(position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)), vertical: false))
+                }
+            }
+            steps += 1
             currentX = currentX + xv
             currentY = currentY + yv
             
@@ -212,6 +222,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 grid[currentX][currentY] = 0
                 self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))?
                     .removeFromParent()
+              
+                
+                grid[currentX][currentY] = 0
+                //self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))?
+                 //  .removeFromParent()
+                let onnode:DODotNode = self.childNode(withName: "DotNode" + String(currentX) + " " + String(currentY))! as! DODotNode
+                onnode.destroySelf()// since we're pretty sure its a dot node
+                
+                   
                 self.dotCount -= 1
             
                 // update score
@@ -563,19 +582,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 dotNodeD.removeFromParent()
                 //print("Player removed")
             }
+            if let trailNode = child as? DOTrailNode{
+                trailNode.removeFromParent()
+                
+            }
         }
-        
-        // determine if modifer is active
-        if gameInfo.level % modInterval == 0 && !restart { // new level and modifier is eligible for new lvl
-            modCode = Int.random(in: 0...2)
-            showModNotification(code: modCode ?? -1)
-            //print("Modifier Active: modCode = \(modCode!)")
-        } else if gameInfo.level % modInterval != 0 { // lvl not eligible for modifier
-            modCode = nil
-            //print("No Modifier Active")
-        }
-        
-        // if we don't restarting, we go to the next level
+        // if we are not restarting, we go to the next level
         if (!restart) {
             backgroundNode.setDeterminedTexture()
             gameInfo.level += 1
