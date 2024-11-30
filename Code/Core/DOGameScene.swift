@@ -347,37 +347,51 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 validDirections = allDirections.filter { $0 != inverseDir[prevDir] }
             }
             let direction = validDirections.randomElement(using: &rng)!
-            
+            var changeAmount:Int = 0
+            var newX = currentX,newY=currentY
             switch direction {
             case 0: // right
                 if currentX < gridSize - 2 {
-                    currentX += Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                    newX += changeAmount
+                    break
                 }
             case 1: // left
                 if currentX > 1 {
-                    currentX -= Int.random(in: 1...(currentX - 1), using: &rng)
+                    changeAmount = Int.random(in: 1...(currentX - 1), using: &rng)
+                    newX -= changeAmount
+                    break
                 }
             case 2: // down
                 if currentY < gridSize - 2 {
-                    currentY += Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                    newY += changeAmount
+                    break
                 }
             case 3: // up
                 if currentY > 1 {
-                    currentY -= Int.random(in: 1...(currentY - 1), using: &rng)
+                    changeAmount = Int.random(in: 1...(currentY - 1), using: &rng)
+                    newY -= changeAmount
+                    break
                 }
             default:
                 break
             }
             
-            if tempGrid[currentX][currentY] == 0 {
+            if tempGrid[newX][newY] == 0 {
                 if randomDifficulty == 1 {
-                    tempGrid[currentX][currentY] = 2 // last dot is player position
+                    tempGrid[newX][newY] = 2 // last dot is player position
                 } else {
-                    tempGrid[currentX][currentY] = 1 // dot position
+                    tempGrid[newX][newY] = 1 // dot position
                 }
                 randomDifficulty -= 1
                 prevDir = direction
+                currentX=newX // only update position if the new spot is valid
+                currentY=newY
             }
+           
+            
+            
         }
         
         return tempGrid
