@@ -44,7 +44,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var xv: Int = .zero
     private var yv: Int = .zero
     private var isPlayerAnimating = false
-    private var queuedLevelLoad: (Bool, Bool)? // (restart, isPending)
+    private var queuedLevelLoad: (Bool, Bool)? 
 
     
     // timer
@@ -186,15 +186,16 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         var steps = 0
         while currentX > 0 && currentY > 0 && currentX < self.gridSize + 1 && currentY < self.gridSize + 1 {
-            if steps>0{
-                if xv == 0{
-                    self.addChild(DOTrailNode(position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)), vertical: true))
-                }
-                else{
-                    self.addChild(DOTrailNode(position: coordCalculate(indices: CGPoint(x: currentX, y: currentY)), vertical: false))
-                }
+            
+            if steps > 0 {
+                let startPoint = coordCalculate(indices: CGPoint(x: currentX - xv, y: currentY - yv))
+                let endPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
+                self.addChild(DOTrailNode(position: endPoint,
+                                         vertical: xv == 0,
+                                         startPoint: startPoint))
             }
             steps += 1
+            
             currentX = currentX + xv
             currentY = currentY + yv
             
@@ -207,6 +208,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 
                 playerNode.gridX = currentX
                 playerNode.gridY = currentY
+
                 playerNode.run(slideAction) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -238,8 +240,13 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         if currentX == 0 || currentY == 0 || currentX == self.gridSize + 1 || currentY == self.gridSize + 1 {
+            for child in children { // no trails on invalid moves
+                if child is DOTrailNode {
+                    child.removeFromParent()
+                }
+            }
             if yv == 0 && xv == 1 {
-                // Slide right offscreen
+                // slide right offscreen
                 let rightEdge = UIScreen.main.bounds.width + playerNode.frame.width
                 let slideRight = SKAction.moveTo(x: rightEdge, duration: 0.25)
                 slideRight.timingMode = .easeIn
@@ -252,8 +259,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         self.levelLoad(restart: restart)
                     }
                 }
-            } else if yv == 0 && xv == -1 {
-                // Slide left offscreen
+            }
+            else if yv == 0 && xv == -1 {
+                // slide left offscreen
                 let leftEdge = -playerNode.frame.width
                 let slideLeft = SKAction.moveTo(x: leftEdge, duration: 0.25)
                 slideLeft.timingMode = .easeIn
@@ -266,7 +274,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         self.levelLoad(restart: restart)
                     }
                 }
-            } else if yv == 1 && xv == 0 {
+            }
+            else if yv == 1 && xv == 0 {
                 // Slide up offscreen
                 let topEdge = UIScreen.main.bounds.height + playerNode.frame.height
                 let slideUp = SKAction.moveTo(y: topEdge, duration: 0.25)
@@ -280,8 +289,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         self.levelLoad(restart: restart)
                     }
                 }
-            } else if yv == -1 && xv == 0 {
-                // Slide down offscreen
+            }
+            else if yv == -1 && xv == 0 {
+                // slide down offscreen
                 let bottomEdge = -playerNode.frame.height
                 let slideDown = SKAction.moveTo(y: bottomEdge, duration: 0.25)
                 slideDown.timingMode = .easeIn
