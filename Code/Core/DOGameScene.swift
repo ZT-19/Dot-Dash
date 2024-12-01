@@ -48,7 +48,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     
     // timer
-    private var initialTime: TimeInterval = 9020
+    private var initialTime: TimeInterval = 20
     private var bonusTime = 10.0
     private var timerNode: DOTimerNode!
     private var explodingTimer: DOExplodingTimerNode!
