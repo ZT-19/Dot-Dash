@@ -64,10 +64,13 @@ class DOTimerNode: SKNode {
         timerLabel.text = "Time: \(Int(remainingTime))"
         return false
     }
-    func addTime(_ seconds: TimeInterval) {
+    func addTime(_ seconds: TimeInterval, stealth: Bool = false) {
         remainingTime += seconds
         timerLabel.text = "Time: \(Int(remainingTime))"
-        emitTimeParticle(seconds: seconds)
+        if !stealth{
+            emitTimeParticle(seconds: seconds)
+        }
+          
     }
     func setPosition(_ position: CGPoint) {
         timerLabel.position = position

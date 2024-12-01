@@ -78,6 +78,8 @@ class DOPowerUpNode: SKNode {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
 
     private func configureAppearance() {
         switch type {
@@ -85,14 +87,17 @@ class DOPowerUpNode: SKNode {
             circleShape.fillColor = .green
             powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
             countdownLabel.fontSize = 10
+            powerupLabel.fontSize = 20
         case .levelScoreBonus:
             circleShape.fillColor = .yellow
             powerupLabel.attributedText = NSAttributedString(string: "+", attributes: attributes)
             countdownLabel.fontSize = 10
+            powerupLabel.fontSize = 20
         case .freezeTime:
             circleShape.fillColor = .cyan
             powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
             countdownLabel.fontSize = 10
+            powerupLabel.fontSize = 20
         default:
             return
         }
@@ -122,6 +127,12 @@ class DOPowerUpNode: SKNode {
 
     func getPosition() -> CGPoint {
         return position
+    }
+    func getTimeLeft() -> Double{
+        return self.remainingTime
+    }
+    func getTimeStart() -> Double{
+        return self.countdownDuration
     }
     
     func islevelScoreBonus() -> Bool {

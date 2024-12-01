@@ -44,12 +44,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var xv: Int = .zero
     private var yv: Int = .zero
     private var isPlayerAnimating = false
-    private var queuedLevelLoad: (Bool, Bool)? 
+    private var queuedLevelLoad: (Bool, Bool, Bool)? // restart, powerup, active
 
     
     // timer
-    private var remainingTime: TimeInterval = 60
-    private var bonusTime = 30.0
+    private var initialTime: TimeInterval = 9020
+    private var bonusTime = 10.0
     private var timerNode: DOTimerNode!
     private var explodingTimer: DOExplodingTimerNode!
     
@@ -107,7 +107,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         placeDotsFromGrid(grid: grid)
         
         // setup timer node
-        timerNode = DOTimerNode(initialTime: remainingTime)
+        timerNode = DOTimerNode(initialTime: initialTime)
         timerNode.setPosition(CGPoint(x: size.width / 2, y: size.height / 5))
         addChild(timerNode)
     }
@@ -118,6 +118,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 gameOver()
             }
         }
+       
         if let explodingTimer = explodingTimer {
             if !(powerupNode != nil && powerupNode.isFreezeTime() && powerupNode.isActive()) {
                 if explodingTimer.update(currentTime) {
@@ -125,6 +126,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
+        if let existingPowerup = powerupNode, !existingPowerup.isActive() {
+            existingPowerup.removeFromParent()
+            if existingPowerup.isFreezeTime(){
+                timerNode.addTime(existingPowerup.getTimeStart(), stealth: true)
+            }
+            powerupCurr = .inactive
+            powerupNode = nil
+        }
+        
         // modifier states
     }
     
@@ -214,9 +224,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     self.isPlayerAnimating = false
                     
                     // Execute queued level load if exists
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
                 
@@ -254,9 +266,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.run(slideRight) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
             }
@@ -269,9 +283,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.run(slideLeft) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
             }
@@ -284,9 +300,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.run(slideUp) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
             }
@@ -299,25 +317,33 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.run(slideDown) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
             }
             
             powerupEligible = false
+           
             if (modCode == 1) {
                 gameOver()
             }
             else {
-                levelLoad(restart: true)
+              
+                levelLoad(restart: true,powerupEligible: powerupEligible)
             }
         }
-        if dotCount == 0 {
+        else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
-            levelLoad(restart: false)
+           
+            levelLoad(restart: false,powerupEligible: powerupEligible)
+            print("sus")
             powerupEligible = true
+            print("sus2")
+            
         }
     }
     
@@ -569,10 +595,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(levelNode)
     }
     
-    func levelLoad(restart: Bool) {
-        
+    func levelLoad(restart: Bool, powerupEligible:Bool = true) {
+       
+        print("leveload called" + String(restart))
         if isPlayerAnimating {
-            queuedLevelLoad = (restart, true)
+            queuedLevelLoad = (restart, powerupEligible ,true)
             return
         }
         
@@ -653,19 +680,21 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
 
         if powerupEligible && (powerupNode == nil || !powerupNode.isActive()) {
+            print(String(powerupEligible) + "amogus")
             let powerUpNodeRadius: CGFloat = 20
             let position = CGPoint(x: powerUpNodeRadius + 15, y: size.height - powerUpNodeRadius - 70)
             powerupCurr = powerupTypes.randomElement(using: &rng)!
+        
             powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
+           
             addChild(powerupNode!)
             showPowerupNotification()
             //print("Powerup gained: \(powerupCurr)")
+           
         }
-        if let existingPowerup = powerupNode, !existingPowerup.isActive() {
-            existingPowerup.removeFromParent()
-            powerupCurr = .inactive
-            powerupNode = nil
-        }
+       
+     
+      
     }
     
     // translates matrix index to position on screen
