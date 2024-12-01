@@ -322,7 +322,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func drawGridArray(difficultyRating: Int, initX: Int, initY: Int) -> [[Int]] {
-        var randomDifficulty = difficultyRating
+        var randomDifficulty = difficultyRating + 1
         var tempGrid = Array(repeating: Array(repeating: 0, count: gridSize + 2), count: gridSize + 2)
         
         // uncomment below to use difficulty range instead of set difficulty
@@ -380,6 +380,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
+        tempGrid[initX][initY] = 0
+        grid = tempGrid
         return tempGrid
     }
     private func placeDotsFromGrid(grid: [[Int]]) {
@@ -609,17 +611,30 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             // draw new 2D Int Array for new level
             if (modCode == 2) { // mod: double difficulty
+                grid = Array(
+                    repeating: Array(repeating: 0, count: self.gridSize + 2),
+                    count: self.gridSize + 2
+                )
                 grid = drawGridArray(difficultyRating: difficulty * 2, initX: gridCenter, initY: gridCenter)
                 baseGrid = grid
             }
             else {
+                grid = Array(
+                    repeating: Array(repeating: 0, count: self.gridSize + 2),
+                    count: self.gridSize + 2
+                )
                 grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter)
                 baseGrid = grid
             }
             
         }
         else {
+            grid = Array(
+                repeating: Array(repeating: 0, count: self.gridSize + 2),
+                count: self.gridSize + 2
+            )
             grid = baseGrid
+            powerupEligible = false
         }
         levelNode.updateLevel(with: gameInfo.level)
         
@@ -638,14 +653,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
 
-        if powerupEligible && (powerupNode == nil || !powerupNode.isActive()) {
+        if powerupEligible && (powerupNode == nil || !powerupNode.isActive()) && !restart {
             let powerUpNodeRadius: CGFloat = 20
             let position = CGPoint(x: powerUpNodeRadius + 15, y: size.height - powerUpNodeRadius - 70)
             powerupCurr = powerupTypes.randomElement(using: &rng)!
             powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
-            addChild(powerupNode!)
+            addChild(powerupNode)
             showPowerupNotification()
             //print("Powerup gained: \(powerupCurr)")
+            powerupEligible = false
         }
         if let existingPowerup = powerupNode, !existingPowerup.isActive() {
             existingPowerup.removeFromParent()
