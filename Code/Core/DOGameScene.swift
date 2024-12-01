@@ -48,7 +48,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     
     // timer
-    private var initialTime: TimeInterval = 9020
+    private var initialTime: TimeInterval = 20
     private var bonusTime = 10.0
     private var timerNode: DOTimerNode!
     private var explodingTimer: DOExplodingTimerNode!
@@ -340,9 +340,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
            
             levelLoad(restart: false,powerupEligible: powerupEligible)
-            print("sus")
             powerupEligible = true
-            print("sus2")
             
         }
     }
@@ -597,7 +595,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     func levelLoad(restart: Bool, powerupEligible:Bool = true) {
        
-        print("leveload called" + String(restart))
+       
         if isPlayerAnimating {
             queuedLevelLoad = (restart, powerupEligible ,true)
             return
@@ -606,14 +604,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if !restart, let explodingTimer = explodingTimer {
             explodingTimer.removeFromParent()
             self.explodingTimer = nil
-        }
-        
-        if (!restart){
-            //print("animation should start")
-            let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y + 10, duration: 2.0)
-            playerNode.run(playerTransition1){
-                //print("kjlsadkfa")
-            }
         }
         
         // remove all dots and players from the scene
@@ -680,7 +670,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
 
         if powerupEligible && (powerupNode == nil || !powerupNode.isActive()) {
-            print(String(powerupEligible) + "amogus")
+            
             let powerUpNodeRadius: CGFloat = 20
             let position = CGPoint(x: powerUpNodeRadius + 15, y: size.height - powerUpNodeRadius - 70)
             powerupCurr = powerupTypes.randomElement(using: &rng)!
@@ -688,6 +678,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
            
             addChild(powerupNode!)
+            addChild(powerupNode)
             showPowerupNotification()
             //print("Powerup gained: \(powerupCurr)")
            
