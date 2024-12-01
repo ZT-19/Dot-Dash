@@ -44,12 +44,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var xv: Int = .zero
     private var yv: Int = .zero
     private var isPlayerAnimating = false
-    private var queuedLevelLoad: (Bool, Bool)? 
+    private var queuedLevelLoad: (Bool, Bool, Bool)? // restart, powerup, active
 
     
     // timer
-    private var remainingTime: TimeInterval = 60
-    private var bonusTime = 30.0
+    private var initialTime: TimeInterval = 20
+    private var bonusTime = 10.0
     private var timerNode: DOTimerNode!
     private var explodingTimer: DOExplodingTimerNode!
     
@@ -107,7 +107,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         placeDotsFromGrid(grid: grid)
         
         // setup timer node
-        timerNode = DOTimerNode(initialTime: remainingTime)
+        timerNode = DOTimerNode(initialTime: initialTime)
         timerNode.setPosition(CGPoint(x: size.width / 2, y: size.height / 5))
         addChild(timerNode)
     }
@@ -118,6 +118,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 gameOver()
             }
         }
+       
         if let explodingTimer = explodingTimer {
             if !(powerupNode != nil && powerupNode.isFreezeTime() && powerupNode.isActive()) {
                 if explodingTimer.update(currentTime) {
@@ -125,6 +126,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
+        if let existingPowerup = powerupNode, !existingPowerup.isActive() {
+            existingPowerup.removeFromParent()
+            if existingPowerup.isFreezeTime(){
+                timerNode.addTime(existingPowerup.getTimeStart(), stealth: true)
+            }
+            powerupCurr = .inactive
+            powerupNode = nil
+        }
+        
         // modifier states
     }
     
@@ -214,9 +224,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     self.isPlayerAnimating = false
                     
                     // Execute queued level load if exists
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
                 
@@ -254,9 +266,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.run(slideRight) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
             }
@@ -269,9 +283,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.run(slideLeft) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
             }
@@ -284,9 +300,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.run(slideUp) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
             }
@@ -299,25 +317,31 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 playerNode.run(slideDown) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
-                    if let (restart, _) = self.queuedLevelLoad {
+                    if let (restart, eligible, _) = self.queuedLevelLoad {
                         self.queuedLevelLoad = nil
-                        self.levelLoad(restart: restart)
+                        
+                        self.levelLoad(restart: restart,powerupEligible: eligible)
+                        
                     }
                 }
             }
             
             powerupEligible = false
+           
             if (modCode == 1) {
                 gameOver()
             }
             else {
-                levelLoad(restart: true)
+              
+                levelLoad(restart: true,powerupEligible: powerupEligible)
             }
         }
-        if dotCount == 0 {
+        else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
-            levelLoad(restart: false)
+           
+            levelLoad(restart: false,powerupEligible: powerupEligible)
             powerupEligible = true
+            
         }
     }
     
@@ -347,37 +371,51 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 validDirections = allDirections.filter { $0 != inverseDir[prevDir] }
             }
             let direction = validDirections.randomElement(using: &rng)!
-            
+            var changeAmount:Int = 0
+            var newX = currentX,newY=currentY
             switch direction {
             case 0: // right
                 if currentX < gridSize - 2 {
-                    currentX += Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                    newX += changeAmount
+                    break
                 }
             case 1: // left
                 if currentX > 1 {
-                    currentX -= Int.random(in: 1...(currentX - 1), using: &rng)
+                    changeAmount = Int.random(in: 1...(currentX - 1), using: &rng)
+                    newX -= changeAmount
+                    break
                 }
             case 2: // down
                 if currentY < gridSize - 2 {
-                    currentY += Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                    newY += changeAmount
+                    break
                 }
             case 3: // up
                 if currentY > 1 {
-                    currentY -= Int.random(in: 1...(currentY - 1), using: &rng)
+                    changeAmount = Int.random(in: 1...(currentY - 1), using: &rng)
+                    newY -= changeAmount
+                    break
                 }
             default:
                 break
             }
             
-            if tempGrid[currentX][currentY] == 0 {
+            if tempGrid[newX][newY] == 0 {
                 if randomDifficulty == 1 {
-                    tempGrid[currentX][currentY] = 2 // last dot is player position
+                    tempGrid[newX][newY] = 2 // last dot is player position
                 } else {
-                    tempGrid[currentX][currentY] = 1 // dot position
+                    tempGrid[newX][newY] = 1 // dot position
                 }
                 randomDifficulty -= 1
                 prevDir = direction
+                currentX=newX // only update position if the new spot is valid
+                currentY=newY
             }
+           
+            
+            
         }
         
         return tempGrid
@@ -555,24 +593,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(levelNode)
     }
     
-    func levelLoad(restart: Bool) {
-        
+    func levelLoad(restart: Bool, powerupEligible:Bool = true) {
+       
+       
         if isPlayerAnimating {
-            queuedLevelLoad = (restart, true)
+            queuedLevelLoad = (restart, powerupEligible ,true)
             return
         }
         
         if !restart, let explodingTimer = explodingTimer {
             explodingTimer.removeFromParent()
             self.explodingTimer = nil
-        }
-        
-        if (!restart){
-            //print("animation should start")
-            let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y + 10, duration: 2.0)
-            playerNode.run(playerTransition1){
-                //print("kjlsadkfa")
-            }
         }
         
         // remove all dots and players from the scene
@@ -639,19 +670,21 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
 
         if powerupEligible && (powerupNode == nil || !powerupNode.isActive()) {
+            
             let powerUpNodeRadius: CGFloat = 20
             let position = CGPoint(x: powerUpNodeRadius + 15, y: size.height - powerUpNodeRadius - 70)
             powerupCurr = powerupTypes.randomElement(using: &rng)!
+        
             powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
+           
             addChild(powerupNode!)
             showPowerupNotification()
             //print("Powerup gained: \(powerupCurr)")
+           
         }
-        if let existingPowerup = powerupNode, !existingPowerup.isActive() {
-            existingPowerup.removeFromParent()
-            powerupCurr = .inactive
-            powerupNode = nil
-        }
+       
+     
+      
     }
     
     // translates matrix index to position on screen
