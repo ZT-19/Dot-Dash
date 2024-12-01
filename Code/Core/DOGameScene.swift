@@ -26,7 +26,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private let gridCenter = DOGameContext.shared.gridCenter
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
-    private var difficulty = 1
+    private var difficulty = 12
     private var dotCount: Int = 0
     
     var rng = SystemRandomNumberGenerator()
@@ -334,7 +334,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         var currentX = initX
         var currentY = initY
-        tempGrid[initX][initY] = 1 // first dot
+        tempGrid[initX][initY] = 2 // first dot
         
         // vars to handle unsolvable levels
         var prevDir = -1
@@ -380,7 +380,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             if tempGrid[newX][newY] == 0 {
                 if randomDifficulty == 1 {
-                    tempGrid[newX][newY] = 2 // last dot is player position
+                    tempGrid[newX][newY] = 1 // last dot is player position
                 } else {
                     tempGrid[newX][newY] = 1 // dot position
                 }
@@ -390,11 +390,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 currentY=newY
             }
            
-            
-            
         }
         
-        tempGrid[initX][initY] = 0
+        //tempGrid[initX][initY] = 0
         grid = tempGrid
         return tempGrid
     }
