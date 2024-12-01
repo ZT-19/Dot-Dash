@@ -48,7 +48,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     
     // timer
-    private var initialTime: TimeInterval = 20
+    private var initialTime: TimeInterval = 9020
     private var bonusTime = 10.0
     private var timerNode: DOTimerNode!
     private var explodingTimer: DOExplodingTimerNode!
@@ -678,7 +678,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
            
             addChild(powerupNode!)
-            addChild(powerupNode)
             showPowerupNotification()
             //print("Powerup gained: \(powerupCurr)")
            
