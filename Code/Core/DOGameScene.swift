@@ -82,7 +82,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         backgroundNode.setup(screenSize: size)
         gameOverNode.setup(screenSize: size)
-        backgroundNode.zPosition = 0
+        backgroundNode.zPosition = -CGFloat.greatestFiniteMagnitude // hardcoded to the back layer
         addChild(backgroundNode)
 
         scoreNode.setup(screenSize: size)
@@ -184,20 +184,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         var (currentX, currentY) = playerNode.getLoc()
         
-        var steps = 0
+
         while currentX > 0 && currentY > 0 && currentX < self.gridSize + 1 && currentY < self.gridSize + 1 {
-            
-            if steps > 0 {
-                let startPoint = coordCalculate(indices: CGPoint(x: currentX - xv, y: currentY - yv))
-                let endPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
-                self.addChild(DOTrailNode(position: endPoint,
-                                         vertical: xv == 0,
-                                         startPoint: startPoint))
-            }
-            steps += 1
             
             currentX = currentX + xv
             currentY = currentY + yv
+            
+         
+            let startPoint = coordCalculate(indices: CGPoint(x: currentX - xv, y: currentY - yv))
+            let endPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
+            self.addChild(DOTrailNode(position: endPoint,
+                                         vertical: xv == 0,
+                                         startPoint: startPoint))
+          
+            
             
             if grid[currentX][currentY] == 1 {
                 let newPlayerPosition = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
@@ -347,37 +347,51 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 validDirections = allDirections.filter { $0 != inverseDir[prevDir] }
             }
             let direction = validDirections.randomElement(using: &rng)!
-            
+            var changeAmount:Int = 0
+            var newX = currentX,newY=currentY
             switch direction {
             case 0: // right
                 if currentX < gridSize - 2 {
-                    currentX += Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                    newX += changeAmount
+                    break
                 }
             case 1: // left
                 if currentX > 1 {
-                    currentX -= Int.random(in: 1...(currentX - 1), using: &rng)
+                    changeAmount = Int.random(in: 1...(currentX - 1), using: &rng)
+                    newX -= changeAmount
+                    break
                 }
             case 2: // down
                 if currentY < gridSize - 2 {
-                    currentY += Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                    newY += changeAmount
+                    break
                 }
             case 3: // up
                 if currentY > 1 {
-                    currentY -= Int.random(in: 1...(currentY - 1), using: &rng)
+                    changeAmount = Int.random(in: 1...(currentY - 1), using: &rng)
+                    newY -= changeAmount
+                    break
                 }
             default:
                 break
             }
             
-            if tempGrid[currentX][currentY] == 0 {
+            if tempGrid[newX][newY] == 0 {
                 if randomDifficulty == 1 {
-                    tempGrid[currentX][currentY] = 2 // last dot is player position
+                    tempGrid[newX][newY] = 2 // last dot is player position
                 } else {
-                    tempGrid[currentX][currentY] = 1 // dot position
+                    tempGrid[newX][newY] = 1 // dot position
                 }
                 randomDifficulty -= 1
                 prevDir = direction
+                currentX=newX // only update position if the new spot is valid
+                currentY=newY
             }
+           
+            
+            
         }
         
         tempGrid[initX][initY] = 0
