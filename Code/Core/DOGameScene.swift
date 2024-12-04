@@ -81,7 +81,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var powerupCurr = PowerUpType.doubleDotScore
     private var n_powerups = 0
     private var max_powerUps = 3 // goes up to 5 before going off screen
-    private var actual_max_powerUps = 5 // goes up to 5 before going off screen
+    private var actual_max_powerUps = 4 // goes up to 5 before going off screen
 
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray

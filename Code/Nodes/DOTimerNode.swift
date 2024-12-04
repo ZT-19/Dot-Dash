@@ -11,7 +11,7 @@ class DOTimerNode: SKNode {
     private let timerLabel = SKLabelNode(fontNamed: "Arial")
     private var remainingTime: TimeInterval
     private var lastUpdateTime: TimeInterval = 0
-    private var paused: Bool = false
+    private var timerPaused: Bool = false
 
     init(initialTime: TimeInterval) {
         self.remainingTime = initialTime
@@ -49,7 +49,7 @@ class DOTimerNode: SKNode {
 }
 
     func update(_ currentTime: TimeInterval) -> Bool {
-        if (paused){
+        if (timerPaused){
             return false
         }
         if lastUpdateTime == 0 {
@@ -79,10 +79,10 @@ class DOTimerNode: SKNode {
           
     }
     func pause(){
-        paused=true
+        timerPaused=true
     }
     func resume(){
-        paused=false
+        timerPaused=false
     }
     func setPosition(_ position: CGPoint) {
         timerLabel.position = position
