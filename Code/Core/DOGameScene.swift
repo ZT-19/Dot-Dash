@@ -334,7 +334,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         var currentX = initX
         var currentY = initY
-        tempGrid[initX][initY] = 1 // first dot
+        tempGrid[initX][initY] = 2 // first dot
         
         // vars to handle unsolvable levels
         var prevDir = -1
@@ -371,7 +371,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             if tempGrid[currentX][currentY] == 0 {
                 if randomDifficulty == 1 {
-                    tempGrid[currentX][currentY] = 2 // last dot is player position
+                    tempGrid[currentX][currentY] = 1 // last dot is player position
                 } else {
                     tempGrid[currentX][currentY] = 1 // dot position
                 }
