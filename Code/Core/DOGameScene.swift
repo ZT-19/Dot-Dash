@@ -293,7 +293,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
                 // update score
                 
-                var doublefactor = 1
+                //let doublefactor = 1
                 /* double score powerup
                 for i in 0..<n_powerups{
                     if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.isDoubleDotScore()) {
@@ -302,9 +302,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 // double score powerups stack
                 }
                  */
-                gameInfo.score += 10 * doublefactor
+                //gameInfo.score += 10 * doublefactor
                 
-                scoreNode.updateScore(with: gameInfo.score, mode: dotCount > 0 ? 1 : 0)
+                //scoreNode.updateScore(with: gameInfo.score, mode: dotCount > 0 ? 1 : 0)
                 break
             }
         }
@@ -693,7 +693,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             difficulty += 1 // constant increase every lvl
             // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls
-            var leveBonusMultiplier = 1.0
+            let leveBonusMultiplier = 1.0
             /*
             for i in 0..<n_powerups{
                 if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {// bonus level score powerup
@@ -706,7 +706,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             gameInfo.score += Int(100 * leveBonusMultiplier)
             
             if (!skipped){
-                timerNode.addTime(bonusTime)
+                print(timerNode.setTime(difficulty))
             }
             
             // draw new 2D Int Array for new level

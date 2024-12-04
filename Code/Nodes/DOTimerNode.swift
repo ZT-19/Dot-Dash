@@ -75,6 +75,25 @@ class DOTimerNode: SKNode {
         
         return false
     }
+
+    func setTime(_ level: Int) -> Double{
+        var cnt = 0.0
+        switch level {
+        case 1...15:
+            // linear growth from 20 to 25 seconds
+            cnt =  20 + (5.0 / 15.0) * Double(level - 1)
+        case 16...40: // 16-30
+            // linear growth from 30 to 40 seconds
+            cnt = 30 + (10.0 / 25.0) * Double(level - 16) //TODO: change rate of increase
+        default:
+            // Levels 41+: Logistic growth approaching 120 seconds
+            cnt = Double(level)
+        }
+        remainingTime = cnt
+        timerLabel.text = "Time: \(Int(remainingTime))"
+        return remainingTime
+    }
+    
     func addTime(_ seconds: TimeInterval, stealth: Bool = false) {
         remainingTime += seconds
         timerLabel.text = "Time: \(Int(remainingTime))"
