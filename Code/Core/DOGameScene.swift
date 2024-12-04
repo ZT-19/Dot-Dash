@@ -66,8 +66,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var modNotificationLabel: SKLabelNode?
     
     // powerups
-    private let powerupRadius = 30.0
-    let powerUpNodeRadius: CGFloat = 34
+    private let powerupRadius = 38.0
+    let powerUpNodeRadius: CGFloat = 43
 
     private let powerupTypes: [PowerUpType] = [
     //    .doubleDotScore,
@@ -80,8 +80,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var powerupNotificationLabel: SKLabelNode?
     private var powerupCurr = PowerUpType.freezeTime
     private var n_powerups = 0
-    private var max_powerUps = 3 // goes up to 5 before going off screen
-    private var actual_max_powerUps = 4 // goes up to 5 before going off screen
+    private var max_powerUps = 4
 
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
@@ -755,7 +754,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             var x_powerUp_position = powerUpNodeRadius + 10
             x_powerUp_position += (powerUpNodeRadius * 2 + CGFloat(10)) * CGFloat(n_powerups)
            
-            let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 70)
+            let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 75)
             powerupCurr = powerupTypes.randomElement(using: &rng)!
             /*
             while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){

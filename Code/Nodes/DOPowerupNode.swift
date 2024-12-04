@@ -35,7 +35,7 @@ class DOPowerUpNode: SKNode {
         self.maskHeight = radius * 2
         
         if (type==PowerUpType.skipLevel){
-            countdownDuration=0.1
+            countdownDuration=0.001
             self.remainingTime = countdownDuration
         }
         
