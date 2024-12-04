@@ -1,10 +1,10 @@
 import SpriteKit
 
 enum PowerUpType {
-    case doubleDotScore
-    case levelScoreBonus
+ //   case doubleDotScore
+ //   case levelScoreBonus
     case freezeTime
-    case extraSlot
+ //   case extraSlot
     case skipLevel
     case inactive
 }
@@ -34,7 +34,7 @@ class DOPowerUpNode: SKNode {
         self.remainingTime = self.countdownDuration
         self.maskHeight = radius * 2
         
-        if (type == PowerUpType.extraSlot||type==PowerUpType.skipLevel){
+        if (type==PowerUpType.skipLevel){
             countdownDuration=0.1
             self.remainingTime = countdownDuration
         }
@@ -91,6 +91,7 @@ class DOPowerUpNode: SKNode {
     
     private func configureAppearance() {
         switch type {
+            /*
         case .doubleDotScore:
             circleShape.fillColor = .green
             powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
@@ -103,6 +104,12 @@ class DOPowerUpNode: SKNode {
             countdownLabel.fontSize = 10
             powerupLabel.fontSize = 20
             break
+        case .extraSlot:
+            circleShape.fillColor = .orange
+            powerupLabel.attributedText = NSAttributedString(string: "+", attributes: attributes)
+            countdownLabel.fontSize = 0
+            powerupLabel.fontSize = 20
+            */
         case .freezeTime:
             circleShape.fillColor = .cyan
             powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
@@ -114,11 +121,7 @@ class DOPowerUpNode: SKNode {
             powerupLabel.attributedText = NSAttributedString(string: "→", attributes: attributes)
             countdownLabel.fontSize = 0
             powerupLabel.fontSize = 20
-        case .extraSlot:
-            circleShape.fillColor = .orange
-            powerupLabel.attributedText = NSAttributedString(string: "+", attributes: attributes)
-            countdownLabel.fontSize = 0
-            powerupLabel.fontSize = 20
+       
         default: // or inactive
             circleShape.fillColor = .darkGray
             return
@@ -158,7 +161,7 @@ class DOPowerUpNode: SKNode {
     func getTimeStart() -> Double{
         return self.countdownDuration
     }
-    
+    /*
     func islevelScoreBonus() -> Bool {
         return type == .levelScoreBonus
     }
@@ -169,6 +172,7 @@ class DOPowerUpNode: SKNode {
     func isExtraSlot() -> Bool {
         return type == .extraSlot
     }
+     */
     func isSkipLevel() -> Bool {
         return type == .skipLevel
     }

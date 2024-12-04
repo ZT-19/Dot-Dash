@@ -12,9 +12,12 @@ class DOTimerNode: SKNode {
     private var remainingTime: TimeInterval
     private var lastUpdateTime: TimeInterval = 0
     private var timerPaused: Bool = false
+    private var timeFreeze: Date
+    private var timeFrozenCompensation:Double = 0
 
     init(initialTime: TimeInterval) {
         self.remainingTime = initialTime
+        self.timeFreeze = Date()
         super.init()
         setup()
     }
@@ -50,8 +53,10 @@ class DOTimerNode: SKNode {
 
     func update(_ currentTime: TimeInterval) -> Bool {
         if (timerPaused){
+            
             return false
         }
+        
         if lastUpdateTime == 0 {
             lastUpdateTime = currentTime
         }
@@ -79,9 +84,17 @@ class DOTimerNode: SKNode {
           
     }
     func pause(){
+        if timerPaused{
+            timeFrozenCompensation += Date().timeIntervalSince(timeFreeze)
+        }
+        timeFreeze = Date()
+        
         timerPaused=true
     }
     func resume(){
+      //  remainingTime = TimeInterval(timeFreeze)
+        addTime(timeFrozenCompensation+Date().timeIntervalSince(timeFreeze),stealth: true)
+        timeFrozenCompensation=0
         timerPaused=false
     }
     func setPosition(_ position: CGPoint) {
