@@ -4,6 +4,8 @@ enum PowerUpType {
     case doubleDotScore
     case levelScoreBonus
     case freezeTime
+    case extraSlot
+    case skipLevel
     case inactive
 }
 
@@ -24,12 +26,18 @@ class DOPowerUpNode: SKNode {
         .strokeWidth: 3.0,
         .font: UIFont(name: "Arial-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
     ]
+    private var turnedOn = false
 
     init(radius: CGFloat, type: PowerUpType, position: CGPoint, duration: TimeInterval = 15.0) {
         self.type = type
         self.countdownDuration = duration
-        self.remainingTime = duration
+        self.remainingTime = self.countdownDuration
         self.maskHeight = radius * 2
+        
+        if (type == PowerUpType.extraSlot||type==PowerUpType.skipLevel){
+            countdownDuration=0.1
+            self.remainingTime = countdownDuration
+        }
         
         circleShape = SKShapeNode(circleOfRadius: radius)
         circleShape.fillColor = .yellow
@@ -49,7 +57,7 @@ class DOPowerUpNode: SKNode {
         countdownLabel = SKLabelNode(fontNamed: "Arial")
         countdownLabel.fontSize = 12
         countdownLabel.fontColor = .white
-        countdownLabel.text = "\(Int(duration))"
+        countdownLabel.text = "\(Int(countdownDuration))"
         countdownLabel.verticalAlignmentMode = .center
         countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.5))
 
@@ -66,21 +74,21 @@ class DOPowerUpNode: SKNode {
         // setup node hierarchy
         cropNode.maskNode = maskNode
         cropNode.addChild(circleShape)
+        configureAppearance()
         self.position = position
         self.addChild(cropNode)
         self.addChild(powerupLabel)
         self.addChild(countdownLabel)
 
-        configureAppearance()
-        startCountdown()
+       
+       
+       // startCountdown() // comment out and instead start on touch in gamescene
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-
     private func configureAppearance() {
         switch type {
         case .doubleDotScore:
@@ -88,23 +96,39 @@ class DOPowerUpNode: SKNode {
             powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
             countdownLabel.fontSize = 10
             powerupLabel.fontSize = 20
+            break
         case .levelScoreBonus:
             circleShape.fillColor = .yellow
             powerupLabel.attributedText = NSAttributedString(string: "+", attributes: attributes)
             countdownLabel.fontSize = 10
             powerupLabel.fontSize = 20
+            break
         case .freezeTime:
             circleShape.fillColor = .cyan
             powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
             countdownLabel.fontSize = 10
             powerupLabel.fontSize = 20
-        default:
+            break
+        case .skipLevel:
+            circleShape.fillColor = .red
+            powerupLabel.attributedText = NSAttributedString(string: "→", attributes: attributes)
+            countdownLabel.fontSize = 0
+            powerupLabel.fontSize = 20
+        case .extraSlot:
+            circleShape.fillColor = .orange
+            powerupLabel.attributedText = NSAttributedString(string: "+", attributes: attributes)
+            countdownLabel.fontSize = 0
+            powerupLabel.fontSize = 20
+        default: // or inactive
+            circleShape.fillColor = .darkGray
             return
         }
     }
 
-    private func startCountdown() {
+    func startCountdown() {
         // create draining animation
+        turnedOn = true
+        self.remainingTime = countdownDuration
         let scaleAction = SKAction.scaleY(to: 0, duration: countdownDuration)
         maskNode.run(scaleAction)
         
@@ -142,12 +166,22 @@ class DOPowerUpNode: SKNode {
     func isDoubleDotScore() -> Bool {
         return type == .doubleDotScore
     }
+    func isExtraSlot() -> Bool {
+        return type == .extraSlot
+    }
+    func isSkipLevel() -> Bool {
+        return type == .skipLevel
+    }
     
     func isFreezeTime() -> Bool {
         return type == .freezeTime
     }
     
     func isActive() -> Bool {
-        return remainingTime > 0
+        return turnedOn
+    }
+    
+    func isSpent() -> Bool{
+        return remainingTime<=0&&turnedOn
     }
 }

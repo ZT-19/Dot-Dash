@@ -24,6 +24,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private let dotSpacing = DOGameContext.shared.dotSpacing
     private let gridSize = DOGameContext.shared.gridSize
     private let gridCenter = DOGameContext.shared.gridCenter
+    private var powerUpArray = DOGameContext.shared.powerUpArray
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
     private var difficulty = 1
@@ -65,16 +66,22 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var modNotificationLabel: SKLabelNode?
     
     // powerups
-    private let powerupRadius = 20.0
+    private let powerupRadius = 30.0
+    let powerUpNodeRadius: CGFloat = 34
+
     private let powerupTypes: [PowerUpType] = [
         .doubleDotScore,
         .levelScoreBonus,
-        .freezeTime
+        .freezeTime,
+        .extraSlot,
+        .skipLevel,
     ]
-    private var powerupNode: DOPowerUpNode!
     private var powerupEligible = true
     private var powerupNotificationLabel: SKLabelNode?
     private var powerupCurr = PowerUpType.doubleDotScore
+    private var n_powerups = 0
+    private var max_powerUps = 3 // goes up to 5 before going off screen
+    private var actual_max_powerUps = 5 // goes up to 5 before going off screen
 
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
@@ -113,12 +120,18 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        if !(powerupNode != nil && powerupNode.isFreezeTime() && powerupNode.isActive()) {
-            if timerNode.update(currentTime) {
-                gameOver()
+        var frozen = false
+        for i in 0..<n_powerups{
+            if (powerUpArray[i] != nil && powerUpArray[i]!.isFreezeTime() && powerUpArray[i]!.isActive()) {
+                frozen = true
+               
             }
+           
         }
-       
+        if timerNode.update(currentTime) && !frozen {
+            gameOver()
+        }
+      /*
         if let explodingTimer = explodingTimer {
             if !(powerupNode != nil && powerupNode.isFreezeTime() && powerupNode.isActive()) {
                 if explodingTimer.update(currentTime) {
@@ -126,15 +139,35 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-        if let existingPowerup = powerupNode, !existingPowerup.isActive() {
-            existingPowerup.removeFromParent()
-            if existingPowerup.isFreezeTime(){
-                timerNode.addTime(existingPowerup.getTimeStart(), stealth: true)
+       */
+        for i in 0..<n_powerups{
+            if let existingPowerup = powerUpArray[i], existingPowerup.isSpent() {
+                //existingPowerup.removeFromParent()
+                if existingPowerup.isFreezeTime(){
+                    timerNode.addTime(existingPowerup.getTimeStart(), stealth: true)
+                }
+               
+                if existingPowerup.isExtraSlot(){
+                    max_powerUps += 1
+                }
+                powerupCurr = .inactive
+                
+                for j in i+1..<n_powerups{
+                    powerUpArray[j]?.position.x -= (powerUpNodeRadius * 2 + CGFloat(10))
+                    powerUpArray.swapAt(j, j-1)
+                    
+                }
+                powerUpArray[n_powerups-1] = nil
+                n_powerups -= 1
+                if existingPowerup.isSkipLevel(){
+                    levelLoad(restart: false,powerupEligible: false)
+                    
+                }
+                
             }
-            powerupCurr = .inactive
-            powerupNode = nil
+            
         }
-        
+      
         // modifier states
     }
     
@@ -165,6 +198,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             levelClear()
             return
         }
+        for i in 0..<n_powerups{
+            if (lastPosition.x <= ((powerUpArray[i]?.position.x)!+CGFloat(powerupRadius))&&lastPosition.x >= ((powerUpArray[i]?.position.x)!-powerupRadius)&&lastPosition.y <= ((powerUpArray[i]?.position.y)!+powerupRadius)&&lastPosition.y >= ((powerUpArray[i]?.position.y)!-powerupRadius)){
+                    let ihateswift = powerUpArray[i]?.isActive() ?? true
+                if !ihateswift{
+                    powerUpArray[i]?.startCountdown()
+                    
+                    return
+                }
+              
+                
+            }
+          
+        }
+        
         
         let deltaX = lastPosition.x - firstPosition.x
         let deltaY = lastPosition.y - firstPosition.y
@@ -241,12 +288,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 self.dotCount -= 1
             
                 // update score
-                if (powerupNode != nil && powerupNode.isActive() && powerupNode.isDoubleDotScore()) {
-                    gameInfo.score += 20
+                var doublefactor = 1
+                for i in 0..<n_powerups{
+                    if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.isDoubleDotScore()) {
+                        doublefactor *= 2
+                    }
+                // double score powerups stack
                 }
-                else {
-                    gameInfo.score += 10
-                }
+                gameInfo.score += 10 * doublefactor
+                
                 scoreNode.updateScore(with: gameInfo.score, mode: dotCount > 0 ? 1 : 0)
                 break
             }
@@ -482,6 +532,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             notification.text = "Powerup: Level Bonus!"
         case .freezeTime:
             notification.text = "Powerup: Time Freeze!"
+        case .extraSlot:
+            notification.text = "Powerup: Extra Powerup Slot!"
+        case .skipLevel:
+            notification.text = "Powerup: Level Skip!"
+
         default:
             return
         }
@@ -496,7 +551,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         let fadeIn = SKAction.fadeIn(withDuration: 0.3)
         
         // slide to corner while shrinking
-        let moveToCorner = SKAction.move(to: powerupNode.getPosition(), duration: 0.5)
+        let moveToCorner = SKAction.move(to: powerUpArray[n_powerups]!.getPosition(), duration: 0.5)
         let shrink = SKAction.scale(to: 0.5, duration: 0.5)
         let fadeOut = SKAction.fadeOut(withDuration: 0.5)
         
@@ -628,13 +683,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             difficulty += 1 // constant increase every lvl
             // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls
+            var leveBonusMultiplier = 1.0
+            for i in 0..<n_powerups{
+                if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {// bonus level score powerup
+                    leveBonusMultiplier *= 1.5
+                }
             
-            if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus()) { // bonus level score powerup
-                gameInfo.score += 150
             }
-            else {
-                gameInfo.score += 100
-            }
+           
+
+            gameInfo.score += Int(100 * leveBonusMultiplier)
+            
             
             timerNode.addTime(bonusTime)
             
@@ -654,10 +713,16 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
         levelNode.updateLevel(with: gameInfo.level)
         
-        if (powerupNode != nil && powerupNode.isActive() && powerupNode.islevelScoreBonus() && !restart) { // double dot score powerup
-            scoreNode.updateScore(with: gameInfo.score, mode: 2)
+        var bonusApplied = false
+        for i in 0..<n_powerups{
+            if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {
+                bonusApplied = true
+                scoreNode.updateScore(with: gameInfo.score, mode: 2)
+                break
+            }
+        // double score powerups stack
         }
-        else {
+        if !bonusApplied{
             scoreNode.updateScore(with: gameInfo.score, mode: 1)
         }
         
@@ -669,18 +734,25 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
 
-        if powerupEligible && (powerupNode == nil || !powerupNode.isActive()) {
+        if powerupEligible && n_powerups < max_powerUps  {
             
-            let powerUpNodeRadius: CGFloat = 20
-            let position = CGPoint(x: powerUpNodeRadius + 15, y: size.height - powerUpNodeRadius - 70)
-            powerupCurr = powerupTypes.randomElement(using: &rng)!
-        
-            powerupNode = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
+          
+            var x_powerUp_position = powerUpNodeRadius + 10
+            x_powerUp_position += (powerUpNodeRadius * 2 + CGFloat(10)) * CGFloat(n_powerups)
            
-            addChild(powerupNode!)
+            let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 70)
+            powerupCurr = powerupTypes.randomElement(using: &rng)!
+            
+            while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){
+                powerupCurr = powerupTypes.randomElement(using: &rng)!
+            }
+        
+            powerUpArray[self.n_powerups] = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
+           
+            addChild(powerUpArray[self.n_powerups]!)
             showPowerupNotification()
             //print("Powerup gained: \(powerupCurr)")
-           
+            n_powerups += 1
         }
        
      
