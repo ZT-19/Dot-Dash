@@ -748,7 +748,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
 
-        if powerupEligible && n_powerups < max_powerUps  {
+       // if powerupEligible && n_powerups < max_powerUps  {
+        if gameInfo.level%5==0 && !restart && n_powerups < max_powerUps  {
             
           
             var x_powerUp_position = powerUpNodeRadius + 10
