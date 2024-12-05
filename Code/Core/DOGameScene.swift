@@ -406,16 +406,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var randomDifficulty = difficultyRating
         var tempGrid = Array(repeating: Array(repeating: 0, count: gridSize + 2), count: gridSize + 2)
         
-        // uncomment below to use difficulty range instead of set difficulty
-        /*
-        let randomRange = 2
-        randomDifficulty = Int.random(in: (difficultyRating - randomRange)...(difficultyRating + randomRange), using: &rng)
-        print("Curr Difficulty: \(randomDifficulty)")
-        */
-        
         var currentX = initX
         var currentY = initY
-        tempGrid[initX][initY] = 1 // first dot
+        tempGrid[initX][initY] = 2 // first location is player
         
         // vars to handle unsolvable levels
         var prevDir = -1
@@ -429,7 +422,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
             let direction = validDirections.randomElement(using: &rng)!
             var changeAmount:Int = 0
-            var newX = currentX,newY=currentY
+            var newX = currentX, newY=currentY
             switch direction {
             case 0: // right
                 if currentX < gridSize - 2 {
@@ -460,11 +453,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
             
             if tempGrid[newX][newY] == 0 {
-                if randomDifficulty == 1 {
-                    tempGrid[newX][newY] = 2 // last dot is player position
-                } else {
-                    tempGrid[newX][newY] = 1 // dot position
-                }
+                tempGrid[newX][newY] = 1
                 randomDifficulty -= 1
                 prevDir = direction
                 currentX=newX // only update position if the new spot is valid
@@ -690,7 +679,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if (!restart) {
             backgroundNode.setDeterminedTexture()
             gameInfo.level += 1
-            
             difficulty += 1 // constant increase every lvl
             // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls
             let leveBonusMultiplier = 1.0
