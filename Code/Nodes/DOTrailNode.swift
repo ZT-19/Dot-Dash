@@ -27,11 +27,14 @@ class DOTrailNode: SKNode {
             }
             
             trailSprite.position = startPoint
-            
+       
+        
             super.init()
+        self.zPosition = -3 // behind planet residues but in front of stars
             addChild(trailSprite)
             
             animateTrail(to: position, duration: 0.2, vertical: vertical)
+        
         }
         
         private func animateTrail(to endPoint: CGPoint, duration: TimeInterval, vertical: Bool) {

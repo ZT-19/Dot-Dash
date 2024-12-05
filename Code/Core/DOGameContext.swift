@@ -19,11 +19,14 @@ public class DOGameContext {
     let gridSize = 13
     let gridCenter = 6
     let dotSpacing: CGFloat = 30  // space between dots for layout on screen, remove hardcode later
+    var powerUpArray: [DOPowerUpNode?]
 
     // initialize array to be of size gridSize + 2 x gridSize + 2
     // outermost row and column have nothing in them, used to detect out-o-bounds
     init() {
         grid = Array(repeating: Array(repeating: 0, count: gridSize+2), count: gridSize+2)
+        
+        powerUpArray = Array(repeating: nil, count: 5)
     }
 
     func getRandomPosition() -> (Int, Int) {
