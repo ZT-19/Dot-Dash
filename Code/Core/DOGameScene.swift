@@ -32,7 +32,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     var rng = SystemRandomNumberGenerator()
     let backgroundNode = DOBackgroundNode()
-    let scoreNode = DOScoreNode()
+    //let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
     let gameOverNode = DOGameOverNode()
     var playerNode = DOPlayerNode()
@@ -52,6 +52,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var initialTime: TimeInterval = 20
     private var bonusTime = 10.0
     private var timerNode: DOTimerNode!
+    private var progressBar: DOProgressBarNode!
     private var explodingTimer: DOExplodingTimerNode!
     
     /*
@@ -67,7 +68,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     // powerups
     private let powerupRadius = 38.0
-    let powerUpNodeRadius: CGFloat = 43
+    let powerUpNodeRadius: CGFloat = 68
 
     private let powerupTypes: [PowerUpType] = [
     //    .doubleDotScore,
@@ -80,7 +81,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var powerupNotificationLabel: SKLabelNode?
     private var powerupCurr = PowerUpType.freezeTime
     private var n_powerups = 0
-    private var max_powerUps = 4
+    private var max_powerUps = 3
 
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
@@ -89,10 +90,13 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         backgroundNode.setup(screenSize: size)
         gameOverNode.setup(screenSize: size)
         backgroundNode.zPosition = -CGFloat.greatestFiniteMagnitude // hardcoded to the back layer
+        progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width/2, height: 30),backgroundColor: .darkGray,fillColor: .white)
+        progressBar.setup(screenSize: size)
+        addChild(progressBar)
         addChild(backgroundNode)
 
-        scoreNode.setup(screenSize: size)
-        addChild(scoreNode)
+     //   scoreNode.setup(screenSize: size)
+       // addChild(scoreNode)
 
         levelNode.setup(screenSize: size)
         addChild(levelNode)
@@ -114,7 +118,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         // setup timer node
         timerNode = DOTimerNode(initialTime: initialTime)
-        timerNode.setPosition(CGPoint(x: size.width / 2, y: size.height / 5))
+        timerNode.setPosition(CGPoint(x: size.width / 2, y: size.height - size.height / 8))
         addChild(timerNode)
     }
     
@@ -159,7 +163,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 powerupCurr = .inactive
                 
                 for j in i+1..<n_powerups{
-                    powerUpArray[j]?.position.x -= (powerUpNodeRadius * 2 + CGFloat(10))
+                    powerUpArray[j]?.position.x -= (UIScreen.main.bounds.width/2 - powerUpNodeRadius)
                     powerUpArray.swapAt(j, j-1)
                     
                 }
@@ -646,8 +650,32 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         playerNode.run(playerTransition1)
         self.removeAllChildren()
         addChild(backgroundNode)
-        addChild(scoreNode)
+      //  addChild(scoreNode)
         addChild(levelNode)
+    }
+    
+    func addPowerUp(){
+        if n_powerups>=max_powerUps{
+            return
+        }
+        var x_powerUp_position = powerUpNodeRadius
+        x_powerUp_position += (UIScreen.main.bounds.width/2 - powerUpNodeRadius) * CGFloat(n_powerups)
+        
+       
+        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 115)
+        powerupCurr = powerupTypes.randomElement(using: &rng)!
+        /*
+        while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){
+            powerupCurr = powerupTypes.randomElement(using: &rng)!
+        }
+         */
+        powerUpArray[self.n_powerups] = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
+       
+        addChild(powerUpArray[self.n_powerups]!)
+        showPowerupNotification()
+        //print("Powerup gained: \(powerupCurr)")
+        n_powerups += 1
+        progressBar.setProgress(0.0)
     }
     
     func levelLoad(restart: Bool, powerupEligible:Bool = true, skipped:Bool = false) {
@@ -697,7 +725,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             gameInfo.score += Int(100 * leveBonusMultiplier)
             
             if (!skipped){
-                print(timerNode.setTime(difficulty))
+                let timeprintoutting = timerNode.setTime(difficulty)
+              //  print(timeprintoutting)
             }
             
             // draw new 2D Int Array for new level
@@ -726,43 +755,31 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         // double score powerups stack
         }
-         */
+         
         if !bonusApplied{
             scoreNode.updateScore(with: gameInfo.score, mode: 1)
         }
         
+         */
+        /*
         if (modCode == 0 && !restart) {
             explodingTimer = DOExplodingTimerNode(initialTime: bonusTime)
             explodingTimer.setPosition(CGPoint(x: size.width / 2, y: size.height / 6))
             addChild(explodingTimer)
         }
+         */
         
         placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
 
        // if powerupEligible && n_powerups < max_powerUps  {
-        if gameInfo.level%5==0 && !restart && n_powerups < max_powerUps  {
-            
-          
-            var x_powerUp_position = powerUpNodeRadius + 10
-            x_powerUp_position += (powerUpNodeRadius * 2 + CGFloat(10)) * CGFloat(n_powerups)
-           
-            let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 75)
-            powerupCurr = powerupTypes.randomElement(using: &rng)!
-            /*
-            while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){
-                powerupCurr = powerupTypes.randomElement(using: &rng)!
-            }
-             */
-            powerUpArray[self.n_powerups] = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
-           
-            addChild(powerUpArray[self.n_powerups]!)
-            showPowerupNotification()
-            //print("Powerup gained: \(powerupCurr)")
-            n_powerups += 1
+        if !restart{
+            progressBar.increaseProgress(0.5)
+        }
+        
+        if progressBar.getProgress() == 1.0 && !restart && n_powerups < max_powerUps  {
+            addPowerUp()
         }
        
-     
-      
     }
     
     // translates matrix index to position on screen

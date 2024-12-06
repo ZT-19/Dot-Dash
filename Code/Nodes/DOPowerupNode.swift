@@ -59,7 +59,7 @@ class DOPowerUpNode: SKNode {
         countdownLabel.fontColor = .white
         countdownLabel.text = "\(Int(countdownDuration))"
         countdownLabel.verticalAlignmentMode = .center
-        countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.5))
+        countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.3))
 
         // initialize crop node and mask for draining animation
         cropNode = SKCropNode()

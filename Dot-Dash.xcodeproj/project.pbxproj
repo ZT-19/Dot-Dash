@@ -12,6 +12,7 @@
 		2B9D80E52CF6EBED003722E6 /* DOPowerupNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */; };
 		2BA915E22CF6792600A634C4 /* DOTimerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA915E12CF6792100A634C4 /* DOTimerNode.swift */; };
 		870008362CFACE7A005B8218 /* DOTrailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870008352CFACE74005B8218 /* DOTrailNode.swift */; };
+		87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */; };
 		87BF02C92CDD4738002A1821 /* DOPlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */; };
 		87BF02CC2CDD476A002A1821 /* DOGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CB2CDD476A002A1821 /* DOGameScene.swift */; };
 		87BF02CD2CDD476A002A1821 /* DOGameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CA2CDD476A002A1821 /* DOGameContext.swift */; };
@@ -54,6 +55,7 @@
 		2BD62E742CCD7A9C00B86F14 /* Dot-DashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BD62E7E2CCD7A9C00B86F14 /* Dot-DashUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		870008352CFACE74005B8218 /* DOTrailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTrailNode.swift; sourceTree = "<group>"; };
+		87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOProgressBarNode.swift; sourceTree = "<group>"; };
 		87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOPlayerNode.swift; sourceTree = "<group>"; };
 		87BF02CA2CDD476A002A1821 /* DOGameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameContext.swift; sourceTree = "<group>"; };
 		87BF02CB2CDD476A002A1821 /* DOGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameScene.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				87BF02D02CDD48C8002A1821 /* DOScoreNode.swift */,
 				87BF02EF2CDD8E89002A1821 /* DODotNode.swift */,
 				87C1A7102CDEC7FF0033FDD1 /* DOGameOverNode.swift */,
+				87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				87BF02D72CDD4A4A002A1821 /* DOGameInfo.swift in Sources */,
+				87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */,
 				87DB9B712CDDF1AB0096130C /* DOLevelNode.swift in Sources */,
 				2B9D80E32CF6E8DC003722E6 /* DOExplodingTimerNode.swift in Sources */,
 				2B9D80E52CF6EBED003722E6 /* DOPowerupNode.swift in Sources */,
