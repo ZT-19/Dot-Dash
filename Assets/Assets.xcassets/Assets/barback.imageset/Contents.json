@@ -5,12 +5,12 @@
       "scale" : "1x"
     },
     {
-      "filename" : "blackhole@2x.png",
+      "filename" : "progressbarback@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "blackhole@3x.png",
+      "filename" : "progressbarback@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

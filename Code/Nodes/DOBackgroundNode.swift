@@ -5,7 +5,7 @@ import SpriteKit
 
 class DOBackgroundNode: SKSpriteNode {
     private var backgrounds = [
-        "black"
+        "blackwithhole"
     ]
     private var rng = SystemRandomNumberGenerator()
     init() {
