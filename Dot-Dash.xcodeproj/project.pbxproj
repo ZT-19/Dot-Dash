@@ -10,9 +10,10 @@
 		2B39B0762CFA321000DA44B4 /* DOStarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B39B0752CFA320D00DA44B4 /* DOStarNode.swift */; };
 		2B9D80E32CF6E8DC003722E6 /* DOExplodingTimerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9D80E22CF6E8D6003722E6 /* DOExplodingTimerNode.swift */; };
 		2B9D80E52CF6EBED003722E6 /* DOPowerupNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */; };
-		2BA915E22CF6792600A634C4 /* DOTimerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA915E12CF6792100A634C4 /* DOTimerNode.swift */; };
 		870008362CFACE7A005B8218 /* DOTrailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870008352CFACE74005B8218 /* DOTrailNode.swift */; };
 		87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */; };
+		876B51522D03CD3100AAEE04 /* DOTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51512D03CD3100AAEE04 /* DOTimer.swift */; };
+		876B51542D03CD3700AAEE04 /* DOTimerTrackerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */; };
 		87BF02C92CDD4738002A1821 /* DOPlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */; };
 		87BF02CC2CDD476A002A1821 /* DOGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CB2CDD476A002A1821 /* DOGameScene.swift */; };
 		87BF02CD2CDD476A002A1821 /* DOGameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CA2CDD476A002A1821 /* DOGameContext.swift */; };
@@ -50,12 +51,13 @@
 		2B39B0752CFA320D00DA44B4 /* DOStarNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOStarNode.swift; sourceTree = "<group>"; };
 		2B9D80E22CF6E8D6003722E6 /* DOExplodingTimerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOExplodingTimerNode.swift; sourceTree = "<group>"; };
 		2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOPowerupNode.swift; sourceTree = "<group>"; };
-		2BA915E12CF6792100A634C4 /* DOTimerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimerNode.swift; sourceTree = "<group>"; };
 		2BD62E642CCD7A9900B86F14 /* Dot-Dash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dot-Dash.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BD62E742CCD7A9C00B86F14 /* Dot-DashTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BD62E7E2CCD7A9C00B86F14 /* Dot-DashUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		870008352CFACE74005B8218 /* DOTrailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTrailNode.swift; sourceTree = "<group>"; };
 		87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOProgressBarNode.swift; sourceTree = "<group>"; };
+		876B51512D03CD3100AAEE04 /* DOTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimer.swift; sourceTree = "<group>"; };
+		876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimerTrackerService.swift; sourceTree = "<group>"; };
 		87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOPlayerNode.swift; sourceTree = "<group>"; };
 		87BF02CA2CDD476A002A1821 /* DOGameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameContext.swift; sourceTree = "<group>"; };
 		87BF02CB2CDD476A002A1821 /* DOGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameScene.swift; sourceTree = "<group>"; };
@@ -150,10 +152,11 @@
 		87BF02C42CDD4738002A1821 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				876B51512D03CD3100AAEE04 /* DOTimer.swift */,
+				876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */,
 				2B39B0752CFA320D00DA44B4 /* DOStarNode.swift */,
 				2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */,
 				870008352CFACE74005B8218 /* DOTrailNode.swift */,
-				2BA915E12CF6792100A634C4 /* DOTimerNode.swift */,
 				2B9D80E22CF6E8D6003722E6 /* DOExplodingTimerNode.swift */,
 				87DB9B702CDDF1A60096130C /* DOLevelNode.swift */,
 				87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */,
@@ -350,13 +353,14 @@
 			files = (
 				87BF02D72CDD4A4A002A1821 /* DOGameInfo.swift in Sources */,
 				87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */,
+				876B51522D03CD3100AAEE04 /* DOTimer.swift in Sources */,
 				87DB9B712CDDF1AB0096130C /* DOLevelNode.swift in Sources */,
 				2B9D80E32CF6E8DC003722E6 /* DOExplodingTimerNode.swift in Sources */,
 				2B9D80E52CF6EBED003722E6 /* DOPowerupNode.swift in Sources */,
 				87BF02E02CDD4C80002A1821 /* GameModeType.swift in Sources */,
 				87BF02E12CDD4C80002A1821 /* Dependencies.swift in Sources */,
-				2BA915E22CF6792600A634C4 /* DOTimerNode.swift in Sources */,
 				87C1A7112CDEC7FF0033FDD1 /* DOGameOverNode.swift in Sources */,
+				876B51542D03CD3700AAEE04 /* DOTimerTrackerService.swift in Sources */,
 				2B39B0762CFA321000DA44B4 /* DOStarNode.swift in Sources */,
 				87BF02E22CDD4C80002A1821 /* GameType.swift in Sources */,
 				87BF02E32CDD4C80002A1821 /* GameContext.swift in Sources */,

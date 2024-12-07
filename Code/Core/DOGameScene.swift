@@ -51,9 +51,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     // timer
     private var initialTime: TimeInterval = 20
     private var bonusTime = 10.0
-    private var timerNode: DOTimerNode!
+    private var timerNode: DOTimer!
     private var progressBar: DOProgressBarNode!
-    private var explodingTimer: DOExplodingTimerNode!
+    //private var explodingTimer: DOExplodingTimerNode!
     
     /*
     MODIFIER STATES:
@@ -117,17 +117,23 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         placeDotsFromGrid(grid: grid)
         
         // setup timer node
-        timerNode = DOTimerNode(initialTime: initialTime)
-        timerNode.setPosition(CGPoint(x: size.width / 2, y: size.height - size.height / 8))
+        timerNode = DOTimer(radius: 30, levelTime: 20) { [weak self] in
+            // Timer setup completed callback if needed
+            //self?.gameOver()
+        }
+        timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
         addChild(timerNode)
+        timerNode.start()
     }
     
     override func update(_ currentTime: TimeInterval) {
        
         
-        if timerNode.update(currentTime) {
-            gameOver()
-        }
+        if let timer = timerNode, timer.parent != nil {
+                if timer.timeLeft() <= 1 {
+                    gameOver()
+                }
+            }
       /*
         if let explodingTimer = explodingTimer {
             if !(powerupNode != nil && powerupNode.isFreezeTime() && powerupNode.isActive()) {
@@ -412,7 +418,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         var currentX = initX
         var currentY = initY
+
         tempGrid[initX][initY] = 2 // first location is player
+
         
         // vars to handle unsolvable levels
         var prevDir = -1
@@ -456,6 +464,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 break
             }
             
+
             if tempGrid[newX][newY] == 0 {
                 tempGrid[newX][newY] = 1
                 randomDifficulty -= 1
@@ -624,7 +633,31 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         ])
         notification.run(sequence)
     }
-
+    private func difficultyToTime(_ level: Int) -> Int {
+            var cnt = 0.0
+            switch level {
+            case 1...15:
+                // linear growth from 20 to 25 seconds
+                cnt =  20 + (5.0 / 15.0) * Double(level - 1)
+            case 16...40: // 16-30
+                // linear growth from 30 to 40 seconds
+                cnt = 30 + (10.0 / 25.0) * Double(level - 16) //TODO: change rate of increase
+            default:
+                // Levels 41+: Logistic growth approaching 120 seconds
+                cnt = Double(level)
+            }
+            return Int(cnt)
+    }
+    func intermission(code: Int){
+        // 0 for basic tutorial, 1 for first freeze, 2 for first level skip
+        switch code{
+        case 2:
+            pause()
+            break;
+        default:
+            break
+        }
+    }
     func gameOver() {
         self.removeAllChildren()
         // gameOverNode.updateMessage()
@@ -682,11 +715,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             queuedLevelLoad = (restart, powerupEligible ,true)
             return
         }
-        
+        /*
         if !restart, let explodingTimer = explodingTimer {
             explodingTimer.removeFromParent()
             self.explodingTimer = nil
         }
+         */
         
         // remove all dots and players from the scene
         for child in self.children {
@@ -722,8 +756,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             gameInfo.score += Int(100 * leveBonusMultiplier)
             
             if (!skipped){
-                let timeprintoutting = timerNode.setTime(difficulty)
-              //  print(timeprintoutting)
+                //  print(timeprintoutting)
+                if let existingTimer = timerNode {
+                    existingTimer.removeFromParent()
+                    existingTimer.removeAllActions()
+                }
+                
+                timerNode = DOTimer(radius: 30, levelTime: difficultyToTime(difficulty)) { [weak self] in
+                    // Timer setup completed callback if needed
+                    //self?.gameOver()
+                }
+                timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
+                addChild(timerNode)
+                timerNode.start()
+              
             }
             
             // draw new 2D Int Array for new level
