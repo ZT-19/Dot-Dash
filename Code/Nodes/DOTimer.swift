@@ -14,7 +14,6 @@ class DOTimer: SKSpriteNode {
     private var timeLabel: SKLabelNode!
     private var innerCircle: SKShapeNode!
     private var textureNode: SKSpriteNode!
-    private var freezeNode: SKSpriteNode!
     private var timerService: DOTimerTrackerService!
     private var isTimerPaused = false
     private var timeFreeze: Date
@@ -78,13 +77,6 @@ class DOTimer: SKSpriteNode {
         textureNode.position = CGPoint(x: 0, y: 0)
         addChild(textureNode)
         
-        freezeNode = SKSpriteNode(imageNamed: "wh_timer_freeze")
-        freezeNode.size = CGSize(width: radius*3, height: radius*3)
-        freezeNode.position = CGPoint(x: 0, y: 0)
-        freezeNode.zPosition = 2
-        freezeNode.alpha = 0.0
-        addChild(freezeNode)
-        
         selfRad = radius
     }
     func timeLeft() -> Int {
@@ -129,34 +121,19 @@ class DOTimer: SKSpriteNode {
         if isTimerPaused{
             timeFrozenCompensation += Date().timeIntervalSince(timeFreeze)
         }
-        //guard !isTimerPaused else { return }
         isTimerPaused = true
         self.speed = 0.01
-        
-        //freezeNode.setScale(1.2)
         
         let fadeIn = SKAction.fadeIn(withDuration: 0.002)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.01)
         scaleUp.timingMode = .easeOut
         
-        /*freezeNode.run(fadeIn)
-        freezeNode.run(scaleUp) {
-            self.innerCircle.fillColor = self.gray
-            self.timeLabel.fontColor = self.white
-            self.speed = 0
-        }*/
     }
 
     func resume() {
         //guard isTimerPaused else { return }
         isTimerPaused = false
         self.speed = 1
-        
-        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-        freezeNode.run(fadeOut) {
-            self.innerCircle.fillColor = self.lightPurple
-            self.updateTimeLabel()
-        }
     }
 
     func stop() {
@@ -166,17 +143,31 @@ class DOTimer: SKSpriteNode {
         self.removeAction(forKey: "countdownTimer")
         textureNode.removeAction(forKey: "countdownAnimation")
     }
-    /*
-    func resetTimer(level: Int) {
+    
+    func resetTimer(timeLeft: Int) {
         hasEnded = false
         playedTick = false
-        remainingTime = setTime(level)
+        remainingTime = timeLeft
         print("setting time to \(totalTime)")
-        //remainingTime = setTime(level)//totalTime
+        
+        timerService = DOTimerTrackerService(circleSize: CGSize(width: selfRad*2, height: selfRad*2)) { [weak self] in
+            self?.isTexturesPrepared = true
+            if self?.pendingStart == true {
+                DispatchQueue.main.async {
+                    self?.startAnimation()
+                }
+            }
+            //completion()
+        }
+        
+        timeLabel?.removeFromParent()
+        innerCircle?.removeFromParent()
+        textureNode?.removeFromParent()
+        
         setupTimerAppearance(radius: self.selfRad, currTime: remainingTime)
         updateTimeLabel()
-    }*/
-
+    }
+    
     private func updateTimeLabel() {
         let minutes = remainingTime / 60
         let seconds = remainingTime % 60
