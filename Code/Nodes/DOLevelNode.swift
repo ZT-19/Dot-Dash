@@ -14,7 +14,7 @@ class DOLevelNode: SKNode {
     private let textNode = SKLabelNode(fontNamed: "Arial")
 
     func setup(screenSize: CGSize) {
-        position = CGPoint(x: screenSize.width / 2, y: screenSize.height - 120 - Constants.size.height / 2)
+        position = CGPoint(x: screenSize.width / 2, y: screenSize.height - 140 - Constants.size.height / 2)
 
         updateLevel(with: 1)
         textNode.verticalAlignmentMode = .center
