@@ -14,6 +14,7 @@
 		87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */; };
 		876B51522D03CD3100AAEE04 /* DOTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51512D03CD3100AAEE04 /* DOTimer.swift */; };
 		876B51542D03CD3700AAEE04 /* DOTimerTrackerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */; };
+		876B51632D03D92000AAEE04 /* DOExplanationNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51622D03D92000AAEE04 /* DOExplanationNode.swift */; };
 		87BF02C92CDD4738002A1821 /* DOPlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */; };
 		87BF02CC2CDD476A002A1821 /* DOGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CB2CDD476A002A1821 /* DOGameScene.swift */; };
 		87BF02CD2CDD476A002A1821 /* DOGameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CA2CDD476A002A1821 /* DOGameContext.swift */; };
@@ -58,6 +59,7 @@
 		87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOProgressBarNode.swift; sourceTree = "<group>"; };
 		876B51512D03CD3100AAEE04 /* DOTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimer.swift; sourceTree = "<group>"; };
 		876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimerTrackerService.swift; sourceTree = "<group>"; };
+		876B51622D03D92000AAEE04 /* DOExplanationNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOExplanationNode.swift; sourceTree = "<group>"; };
 		87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOPlayerNode.swift; sourceTree = "<group>"; };
 		87BF02CA2CDD476A002A1821 /* DOGameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameContext.swift; sourceTree = "<group>"; };
 		87BF02CB2CDD476A002A1821 /* DOGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameScene.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				87BF02EF2CDD8E89002A1821 /* DODotNode.swift */,
 				87C1A7102CDEC7FF0033FDD1 /* DOGameOverNode.swift */,
 				87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */,
+				876B51622D03D92000AAEE04 /* DOExplanationNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -360,6 +363,7 @@
 				87BF02E02CDD4C80002A1821 /* GameModeType.swift in Sources */,
 				87BF02E12CDD4C80002A1821 /* Dependencies.swift in Sources */,
 				87C1A7112CDEC7FF0033FDD1 /* DOGameOverNode.swift in Sources */,
+				876B51632D03D92000AAEE04 /* DOExplanationNode.swift in Sources */,
 				876B51542D03CD3700AAEE04 /* DOTimerTrackerService.swift in Sources */,
 				2B39B0762CFA321000DA44B4 /* DOStarNode.swift in Sources */,
 				87BF02E22CDD4C80002A1821 /* GameType.swift in Sources */,
