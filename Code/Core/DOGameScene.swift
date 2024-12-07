@@ -129,7 +129,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
         timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
         addChild(timerNode)
-        timerNode.start()
+        timerNode.start()//WK
         
         intermission(code: 0)
     }
@@ -778,20 +778,19 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             gameInfo.score += Int(100 * leveBonusMultiplier)
             
             if (!skipped){
-                //  print(timeprintoutting)
-                if let existingTimer = timerNode {
-                    existingTimer.removeFromParent()
-                    existingTimer.removeAllActions()
-                }
-                
-                timerNode = DOTimer(radius: 30, levelTime: difficultyToTime(difficulty)) { [weak self] in
-                    // Timer setup completed callback if needed
-                    //self?.gameOver()
-                }
-                timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
-                addChild(timerNode)
+                timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
                 timerNode.start()
-              
+                for i in 0..<n_powerups{
+                    if let cpow = powerUpArray[i]{
+                        if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive()){
+                                
+                                cpow.startCountdown()
+                            if (cpow.isFreezeTime()){
+                                timerNode.pause()
+                            }
+                        }
+                    }
+                }
             }
             
             // draw new 2D Int Array for new level

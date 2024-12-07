@@ -145,28 +145,34 @@ class DOTimer: SKSpriteNode {
     }
     
     func resetTimer(timeLeft: Int) {
-        hasEnded = false
-        playedTick = false
-        remainingTime = timeLeft
-        print("setting time to \(totalTime)")
-        
-        timerService = DOTimerTrackerService(circleSize: CGSize(width: selfRad*2, height: selfRad*2)) { [weak self] in
-            self?.isTexturesPrepared = true
-            if self?.pendingStart == true {
-                DispatchQueue.main.async {
-                    self?.startAnimation()
-                }
-            }
-            //completion()
-        }
-        
-        timeLabel?.removeFromParent()
-        innerCircle?.removeFromParent()
-        textureNode?.removeFromParent()
-        
-        setupTimerAppearance(radius: self.selfRad, currTime: remainingTime)
-        updateTimeLabel()
+           // Stop existing animations
+    self.removeAction(forKey: "countdownTimer")
+    textureNode.removeAction(forKey: "countdownAnimation")
+    
+    // Reset state
+    hasEnded = false
+    playedTick = false
+    remainingTime = totalTime
+    
+    // Update visuals
+    updateTimeLabel()
+    
+    // Reset texture node
+    textureNode.removeAllActions()
+    textureNode.texture = timerService.getAllTextures().first
+    
+    // If timer should auto-start
+    if !isTimerPaused {
+        startAnimation()
     }
+    }
+    /*
+    func resetTimer(timeLeft: Int = 20) {
+            hasEnded = false
+            playedTick = false
+            remainingTime = totalTime
+            updateTimeLabel()
+        }*/
     
     private func updateTimeLabel() {
         let minutes = remainingTime / 60
