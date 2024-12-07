@@ -83,6 +83,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var n_powerups = 0
     private var max_powerUps = 3
 
+    private var inIntermission = false
+    private var firstFreeze = true
+    private var firstSkip = true
+    private var onscreentext: DOExplanationNode!
+    
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
         self.physicsWorld.contactDelegate = self
@@ -94,6 +99,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         progressBar.setup(screenSize: size)
         addChild(progressBar)
         addChild(backgroundNode)
+        onscreentext = DOExplanationNode(size:size)
 
      //   scoreNode.setup(screenSize: size)
        // addChild(scoreNode)
@@ -124,6 +130,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
         addChild(timerNode)
         timerNode.start()
+        
+        intermission(code: 0)
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -214,6 +222,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             gameOverScreen = false
             levelClear()
             return
+        }
+        if inIntermission{
+            onscreentext.resetText()
+            onscreentext.removeFromParent()
+            timerNode.resume()
+            inIntermission = false
+            return
+            
         }
         for i in 0..<n_powerups{
             if let cpow = powerUpArray[i]{
@@ -650,13 +666,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     }
     func intermission(code: Int){
         // 0 for basic tutorial, 1 for first freeze, 2 for first level skip
-        switch code{
-        case 2:
-            pause()
-            break;
-        default:
-            break
-        }
+        inIntermission=true
+        timerNode.pause()
+        onscreentext.updateText(code: code)
+        addChild(onscreentext)
+        
     }
     func gameOver() {
         self.removeAllChildren()
@@ -706,6 +720,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         //print("Powerup gained: \(powerupCurr)")
         n_powerups += 1
         progressBar.setProgress(0.0)
+        if (firstSkip && powerupCurr == .skipLevel){
+            intermission(code: 2)
+            firstSkip = false
+        }
+        else if (firstFreeze && powerupCurr == .freezeTime){
+            intermission(code: 1)
+            firstFreeze = false
+        }
     }
     
     func levelLoad(restart: Bool, powerupEligible:Bool = true, skipped:Bool = false) {
@@ -816,13 +838,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(0.5)
         }
         
         if progressBar.getProgress() == 1.0 && !restart && n_powerups < max_powerUps  {
             addPowerUp()
         }
        
+   
     }
     
     // translates matrix index to position on screen
