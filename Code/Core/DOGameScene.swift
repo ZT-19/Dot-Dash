@@ -127,8 +127,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         dotSpacingY = (playableYSize)/Double(gridSize+1)
         // center grid on screen and draw it
         let gridWidth = CGFloat(gridSize) * dotSpacingX
-        offsetX = playableXLeft - 1
-        offsetY = playableYBottom + 56
+        offsetX = playableXLeft - 3
+        offsetY = playableYBottom + 58
         
         // clear grid
         grid = Array(
@@ -315,12 +315,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             if xv==0{
                 self.addChild(DOTrailNode(position: endPoint,
                                              vertical: xv == 0,
-                                          startPoint: startPoint, size:CGSize(width: dotSpacingX/3, height: dotSpacingY))) // height is argument for length, width for width
+                                          startPoint: startPoint, size:CGSize(width: dotSpacingX/4, height: dotSpacingY))) // height is argument for length, width for width
             }
             else{
                 self.addChild(DOTrailNode(position: endPoint,
                                              vertical: xv == 0,
-                                          startPoint: startPoint, size:CGSize(width: dotSpacingY/3, height: dotSpacingX)))
+                                          startPoint: startPoint, size:CGSize(width: dotSpacingY/4, height: dotSpacingX)))
             }
             
             if grid[currentX][currentY] == 1 {
@@ -558,7 +558,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
        // let yPosition = offsetY + CGFloat(j) * dotSpacingY
 
         // create a dot and add it to the scene
-        let dotNode = DODotNode(
+        let dotNode = DODotNode(radius: dotSpacingX * 0.8,
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
@@ -574,7 +574,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
        // let yPosition = offsetY + CGFloat(j) * dotSpacingY
 
         // create a player and add it to the scene
-        playerNode = DOPlayerNode(
+        playerNode = DOPlayerNode(radius: dotSpacingX * 0.8,
             position:coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         playerNode.name = "player"
         self.addChild(playerNode)
@@ -801,9 +801,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
         // if we are not restarting, we go to the next level
         if (!restart) {
+            gridSize += 1
+            backgroundNode.changeGridSize(new: gridSize)
+            dotSpacingX = (playableXSize)/Double(gridSize+1)
+            dotSpacingY = (playableYSize)/Double(gridSize+1)
             backgroundNode.setDeterminedTexture()
             gameInfo.level += 1
             difficulty += 1 // constant increase every lvl
+           
             // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls
             let leveBonusMultiplier = 1.0
             /*

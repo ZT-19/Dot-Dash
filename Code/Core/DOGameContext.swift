@@ -16,7 +16,7 @@ public class DOGameContext {
     
     // define parameters for the grid, which will track positions of DODotNodes
     var grid: [[Int]]
-    var gridSize = 9
+    var gridSize = 5
     var gridCenter = 6
     var powerUpArray: [DOPowerUpNode?]
 

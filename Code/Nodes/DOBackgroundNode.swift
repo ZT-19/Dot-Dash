@@ -24,6 +24,9 @@ class DOBackgroundNode: SKSpriteNode {
         playableYSize = playableYTop-playableYBottom
         super.init(texture: texture, color: .clear, size: texture.size())
     }
+    func changeGridSize(new:Int){
+        gridSize=new
+    }
     private func addStars(gridSize: Int = 13) {
    
         
@@ -94,7 +97,7 @@ class DOBackgroundNode: SKSpriteNode {
 
     }
     private func animateCurrentStarsDown() {
-    let slideDown = SKAction.moveBy(x: 0, y: -size.height * 2, duration: 2.0)
+        let slideDown = SKAction.moveBy(x: 0, y: -size.height * 2, duration: 2.0)
     children.forEach { node in
         if let star = node as? DOStarNode {
             let sequence = SKAction.sequence([

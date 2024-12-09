@@ -13,7 +13,7 @@ class DOFrameNode: SKNode {
     
     override init() {
         //starSprite = SKSpriteNode(imageNamed: "backgroundstar3x")
-        frameSprite = SKSpriteNode(texture: SKTexture(imageNamed: "frameskinny"))
+        frameSprite = SKSpriteNode(texture: SKTexture(imageNamed: "frame"))
         super.init()
         addChild(frameSprite)
       
