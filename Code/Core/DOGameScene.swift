@@ -21,10 +21,18 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
     private var grid = DOGameContext.shared.grid
     private var baseGrid = DOGameContext.shared.grid
-    private let dotSpacing = DOGameContext.shared.dotSpacing
-    private let gridSize = DOGameContext.shared.gridSize
+    private var gridSize = DOGameContext.shared.gridSize
     private let gridCenter = DOGameContext.shared.gridCenter
     private var powerUpArray = DOGameContext.shared.powerUpArray
+    private let playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor
+    private let playableYBottom = 140.0 // above all powerups.
+    private let playableXLeft = 15.0 // below the level count
+    private let playableXRight = 397.0 // above all powerups.
+    private var playableXSize:Double = 382.0 // right-left
+    private var playableYSize:Double = 480.0// top - bottom
+    private var dotSpacingX: Double = 69 // temporary value, changes depending on gridsize
+    private var dotSpacingY: Double = 420 // temporary value, changes depending on gridsize
+  
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
     private var difficulty = 1
@@ -35,6 +43,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     //let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
     let gameOverNode = DOGameOverNode()
+    let frameNode = DOFrameNode()
     var playerNode = DOPlayerNode()
     private var gameInfo = DOGameInfo()
     private var gameOverScreen = false
@@ -67,7 +76,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var modNotificationLabel: SKLabelNode?
     
     // powerups
-    private let powerupRadius = 38.0
+    private let powerupRadius = 45.0
     let powerUpNodeRadius: CGFloat = 68
 
     private let powerupTypes: [PowerUpType] = [
@@ -91,14 +100,21 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
         self.physicsWorld.contactDelegate = self
-
+        
+        print(size.height)
+        print(size.width)
+        playableXSize = playableXRight-playableXLeft
+        playableYSize = playableYTop-playableYBottom
+        
         backgroundNode.setup(screenSize: size)
         gameOverNode.setup(screenSize: size)
-        backgroundNode.zPosition = -CGFloat.greatestFiniteMagnitude // hardcoded to the back layer
-        progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width/2, height: 30),backgroundColor: .darkGray,fillColor: .white)
+        progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width*0.5, height: 30))
         progressBar.setup(screenSize: size)
-        addChild(progressBar)
+        frameNode.setup(screenSize: CGSize(width: size.width+1, height: size.height))
+        
         addChild(backgroundNode)
+        addChild(frameNode)
+        addChild(progressBar)
         onscreentext = DOExplanationNode(size:size)
 
      //   scoreNode.setup(screenSize: size)
@@ -106,11 +122,13 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         levelNode.setup(screenSize: size)
         addChild(levelNode)
-
+     
+        dotSpacingX = (playableXSize)/Double(gridSize+1)
+        dotSpacingY = (playableYSize)/Double(gridSize+1)
         // center grid on screen and draw it
-        let gridWidth = CGFloat(gridSize) * dotSpacing
-        offsetX = (max(30, (size.width - gridWidth) / 2))/3
-        offsetY = max(30, (size.height - gridWidth) / 2)
+        let gridWidth = CGFloat(gridSize) * dotSpacingX
+        offsetX = playableXLeft - 1
+        offsetY = playableYBottom + 56
         
         // clear grid
         grid = Array(
@@ -122,6 +140,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         baseGrid = grid
         placeDotsFromGrid(grid: grid)
         
+        
+       
+        
+        
         // setup timer node
         timerNode = DOTimer(radius: 30, levelTime: 20) { [weak self] in
             // Timer setup completed callback if needed
@@ -131,6 +153,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(timerNode)
         timerNode.start()//WK
         
+        print(playableYTop)
+        print(playableYBottom)
+        
+        backgroundNode.zPosition = -CGFloat.greatestFiniteMagnitude // hardcoded to the back layer
+        frameNode.zPosition = 1
+        timerNode.zPosition = 2
+        progressBar.zPosition = 3
+        levelNode.zPosition = 2
+        
         intermission(code: 0)
     }
     
@@ -138,7 +169,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
        
         
         if let timer = timerNode, timer.parent != nil {
-                if timer.timeLeft() <= 1 {
+                if timer.timeLeft() <= 0 {
                     gameOver()
                 }
             }
@@ -221,6 +252,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             gameInfo.level = 0
             gameOverScreen = false
             levelClear()
+            print("You lost but what happens now")
             return
         }
         if inIntermission{
@@ -280,11 +312,16 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
          
             let startPoint = coordCalculate(indices: CGPoint(x: currentX - xv, y: currentY - yv))
             let endPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
-            self.addChild(DOTrailNode(position: endPoint,
-                                         vertical: xv == 0,
-                                         startPoint: startPoint))
-          
-            
+            if xv==0{
+                self.addChild(DOTrailNode(position: endPoint,
+                                             vertical: xv == 0,
+                                          startPoint: startPoint, size:CGSize(width: dotSpacingX/3, height: dotSpacingY))) // height is argument for length, width for width
+            }
+            else{
+                self.addChild(DOTrailNode(position: endPoint,
+                                             vertical: xv == 0,
+                                          startPoint: startPoint, size:CGSize(width: dotSpacingY/3, height: dotSpacingX)))
+            }
             
             if grid[currentX][currentY] == 1 {
                 let newPlayerPosition = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
@@ -517,26 +554,28 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         let (i, j) = gridPosition
 
         // calculate screen position from grid coordinates
-        let xPosition = offsetX + CGFloat(i) * dotSpacing
-        let yPosition = offsetY + CGFloat(j) * dotSpacing
+       // let xPosition = offsetX + CGFloat(i) * dotSpacingX
+       // let yPosition = offsetY + CGFloat(j) * dotSpacingY
 
         // create a dot and add it to the scene
         let dotNode = DODotNode(
-            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j))
+            position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
+        print(j)
+        print("kljdsaf")
     }
 
     private func addPlayer(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
         let (i, j) = gridPosition
 
         // calculate screen position from grid coordinates
-        let xPosition = offsetX + CGFloat(i) * dotSpacing
-        let yPosition = offsetY + CGFloat(j) * dotSpacing
+       // let xPosition = offsetX + CGFloat(i) * dotSpacingX
+       // let yPosition = offsetY + CGFloat(j) * dotSpacingY
 
         // create a player and add it to the scene
         playerNode = DOPlayerNode(
-            position: CGPoint(x: xPosition, y: yPosition), gridPosition: CGPoint(x: i, y: j))
+            position:coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         playerNode.name = "player"
         self.addChild(playerNode)
     }
@@ -662,6 +701,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 // Levels 41+: Logistic growth approaching 120 seconds
                 cnt = Double(level)
             }
+        print(cnt)
             return Int(cnt)
     }
     func intermission(code: Int){
@@ -706,7 +746,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         x_powerUp_position += (UIScreen.main.bounds.width/2 - powerUpNodeRadius) * CGFloat(n_powerups)
         
        
-        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 115)
+        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 75)
         powerupCurr = powerupTypes.randomElement(using: &rng)!
         /*
         while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){
@@ -714,7 +754,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
          */
         powerUpArray[self.n_powerups] = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
-       
+        powerUpArray[self.n_powerups]?.zPosition = 3
         addChild(powerUpArray[self.n_powerups]!)
         showPowerupNotification()
         //print("Powerup gained: \(powerupCurr)")
@@ -777,7 +817,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
             gameInfo.score += Int(100 * leveBonusMultiplier)
             
-            if (!skipped){
+     
                 timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
                 timerNode.start()
                 for i in 0..<n_powerups{
@@ -791,7 +831,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         }
                     }
                 }
-            }
+            
             
             // draw new 2D Int Array for new level
             if (modCode == 2) { // mod: double difficulty
@@ -844,13 +884,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             addPowerUp()
         }
        
-   
+       
     }
     
     // translates matrix index to position on screen
     func coordCalculate(indices: CGPoint) -> CGPoint {
         return CGPoint(
-            x: offsetX + CGFloat(indices.x) * dotSpacing,
-            y: offsetY + CGFloat(indices.y) * dotSpacing)
+            x: offsetX + CGFloat(indices.x) * dotSpacingX,
+            y: offsetY + CGFloat(indices.y) * dotSpacingY)
+        
     }
 }

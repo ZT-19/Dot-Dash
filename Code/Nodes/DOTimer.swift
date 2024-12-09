@@ -109,7 +109,7 @@ class DOTimer: SKSpriteNode {
             if self.remainingTime <= 0 {
                 self.stop()
             }
-            print(remainingTime)
+           // print(remainingTime)
         }
         let waitAction = SKAction.wait(forDuration: 1.0)
         let countdownSequence = SKAction.sequence([updateTimeAction, waitAction])
@@ -122,7 +122,7 @@ class DOTimer: SKSpriteNode {
             timeFrozenCompensation += Date().timeIntervalSince(timeFreeze)
         }
         isTimerPaused = true
-        self.speed = 0.01
+        self.speed = 0.0
         
         let fadeIn = SKAction.fadeIn(withDuration: 0.002)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.01)
@@ -149,6 +149,7 @@ class DOTimer: SKSpriteNode {
     self.removeAction(forKey: "countdownTimer")
     textureNode.removeAction(forKey: "countdownAnimation")
     
+        totalTime = timeLeft
     // Reset state
     hasEnded = false
     playedTick = false
@@ -160,7 +161,8 @@ class DOTimer: SKSpriteNode {
     // Reset texture node
     textureNode.removeAllActions()
     textureNode.texture = timerService.getAllTextures().first
-    
+        timeLabel.fontColor = lightPurple
+        innerCircle.fillColor = lightPurple
     // If timer should auto-start
     if !isTimerPaused {
         startAnimation()
@@ -179,7 +181,7 @@ class DOTimer: SKSpriteNode {
         let seconds = remainingTime % 60
         timeLabel.text = String(format: "%02d:%02d", minutes, seconds)
         
-        if remainingTime < 8 {
+        if remainingTime < 5 {
             timeLabel.fontColor = .black
             innerCircle.fillColor = red
             if !playedTick {

@@ -9,35 +9,42 @@ import SpriteKit
 
 class DOProgressBarNode: SKNode {
     private let background: SKSpriteNode
-    private let fill: SKSpriteNode
-    private let cropNode: SKCropNode
-    
-    private var progress: CGFloat = 0.0 // Ranges from 0.0 to 1.0
-    
-    init(size: CGSize, backgroundColor: UIColor, fillColor: UIColor) {
-        // Background
-        background = SKSpriteNode(texture: SKTexture(imageNamed: "barback"), size: size)
-        background.color.setFill()
-        background.zPosition = 0
+    private let fullTexture: SKSpriteNode
+        private let cropNode: SKCropNode
+        private let maskTexture: SKSpriteNode
         
-        // Fill
-        fill = SKSpriteNode(color: fillColor, size: CGSize(width: 0, height: size.height)) // Initial size: zero width
-        fill.zPosition = 1
+        private var progress: CGFloat = 0.0 // Progress from 0.0 to 1.0
         
-        
-        // CropNode
-        cropNode = SKCropNode()
-        cropNode.maskNode = SKSpriteNode(color: .white, size: CGSize(width: size.width-17.5, height: size.height-17.5)) // Mask restricts fill to bar size
-        cropNode.addChild(fill)
-        cropNode.zPosition = 1
-        
-        super.init()
-        
-        addChild(background)
-        addChild(cropNode)
-    }
+        init(size: CGSize) {
+          
+            background = SKSpriteNode(texture: SKTexture(imageNamed: "barback"), size: size)
+            background.zPosition = 2
+            
+            // Full texture to reveal
+            fullTexture = SKSpriteNode(texture: SKTexture(imageNamed: "fullprogress"))
+            fullTexture.size = size
+            fullTexture.zPosition = self.background.zPosition+1
+            
+            // Mask texture
+            maskTexture = SKSpriteNode(texture: SKTexture(imageNamed: "barback"))
+            maskTexture.size = size
+            maskTexture.anchorPoint = CGPoint(x: 0.0, y: 0.5) // Anchor on the left for horizontal progress
+            maskTexture.position.x -= size.width/2
+            
+            // CropNode with mask
+            cropNode = SKCropNode()
+            cropNode.maskNode = maskTexture
+            cropNode.addChild(fullTexture)
+            cropNode.zPosition = self.background.zPosition+1
+            
+            super.init()
+            addChild(background)
+            addChild(cropNode)
+            setProgress(0.0) // Start fully hidden
+          
+        }
     func setup(screenSize: CGSize) {
-        position = CGPoint(x: screenSize.width / 2, y: 100)
+        position = CGPoint(x: screenSize.width / 2, y: background.size.height*2)
         
     }
     
@@ -47,9 +54,8 @@ class DOProgressBarNode: SKNode {
     
     func setProgress(_ progress: CGFloat) {
         self.progress = max(0.0, min(progress, 1.0)) // Clamp between 0 and 1
-        let newWidth = background.size.width * self.progress
-        fill.size.width = newWidth
-        fill.position.x = -background.size.width / 2 + newWidth / 2 // Align left
+        let newWidth = fullTexture.size.width * self.progress
+        maskTexture.size = CGSize(width: newWidth, height: maskTexture.size.height)
     }
     
     
@@ -57,9 +63,8 @@ class DOProgressBarNode: SKNode {
         
         // does not MOD, so 1.0 + x will still be 1.0
         self.progress = max(0.0, min(self.progress+extraprogress, 1.0)) // Clamp between 0 and 1
-        let newWidth = background.size.width * self.progress
-        fill.size.width = newWidth
-        fill.position.x = -background.size.width / 2 + newWidth / 2 // Align left
+        let newWidth = fullTexture.size.width * self.progress
+        maskTexture.size = CGSize(width: newWidth, height: maskTexture.size.height)
     }
     func getProgress()->CGFloat{
         

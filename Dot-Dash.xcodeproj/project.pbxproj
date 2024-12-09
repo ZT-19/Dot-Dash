@@ -12,6 +12,7 @@
 		2B9D80E52CF6EBED003722E6 /* DOPowerupNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */; };
 		870008362CFACE7A005B8218 /* DOTrailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870008352CFACE74005B8218 /* DOTrailNode.swift */; };
 		87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */; };
+		874566162D064DF0005D9792 /* DOFrameNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874566152D064DEA005D9792 /* DOFrameNode.swift */; };
 		876B51522D03CD3100AAEE04 /* DOTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51512D03CD3100AAEE04 /* DOTimer.swift */; };
 		876B51542D03CD3700AAEE04 /* DOTimerTrackerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */; };
 		876B51632D03D92000AAEE04 /* DOExplanationNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51622D03D92000AAEE04 /* DOExplanationNode.swift */; };
@@ -57,6 +58,7 @@
 		2BD62E7E2CCD7A9C00B86F14 /* Dot-DashUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Dot-DashUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		870008352CFACE74005B8218 /* DOTrailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTrailNode.swift; sourceTree = "<group>"; };
 		87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOProgressBarNode.swift; sourceTree = "<group>"; };
+		874566152D064DEA005D9792 /* DOFrameNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOFrameNode.swift; sourceTree = "<group>"; };
 		876B51512D03CD3100AAEE04 /* DOTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimer.swift; sourceTree = "<group>"; };
 		876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimerTrackerService.swift; sourceTree = "<group>"; };
 		876B51622D03D92000AAEE04 /* DOExplanationNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOExplanationNode.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 		87BF02C42CDD4738002A1821 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				874566152D064DEA005D9792 /* DOFrameNode.swift */,
 				876B51512D03CD3100AAEE04 /* DOTimer.swift */,
 				876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */,
 				2B39B0752CFA320D00DA44B4 /* DOStarNode.swift */,
@@ -354,6 +357,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				874566162D064DF0005D9792 /* DOFrameNode.swift in Sources */,
 				87BF02D72CDD4A4A002A1821 /* DOGameInfo.swift in Sources */,
 				87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */,
 				876B51522D03CD3100AAEE04 /* DOTimer.swift in Sources */,
