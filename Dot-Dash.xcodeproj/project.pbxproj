@@ -13,6 +13,7 @@
 		870008362CFACE7A005B8218 /* DOTrailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870008352CFACE74005B8218 /* DOTrailNode.swift */; };
 		87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */; };
 		874566162D064DF0005D9792 /* DOFrameNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874566152D064DEA005D9792 /* DOFrameNode.swift */; };
+		876448ED2D07E80100E819FD /* DOplayerStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876448EC2D07E80100E819FD /* DOplayerStart.swift */; };
 		876B51522D03CD3100AAEE04 /* DOTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51512D03CD3100AAEE04 /* DOTimer.swift */; };
 		876B51542D03CD3700AAEE04 /* DOTimerTrackerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */; };
 		876B51632D03D92000AAEE04 /* DOExplanationNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51622D03D92000AAEE04 /* DOExplanationNode.swift */; };
@@ -59,6 +60,7 @@
 		870008352CFACE74005B8218 /* DOTrailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTrailNode.swift; sourceTree = "<group>"; };
 		87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOProgressBarNode.swift; sourceTree = "<group>"; };
 		874566152D064DEA005D9792 /* DOFrameNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOFrameNode.swift; sourceTree = "<group>"; };
+		876448EC2D07E80100E819FD /* DOplayerStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOplayerStart.swift; sourceTree = "<group>"; };
 		876B51512D03CD3100AAEE04 /* DOTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimer.swift; sourceTree = "<group>"; };
 		876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimerTrackerService.swift; sourceTree = "<group>"; };
 		876B51622D03D92000AAEE04 /* DOExplanationNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOExplanationNode.swift; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 				87C1A7102CDEC7FF0033FDD1 /* DOGameOverNode.swift */,
 				87405C512D026CFD00DF81A1 /* DOProgressBarNode.swift */,
 				876B51622D03D92000AAEE04 /* DOExplanationNode.swift */,
+				876448EC2D07E80100E819FD /* DOplayerStart.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -378,6 +381,7 @@
 				87BF02C92CDD4738002A1821 /* DOPlayerNode.swift in Sources */,
 				87BF02CC2CDD476A002A1821 /* DOGameScene.swift in Sources */,
 				87BF02CD2CDD476A002A1821 /* DOGameContext.swift in Sources */,
+				876448ED2D07E80100E819FD /* DOplayerStart.swift in Sources */,
 				87BF02CF2CDD48C1002A1821 /* DOBackgroundNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

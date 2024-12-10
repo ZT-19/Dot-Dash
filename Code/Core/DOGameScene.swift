@@ -45,6 +45,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     let gameOverNode = DOGameOverNode()
     let frameNode = DOFrameNode()
     var playerNode = DOPlayerNode()
+    var playerstart = DOplayerStart()
     private var gameInfo = DOGameInfo()
     private var gameOverScreen = false
     
@@ -157,10 +158,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         print(playableYBottom)
         
         backgroundNode.zPosition = -CGFloat.greatestFiniteMagnitude // hardcoded to the back layer
-        frameNode.zPosition = 1
-        timerNode.zPosition = 2
-        progressBar.zPosition = 3
-        levelNode.zPosition = 2
+        frameNode.zPosition = 5
+        timerNode.zPosition = 6
+        progressBar.zPosition = 6
+        levelNode.zPosition = 6
         
         intermission(code: 0)
     }
@@ -558,7 +559,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
        // let yPosition = offsetY + CGFloat(j) * dotSpacingY
 
         // create a dot and add it to the scene
-        let dotNode = DODotNode(radius: dotSpacingX * 0.8,
+        let dotNode = DODotNode(size: CGSize(width:dotSpacingX * 0.8,height: dotSpacingY*0.8),
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
@@ -574,10 +575,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
        // let yPosition = offsetY + CGFloat(j) * dotSpacingY
 
         // create a player and add it to the scene
-        playerNode = DOPlayerNode(radius: dotSpacingX * 0.8,
+        playerNode = DOPlayerNode(size: CGSize(width:dotSpacingX * 0.8,height: dotSpacingY*0.8),
             position:coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
+        playerstart = DOplayerStart(size: CGSize(width:dotSpacingX * 0.4,height: dotSpacingX*0.4), position: coordCalculate(indices: CGPoint(x: i,y: j)))
+       
+        self.addChild(playerstart)
+        
         playerNode.name = "player"
         self.addChild(playerNode)
+        
     }
 
     private func showPowerupNotification() {
@@ -799,14 +805,19 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 
             }
         }
+        playerstart.removeFromParent()
         // if we are not restarting, we go to the next level
         if (!restart) {
-            gridSize += 1
-            backgroundNode.changeGridSize(new: gridSize)
+            if gridSize<13 && difficulty%2==1{
+                gridSize += 1
+                backgroundNode.changeGridSize(new: gridSize)
+            }
+            
             dotSpacingX = (playableXSize)/Double(gridSize+1)
             dotSpacingY = (playableYSize)/Double(gridSize+1)
             backgroundNode.setDeterminedTexture()
             gameInfo.level += 1
+           
             difficulty += 1 // constant increase every lvl
            
             // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls

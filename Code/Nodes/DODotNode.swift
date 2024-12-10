@@ -7,43 +7,34 @@
 
 import SpriteKit
 
-class DODotNode: SKShapeNode {
+class DODotNode: SKNode{
     var gridX: Int
     var gridY: Int
+    private let sprite: SKSpriteNode
     private var skins = [
         "planet1",
         "planet2",
         "planet3",
         "planet4",
-        "planet5"
+        "planet5",
+        "planet6"
    
     ]
     var rng = SystemRandomNumberGenerator()
     
-    init(radius: CGFloat = 22, position: CGPoint = .zero, gridPosition: CGPoint = .zero, fadeAni: Bool = true) {
+    init(size: CGSize = .zero, position: CGPoint = .zero, gridPosition: CGPoint = .zero, fadeAni:Bool = true) {
         self.gridX = Int(gridPosition.x)
         self.gridY = Int(gridPosition.y)
-        
-        
+        sprite = SKSpriteNode(imageNamed:  skins[Int.random(in: (0)...(skins.count-1), using: &rng)])
+        self.sprite.size = size
         super.init()
-        let rect = CGRect(
-                x: -radius/2,  // Center the rect
-                y: -radius/2,  // Center the rect
-                width: radius,  // Use full radius for width
-                height: radius  // Use full radius for height
-            )
-        self.path = CGPath(ellipseIn: rect, transform: nil)
-        // set the position and color
         self.position = position
-        self.lineWidth = 0.0
-        
-        self.fillColor = .white
-           
-        self.fillTexture = SKTexture(imageNamed: skins[Int.random(in: (0)...(skins.count-1), using: &rng)])
        
+        addChild(sprite)
         if fadeAni{
             fadeIn()
         }
+        
     }
     
     func getLoc() -> (Int, Int){
@@ -51,9 +42,10 @@ class DODotNode: SKShapeNode {
     }
     
     func destroySelf(){
-        self.fillTexture = SKTexture(imageNamed: "brokenplanet")
         
-        self.zRotation =  CGFloat(Float.random(in: (-.pi)...(.pi), using: &rng))// rotate doesnt work
+        self.sprite.texture = SKTexture(imageNamed: "brokenplanet")
+        self.sprite.size = CGSize(width: self.sprite.size.width*0.66, height: self.sprite.size.width*0.66)
+        //self.zRotation =  CGFloat(Float.random(in: (-.pi)...(.pi), using: &rng))// rotate doesnt work
                                           
        
     }

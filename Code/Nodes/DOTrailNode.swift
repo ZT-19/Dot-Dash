@@ -11,6 +11,7 @@ import SpriteKit
 class DOTrailNode: SKNode {
     private let trailSprite: SKSpriteNode
     
+    
     init(position: CGPoint, vertical: Bool, startPoint: CGPoint, size:CGSize = CGSize(width: 10, height: 30)) {
         var long = size.height, wid = size.width
         

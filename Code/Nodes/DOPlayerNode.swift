@@ -7,29 +7,27 @@
 
 import SpriteKit
 
-class DOPlayerNode: SKShapeNode {
+class DOPlayerNode: SKNode {
     var gridX: Int
     var gridY: Int
-    init(radius: CGFloat = 27, position: CGPoint = .zero, gridPosition: CGPoint = .zero) {
+    private let sprite: SKSpriteNode
+    private var skins = [
+        "rook1",
+        "rook2"
+   
+    ]
+    var rng = SystemRandomNumberGenerator()
+    init(size: CGSize = .zero, position: CGPoint = .zero, gridPosition: CGPoint = .zero) {
         self.gridX = Int(gridPosition.x)
         self.gridY = Int(gridPosition.y)
-        
+        sprite = SKSpriteNode(imageNamed:  skins[Int.random(in: (0)...(skins.count-1), using: &rng)])
+        self.sprite.size = size
         super.init()
-        
-        // Fix: Make rect dimensions match the radius
-        let rect = CGRect(
-                x: -radius/2,  // Center the rect
-                y: -radius/2,  // Center the rect
-                width: radius,  // Use full radius for width
-                height: radius  // Use full radius for height
-            )
-        self.path = CGPath(ellipseIn: rect, transform: nil)
-        
         self.position = position
-        self.lineWidth = 0.0
-        self.fillColor = .white
-        self.fillTexture = SKTexture(imageNamed: "player")
-        self.zPosition = 20
+        
+        
+        self.zPosition = 3
+        addChild(sprite)
     }
     func getLoc() -> (Int, Int){
         return (gridX,gridY)
