@@ -32,7 +32,18 @@ class DOPlayerNode: SKNode {
     func getLoc() -> (Int, Int){
         return (gridX,gridY)
     }
- 
+    func fadeOut(){
+        self.setScale(1.0)
+    
+    // Scale down to 0
+    let scaleAction = SKAction.scale(to: 0.0, duration: 0.5)
+    
+    // Optional: Add easing for smoother animation
+    scaleAction.timingMode = .easeOut
+    
+    self.run(scaleAction)
+        
+    }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

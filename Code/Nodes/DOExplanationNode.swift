@@ -40,25 +40,21 @@ class DOExplanationNode: SKNode {
   
     
     let message:[[String]] = [[
-        "Game Instructions:",
-        "Swipe to control the [X].",
-        "Collect all [Y] to advance.",
-        "Swiping off screen results in a level restart.",
-        "Time refills each new level.",
-        " Advance as far as you can!",
+        "Swipe to control the Rook.",
+        "Take all Black pieces.",
+        "Advance as far as you can!",
         "Tap anywhere to continue."
     ]
     ,[
         "New Powerup: Freeze Time."
         , "Freeze time for 15 seconds."
-        , "Tap anywhere to continue."
         
     ]
     ,[
         "New Powerup: Skip Level."
         ,"Instantly clears current level."
-        ,"Tap anywhere to continue."
-    ]]
+    ],
+    ["Swiping off screen", "results in a level restart."]]
     init(size: CGSize){
         overlay = SKSpriteNode(color: UIColor.black.withAlphaComponent(0.7), size: size)
                 overlay.zPosition = 30
@@ -83,7 +79,7 @@ class DOExplanationNode: SKNode {
             fatalError("init(coder:) has not been implemented")
         }
     func updateText(code: Int) {
-        var yPosition = point.y + CGFloat((30 * message[code].count) / 2)
+        var yPosition = point.y + CGFloat((30 * message[code].count) / 2) - 100
         
         for line in message[code] {
                // Create an SKLabelNode for each line
@@ -91,9 +87,7 @@ class DOExplanationNode: SKNode {
                 
                label.fontSize = 30
             label.fontName="Helvetica"
-            if code == 0{
-                label.fontSize = 20
-            }
+         
                label.fontColor = .white
                label.horizontalAlignmentMode = .center
             label.position = CGPoint(x: point.x, y: yPosition)

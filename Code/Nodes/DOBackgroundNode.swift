@@ -15,7 +15,8 @@ class DOBackgroundNode: SKSpriteNode {
     private let playableXLeft = 15.0 // below the level count
     private let playableXRight = 397.0 // above all powerups.
     private let eps = 3.0
-    private var alt = false
+    private var alt = false // to make sure chess rows alternate
+    private let const_zpos = -30.0
     
     private var rng = SystemRandomNumberGenerator()
     init() {
@@ -46,24 +47,7 @@ class DOBackgroundNode: SKSpriteNode {
        
         addChild(debug)
         */
-        
-
-        
-        while yPosition >= 0 - eps{
-            var xPosition = playableXLeft
-            if alt{
-                xPosition += playableXSize/Double(gridSize+1)
-            }
-            while xPosition <= playableXRight + eps{
-                let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1))
-                addChild(star)
-               
-                xPosition += 2 * playableXSize/Double(gridSize+1)
-            }
-            
-            yPosition -= (playableYSize/Double(gridSize+1))
-            alt = (alt == false) // switches alt
-        }
+      
         //now using the first tile laid around the border of the frame fill the part above the playable part
         yPosition = playableYTop + (playableYSize/Double(gridSize+1))
         while yPosition <= size.height + eps{
@@ -73,15 +57,48 @@ class DOBackgroundNode: SKSpriteNode {
             }
             while xPosition <= playableXRight + eps{
                 let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1))
+    
                 addChild(star)
                
                 xPosition += 2 * playableXSize/Double(gridSize+1)
             }
             
             yPosition += (playableYSize/Double(gridSize+1))
+            print(alt)
             alt = (alt == false) // switches alt
         }
         
+        yPosition = playableYTop
+        while yPosition >= 0 - eps{
+            var xPosition = playableXLeft
+            if alt{
+                xPosition += playableXSize/Double(gridSize+1)
+            }
+            while xPosition <= playableXRight + eps{
+                let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1))
+              
+                addChild(star)
+               
+                xPosition += 2 * playableXSize/Double(gridSize+1)
+            }
+            
+            yPosition -= (playableYSize/Double(gridSize+1))
+            print(alt)
+            alt = (alt == false) // switches alt
+           
+        }
+       
+        yPosition = 0.0
+        var xPosition = playableXLeft
+        while xPosition <= playableXRight + eps{
+            let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1) * 2, color: UIColor(red: 79.0/255, green: 76.0/255, blue: 72.0/255, alpha: 1))
+            
+        
+            addChild(star)
+           
+            xPosition += playableXSize/Double(gridSize+1)
+        }
+        print("END")
        
         /*
         let starCount = Int.random(in: 40...50, using: &rng)

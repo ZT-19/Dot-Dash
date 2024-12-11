@@ -35,7 +35,7 @@ class DOPowerUpNode: SKNode {
         self.maskHeight = radius * 2
         
         if (type==PowerUpType.skipLevel){
-            countdownDuration=0.001
+            countdownDuration = 0.05
             self.remainingTime = countdownDuration
         }
         
@@ -74,12 +74,13 @@ class DOPowerUpNode: SKNode {
         // setup node hierarchy
         cropNode.maskNode = maskNode
         cropNode.addChild(circleShape)
+       
         configureAppearance()
+        
         self.position = position
         self.addChild(cropNode)
         self.addChild(powerupLabel)
         self.addChild(countdownLabel)
-
        
        
        // startCountdown() // comment out and instead start on touch in gamescene
@@ -126,6 +127,7 @@ class DOPowerUpNode: SKNode {
             circleShape.fillColor = .darkGray
             return
         }
+            fadeIn()
     }
 
     func startCountdown() {
@@ -187,5 +189,17 @@ class DOPowerUpNode: SKNode {
     
     func isSpent() -> Bool{
         return remainingTime<=0&&turnedOn
+    }
+    func fadeIn(){
+        self.setScale(0)
+    
+    // Scale up to normal size
+    let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
+    
+    // Optional: Add easing for smoother animation
+    scaleAction.timingMode = .easeOut
+    
+    self.run(scaleAction)
+        
     }
 }

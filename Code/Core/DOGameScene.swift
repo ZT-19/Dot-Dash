@@ -96,6 +96,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var inIntermission = false
     private var firstFreeze = true
     private var firstSkip = true
+    private var firstFail = true
     private var onscreentext: DOExplanationNode!
     
     override func didMove(to view: SKView) {
@@ -211,19 +212,24 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 for j in i+1..<n_powerups{
                     powerUpArray[j]?.position.x -= (UIScreen.main.bounds.width/2 - powerUpNodeRadius)
                     powerUpArray.swapAt(j, j-1)
+                    powerUpArray[j-1]?.fadeIn()
                     
                 }
                 powerUpArray[n_powerups-1] = nil
                 n_powerups -= 1
-                if existingPowerup.isSkipLevel(){
+              //  if existingPowerup.isSkipLevel(){
                     
-                    levelLoad(restart: false,powerupEligible: false,skipped: true)
+                   // levelLoad(restart: false,powerupEligible: false,skipped: true) // had to comment this out for  a scuffed
                     
-                }
+               // }
                 
             }
             
         }
+        if progressBar.getProgress() == 1.0 && n_powerups < max_powerUps  {
+            addPowerUp()
+        }
+       
       
         // modifier states
     }
@@ -249,6 +255,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private func handleTouchEnd(_ touch: UITouch) {
         lastPosition = touch.location(in: self)
         if gameOverScreen{
+            return
+        }
+        /*
+        if gameOverScreen{
             gameInfo.score = 0
             gameInfo.level = 0
             gameOverScreen = false
@@ -256,6 +266,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             print("You lost but what happens now")
             return
         }
+         */
         if inIntermission{
             onscreentext.resetText()
             onscreentext.removeFromParent()
@@ -266,14 +277,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
         for i in 0..<n_powerups{
             if let cpow = powerUpArray[i]{
-                if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive()){
+                if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive() && !isPlayerAnimating){
                         
                         cpow.startCountdown()
-                    if (cpow.isFreezeTime()){
-                        timerNode.pause()
+                        if (cpow.isFreezeTime()){
+                            timerNode.pause()
+                        }
+                    else{
+                        levelLoad(restart: false)
                     }
+                  
+                        return
                 }
             }
+           
         }
         
         let deltaX = lastPosition.x - firstPosition.x
@@ -563,8 +580,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-        print(j)
-        print("kljdsaf")
     }
 
     private func addPlayer(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
@@ -719,13 +734,58 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
     }
     func gameOver() {
-        self.removeAllChildren()
-        // gameOverNode.updateMessage()
-        addChild(gameOverNode)
-        gameOverScreen=true
+        self.gameOverScreen=true
+        var removeCount = 0.0
+        let nodes = self.children // Get all nodes in the scene
+        for (index, node) in nodes.enumerated() {
+            if (node is DOPlayerNode) || (node is DODotNode){
+                if let dotnode = node as? DODotNode{
+                    if !dotnode.destroyed{
+                        removeCount += 1 // only fade away still alive pieces
+                    }
+                }
+                else{
+                    removeCount += 1
+                }
+                
+            }
+        }
         
-        gameInfo.score = 0
-        gameInfo.level = 0
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 * removeCount + 0.5) {
+            self.removeAllChildren()
+            // gameOverNode.updateMessage()
+            self.addChild(self.gameOverNode)
+            
+            
+            self.gameInfo.score = 0
+            self.gameInfo.level = 0
+            print("game over")
+        }
+            
+        for (index, node) in nodes.enumerated() {
+            if !(node is DOPlayerNode) && !(node is DODotNode){
+                    continue
+            }
+            
+            if let dotnode2 = node as? DODotNode{
+                if dotnode2.destroyed{
+                    continue
+                }
+            }
+          //  print(node.position)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 * removeCount) {
+                let scaleAction = SKAction.fadeOut(withDuration: 0.2)
+                
+                // Optional: Add easing for smoother animation
+                scaleAction.timingMode = .easeOut
+                
+                node.run(scaleAction)
+                
+            }
+            removeCount -= 1
+                
+        }
+        
     }
 
     //this seems to be a useless duplicate of levelload
@@ -760,7 +820,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
          */
         powerUpArray[self.n_powerups] = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
-        powerUpArray[self.n_powerups]?.zPosition = 3
+        powerUpArray[self.n_powerups]?.zPosition = 5
         addChild(powerUpArray[self.n_powerups]!)
         showPowerupNotification()
         //print("Powerup gained: \(powerupCurr)")
@@ -862,6 +922,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
         else {
             grid = baseGrid
+            if firstFail{
+                firstFail = false
+                intermission(code: 3)
+                
+            }
         }
         levelNode.updateLevel(with: gameInfo.level)
         
@@ -896,10 +961,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             progressBar.increaseProgress(0.2)
         }
         
-        if progressBar.getProgress() == 1.0 && !restart && n_powerups < max_powerUps  {
-            addPowerUp()
-        }
-       
+        
        
     }
     

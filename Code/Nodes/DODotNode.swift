@@ -10,6 +10,7 @@ import SpriteKit
 class DODotNode: SKNode{
     var gridX: Int
     var gridY: Int
+    var destroyed = false
     private let sprite: SKSpriteNode
     private var skins = [
         "planet1",
@@ -42,7 +43,7 @@ class DODotNode: SKNode{
     }
     
     func destroySelf(){
-        
+        destroyed = true
         self.sprite.texture = SKTexture(imageNamed: "brokenplanet")
         self.sprite.size = CGSize(width: self.sprite.size.width*0.66, height: self.sprite.size.width*0.66)
         //self.zRotation =  CGFloat(Float.random(in: (-.pi)...(.pi), using: &rng))// rotate doesnt work
@@ -55,6 +56,18 @@ class DODotNode: SKNode{
     
     // Scale up to normal size
     let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
+    
+    // Optional: Add easing for smoother animation
+    scaleAction.timingMode = .easeOut
+    
+    self.run(scaleAction)
+        
+    }
+    func fadeOut(){
+        self.setScale(1.0)
+    
+    // Scale down to 0
+    let scaleAction = SKAction.scale(to: 0.0, duration: 0.5)
     
     // Optional: Add easing for smoother animation
     scaleAction.timingMode = .easeOut
