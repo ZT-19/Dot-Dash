@@ -10,10 +10,10 @@ class DOBackgroundNode: SKSpriteNode {
     private var gridSize = DOGameContext.shared.gridSize
     private var playableXSize:Double // right-left
     private var playableYSize:Double // top - bottom
-    private let playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor
-    private let playableYBottom = 140.0 // above all powerups.
-    private let playableXLeft = 15.0 // below the level count
-    private let playableXRight = 397.0 // above all powerups.
+    private let playableYTop = 620.0 / 874.0 * UIScreen.main.bounds.height // below the level count. All these values are scaled to 0,0 anchor
+    private let playableYBottom = 140.0 / 874.0 * UIScreen.main.bounds.height// above all powerups.
+    private let playableXLeft = 15.0 / 402.0 *  UIScreen.main.bounds.width// below the level count
+    private let playableXRight = 397.0 / 402.0 *  UIScreen.main.bounds.width// above all powerups.
     private let eps = 3.0
     private var alt = false // to make sure chess rows alternate
     private let const_zpos = -30.0
@@ -114,7 +114,7 @@ class DOBackgroundNode: SKSpriteNode {
 
     }
     private func animateCurrentStarsDown() {
-        let slideDown = SKAction.moveBy(x: 0, y: -size.height * 2, duration: 2.0)
+        let slideDown = SKAction.moveBy(x: 0, y: -size.height * 2, duration: 1.4)
     children.forEach { node in
         if let star = node as? DOStarNode {
             let sequence = SKAction.sequence([

@@ -20,7 +20,7 @@ class DOStarNode: SKNode {
         
         addChild(starSprite)
         
-        let slideDown = SKAction.moveBy(x: 0, y: -screenHeight, duration: 1.0) // Match duration
+        let slideDown = SKAction.moveBy(x: 0, y: -screenHeight, duration: 0.7) // Match duration
         starSprite.run(slideDown)
     }
     

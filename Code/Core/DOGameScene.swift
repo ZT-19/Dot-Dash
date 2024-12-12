@@ -24,14 +24,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var gridSize = DOGameContext.shared.gridSize
     private let gridCenter = DOGameContext.shared.gridCenter
     private var powerUpArray = DOGameContext.shared.powerUpArray
-    private let playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor
-    private let playableYBottom = 140.0 // above all powerups.
-    private let playableXLeft = 15.0 // below the level count
-    private let playableXRight = 397.0 // above all powerups.
-    private var playableXSize:Double = 382.0 // right-left
-    private var playableYSize:Double = 480.0// top - bottom
+    private let playableYTop = 620.0 / 874.0 * UIScreen.main.bounds.height // below the level count. All these values are scaled to 0,0 anchor
+    private let playableYBottom = 140.0 / 874.0 * UIScreen.main.bounds.height// above all powerups.
+    private let playableXLeft = 15.0 / 402.0 *  UIScreen.main.bounds.width// below the level count
+    private let playableXRight = 397.0  / 402.0 *  UIScreen.main.bounds.width // above all powerups.
+    private var playableXSize:Double = 1.00 // right-left ,will be set in didmove
+    private var playableYSize:Double = 10.0// top - bottom will be set in didmove
     private var dotSpacingX: Double = 69 // temporary value, changes depending on gridsize
-    private var dotSpacingY: Double = 420 // temporary value, changes depending on gridsize
+    private var dotSpacingY: Double = 420 // temporary value, changes depending on gridsize,
   
     private var offsetX: CGFloat = 0
     private var offsetY: CGFloat = 0
@@ -77,8 +77,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var modNotificationLabel: SKLabelNode?
     
     // powerups
-    private let powerupRadius = 45.0
-    let powerUpNodeRadius: CGFloat = 68
+    private let powerupRadius = 45.0 / 402.0 *  UIScreen.main.bounds.width
+    let powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
 
     private let powerupTypes: [PowerUpType] = [
     //    .doubleDotScore,
@@ -118,6 +118,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(frameNode)
         addChild(progressBar)
         onscreentext = DOExplanationNode(size:size)
+        
+        
 
      //   scoreNode.setup(screenSize: size)
        // addChild(scoreNode)
@@ -129,8 +131,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         dotSpacingY = (playableYSize)/Double(gridSize+1)
         // center grid on screen and draw it
         let gridWidth = CGFloat(gridSize) * dotSpacingX
-        offsetX = playableXLeft - 3
-        offsetY = playableYBottom + 58
+        offsetX = playableXLeft - 3 / 402.0 *  UIScreen.main.bounds.width
+        offsetY = playableYBottom + 58 / 874.0 * UIScreen.main.bounds.height
         
         // clear grid
         grid = Array(
@@ -812,7 +814,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         x_powerUp_position += (UIScreen.main.bounds.width/2 - powerUpNodeRadius) * CGFloat(n_powerups)
         
        
-        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 75)
+        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 75 / 874.0 * UIScreen.main.bounds.height )
         powerupCurr = powerupTypes.randomElement(using: &rng)!
         /*
         while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){
@@ -876,6 +878,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             dotSpacingX = (playableXSize)/Double(gridSize+1)
             dotSpacingY = (playableYSize)/Double(gridSize+1)
             backgroundNode.setDeterminedTexture()
+            
             gameInfo.level += 1
            
             difficulty += 1 // constant increase every lvl
@@ -895,20 +898,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
      
                 timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
-                timerNode.start()
-                for i in 0..<n_powerups{
-                    if let cpow = powerUpArray[i]{
-                        if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive()){
-                                
-                                cpow.startCountdown()
-                            if (cpow.isFreezeTime()){
-                                timerNode.pause()
-                            }
-                        }
-                    }
-                }
+                
+            timerNode.pause()
             
             
+           
             // draw new 2D Int Array for new level
             if (modCode == 2) { // mod: double difficulty
                 grid = drawGridArray(difficultyRating: difficulty * 2, initX: gridCenter, initY: gridCenter)
@@ -928,9 +922,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 
             }
         }
+        
         levelNode.updateLevel(with: gameInfo.level)
         
-        var bonusApplied = false
+        //var bonusApplied = false
         /*
         for i in 0..<n_powerups{
             if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {
@@ -953,8 +948,27 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             addChild(explodingTimer)
         }
          */
+        var waitForTransition = 0.7
+        if restart{
+            waitForTransition = 0.0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
+            self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
+            timerNode.start()
         
-        placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
+            for i in 0..<n_powerups{
+                if let cpow = powerUpArray[i]{
+                    if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive()){
+                            
+                            cpow.startCountdown()
+                        if (cpow.isFreezeTime()){
+                            timerNode.pause()
+                        }
+                    }
+                }
+            }
+        }
+       
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{

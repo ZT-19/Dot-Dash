@@ -28,6 +28,7 @@ class DOPlayerNode: SKNode {
         
         self.zPosition = 3
         addChild(sprite)
+        fadeIn()
     }
     func getLoc() -> (Int, Int){
         return (gridX,gridY)
@@ -37,6 +38,18 @@ class DOPlayerNode: SKNode {
     
     // Scale down to 0
     let scaleAction = SKAction.scale(to: 0.0, duration: 0.5)
+    
+    // Optional: Add easing for smoother animation
+    scaleAction.timingMode = .easeOut
+    
+    self.run(scaleAction)
+        
+    }
+    func fadeIn(){
+        self.setScale(0)
+    
+    // Scale up to normal size
+    let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
     
     // Optional: Add easing for smoother animation
     scaleAction.timingMode = .easeOut
