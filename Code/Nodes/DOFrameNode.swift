@@ -9,7 +9,6 @@ import SpriteKit
 
 class DOFrameNode: SKNode {
     private let frameSprite: SKSpriteNode
-    private let baseWidth = 402.0
     
     override init() {
         //starSprite = SKSpriteNode(imageNamed: "backgroundstar3x")

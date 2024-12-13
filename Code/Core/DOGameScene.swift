@@ -142,7 +142,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             count: self.gridSize + 2
         )
         // initialize first level
-        grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter)
+        grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter,tutorialLevels: 1)
         baseGrid = grid
         placeDotsFromGrid(grid: grid)
         
@@ -177,6 +177,29 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if let timer = timerNode, timer.parent != nil {
                 if timer.timeLeft() <= 0 {
                     gameOver()
+                }
+            else if timer.timeLeft() <= 10{
+                if self.childNode(withName: "redleft") == nil{
+                  
+                    let leftRed = SKSpriteNode(texture: SKTexture(imageNamed: "redleft"))
+                    leftRed.size = CGSize(width: size.width/5, height:size.height/2)
+                    leftRed.position = CGPoint(x:leftRed.size.width/3,y: size.height/2)
+                    leftRed.zPosition = 23
+                    leftRed.name = "redleft"
+                    leftRed.alpha = 0.0
+                    addChild(leftRed)
+                    let rightRed = SKSpriteNode(texture: SKTexture(imageNamed: "redright"))
+                    rightRed.size = CGSize(width: size.width/5, height:size.height/2)
+                    rightRed.position = CGPoint(x:size.width-rightRed.size.width/3,y: size.height/2)
+                    rightRed.zPosition = 23
+                    rightRed.name = "redright"
+                    rightRed.alpha = 0.0
+                    addChild(rightRed)
+                    let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 7)
+                    rightRed.run(fadeIn)
+                    leftRed.run(fadeIn)
+                    
+                    }
                 }
             }
       /*
@@ -493,11 +516,19 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
         }
     }
-    
-    private func drawGridArray(difficultyRating: Int, initX: Int, initY: Int) -> [[Int]] {
+    private func drawGridArray(difficultyRating: Int, initX: Int, initY: Int, tutorialLevels:Int = 0) -> [[Int]] {
         var randomDifficulty = difficultyRating
         var tempGrid = Array(repeating: Array(repeating: 0, count: gridSize + 2), count: gridSize + 2)
-        
+        if tutorialLevels==1 || tutorialLevels == 2{
+            tempGrid[1][1] = 2
+            tempGrid[gridSize][1] = 1
+            if tutorialLevels == 2{
+                
+                    tempGrid[gridSize][gridSize] = 1
+            }
+            return tempGrid
+        }
+       
         var currentX = initX
         var currentY = initY
 
@@ -879,6 +910,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         playerstart.removeFromParent()
+        childNode(withName: "redleft")?.removeFromParent()
+        childNode(withName: "redright")?.removeFromParent()
         // if we are not restarting, we go to the next level
         if (!restart) {
             if gridSize<13 && difficulty%2==1{
@@ -916,14 +949,19 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
            
             // draw new 2D Int Array for new level
+            /*
             if (modCode == 2) { // mod: double difficulty
                 grid = drawGridArray(difficultyRating: difficulty * 2, initX: gridCenter, initY: gridCenter)
                 baseGrid = grid
             }
             else {
-                grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter)
-                baseGrid = grid
-            }
+             */
+ 
+            grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter,tutorialLevels: gameInfo.level)
+            
+            
+            baseGrid = grid
+           // }
             
         }
         else {
@@ -988,7 +1026,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(3.8)
+            progressBar.increaseProgress(0.2)
         }
         
         
