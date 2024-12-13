@@ -17,6 +17,7 @@ class DOBackgroundNode: SKSpriteNode {
     private let eps = 3.0
     private var alt = false // to make sure chess rows alternate
     private let const_zpos = -30.0
+    private let transitionTime = 1.4
     
     private var rng = SystemRandomNumberGenerator()
     init() {
@@ -56,7 +57,7 @@ class DOBackgroundNode: SKSpriteNode {
                 xPosition += playableXSize/Double(gridSize+1)
             }
             while xPosition <= playableXRight + eps{
-                let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1))
+                let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1), duration: transitionTime / 2.0)
     
                 addChild(star)
                
@@ -83,7 +84,8 @@ class DOBackgroundNode: SKSpriteNode {
             }
             
             yPosition -= (playableYSize/Double(gridSize+1))
-            print(alt)
+      
+            
             alt = (alt == false) // switches alt
            
         }
@@ -98,8 +100,7 @@ class DOBackgroundNode: SKSpriteNode {
            
             xPosition += playableXSize/Double(gridSize+1)
         }
-        print("END")
-       
+
         /*
         let starCount = Int.random(in: 40...50, using: &rng)
     
@@ -114,7 +115,7 @@ class DOBackgroundNode: SKSpriteNode {
 
     }
     private func animateCurrentStarsDown() {
-        let slideDown = SKAction.moveBy(x: 0, y: -size.height * 2, duration: 1.4)
+        let slideDown = SKAction.moveBy(x: 0, y: -size.height * 2, duration: transitionTime)
     children.forEach { node in
         if let star = node as? DOStarNode {
             let sequence = SKAction.sequence([

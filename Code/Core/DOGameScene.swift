@@ -48,6 +48,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     var playerstart = DOplayerStart()
     private var gameInfo = DOGameInfo()
     private var gameOverScreen = false
+    private var isTouchEnabled = true
     
     // player position
     private var lastPosition: CGPoint = .zero
@@ -61,6 +62,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     // timer
     private var initialTime: TimeInterval = 20
     private var bonusTime = 10.0
+    private let levelTransitionTime = 0.7
     private var timerNode: DOTimer!
     private var progressBar: DOProgressBarNode!
     //private var explodingTimer: DOExplodingTimerNode!
@@ -259,6 +261,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if gameOverScreen{
             return
         }
+        if !isTouchEnabled{
+            lastPosition = CGPoint(x: -1, y: -1)
+            return
+        }
         /*
         if gameOverScreen{
             gameInfo.score = 0
@@ -282,14 +288,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive() && !isPlayerAnimating){
                         
                         cpow.startCountdown()
+                
+                 
                         if (cpow.isFreezeTime()){
                             timerNode.pause()
+                            print("freezenode actiavted")
                         }
                     else{
                         levelLoad(restart: false)
                     }
-                  
-                        return
+                    print("poweurp used")
+                    return
                 }
             }
            
@@ -731,6 +740,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         // 0 for basic tutorial, 1 for first freeze, 2 for first level skip
         inIntermission=true
         timerNode.pause()
+        print("intermission pause")
         onscreentext.updateText(code: code)
         addChild(onscreentext)
         
@@ -853,6 +863,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
          */
         
         // remove all dots and players from the scene
+        isTouchEnabled = false
         for child in self.children {
             if let dotNodeD = child as? DODotNode {
                 dotNodeD.removeFromParent()
@@ -900,6 +911,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
                 
             timerNode.pause()
+           
             
             
            
@@ -948,31 +960,35 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             addChild(explodingTimer)
         }
          */
-        var waitForTransition = 0.7
+        var waitForTransition = levelTransitionTime
         if restart{
             waitForTransition = 0.0
         }
+     
+
         DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
             self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
             timerNode.start()
+            print("level timer start")
+         
         
             for i in 0..<n_powerups{
                 if let cpow = powerUpArray[i]{
-                    if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive()){
-                            
-                            cpow.startCountdown()
-                        if (cpow.isFreezeTime()){
-                            timerNode.pause()
-                        }
+                    if (cpow.isActive() && cpow.isFreezeTime() ){  
+                        timerNode.pause()
+                        print("freezenode still active")
                     }
                 }
+            }
+            if (!isTouchEnabled){
+                isTouchEnabled = true
             }
         }
        
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(3.8)
         }
         
         

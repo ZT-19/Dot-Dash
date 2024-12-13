@@ -10,12 +10,13 @@ enum PowerUpType {
 }
 
 class DOPowerUpNode: SKNode {
-    private let circleShape: SKShapeNode
+    private var sprite: SKSpriteNode
     private let countdownLabel: SKLabelNode
-    private let powerupLabel: SKLabelNode
+    //private let powerupLabel: SKLabelNode
     private let cropNode: SKCropNode
     private let maskNode: SKShapeNode
     private let maskHeight: CGFloat
+    private let radius: CGFloat
     
     private var countdownDuration: TimeInterval
     private var type: PowerUpType
@@ -38,13 +39,17 @@ class DOPowerUpNode: SKNode {
             countdownDuration = 0.05
             self.remainingTime = countdownDuration
         }
-        
+        /*
         circleShape = SKShapeNode(circleOfRadius: radius)
         circleShape.fillColor = .yellow
         circleShape.strokeColor = .darkGray
         circleShape.lineWidth = 1
-
+         */
+        sprite = SKSpriteNode(imageNamed: "powerupDefault")
+        self.radius = radius
+        sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
         // powerup label
+        /*
         powerupLabel = SKLabelNode(fontNamed: "Arial-Bold")
         powerupLabel.fontSize = 16
         powerupLabel.fontColor = .white
@@ -52,7 +57,7 @@ class DOPowerUpNode: SKNode {
         powerupLabel.position = CGPoint(x: 0, y: 0)
         
         powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
-
+         */
         // initialize countdown label
         countdownLabel = SKLabelNode(fontNamed: "Arial")
         countdownLabel.fontSize = 12
@@ -73,13 +78,15 @@ class DOPowerUpNode: SKNode {
 
         // setup node hierarchy
         cropNode.maskNode = maskNode
-        cropNode.addChild(circleShape)
+        
        
         configureAppearance()
         
+        cropNode.addChild(sprite)
+        
         self.position = position
         self.addChild(cropNode)
-        self.addChild(powerupLabel)
+    
         self.addChild(countdownLabel)
        
        
@@ -112,19 +119,22 @@ class DOPowerUpNode: SKNode {
             powerupLabel.fontSize = 20
             */
         case .freezeTime:
-            circleShape.fillColor = .cyan
-            powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
+            sprite = SKSpriteNode(imageNamed: "powerupFreeze")
+            sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
+          //  powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
             countdownLabel.fontSize = 10
-            powerupLabel.fontSize = 20
+            //powerupLabel.fontSize = 20
             break
         case .skipLevel:
-            circleShape.fillColor = .red
-            powerupLabel.attributedText = NSAttributedString(string: "→", attributes: attributes)
+            sprite = SKSpriteNode(imageNamed: "powerupSkip")
+            sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
+            //powerupLabel.attributedText = NSAttributedString(string: "→", attributes: attributes)
             countdownLabel.fontSize = 0
-            powerupLabel.fontSize = 20
+            //powerupLabel.fontSize = 20
        
         default: // or inactive
-            circleShape.fillColor = .darkGray
+            sprite = SKSpriteNode(imageNamed: "powerupDefault")
+            sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
             return
         }
             fadeIn()

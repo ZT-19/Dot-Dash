@@ -62,9 +62,12 @@ class DOProgressBarNode: SKNode {
     func increaseProgress(_ extraprogress: CGFloat) {
         
         // does not MOD, so 1.0 + x will still be 1.0
-        self.progress = max(0.0, min(self.progress+extraprogress, 1.0)) // Clamp between 0 and 1
-        let newWidth = fullTexture.size.width * self.progress
-        maskTexture.size = CGSize(width: newWidth, height: maskTexture.size.height)
+     
+       // self.progress = max(0.0, min(self.progress+extraprogress, 1.0)) // Clamp between 0 and 1
+        //let newWidth = fullTexture.size.width * self.progress
+        
+     //  maskTexture.size = CGSize(width: newWidth, height: maskTexture.size.height)
+        animateProgress(to: max(0.0, min(self.progress+extraprogress, 1.0)) , duration: 0.25)
     }
     func getProgress()->CGFloat{
         
@@ -74,4 +77,16 @@ class DOProgressBarNode: SKNode {
         self.position = position
         
     }
+    func animateProgress(to targetProgress: CGFloat, duration: TimeInterval) {
+            let startProgress = self.progress
+            let delta = targetProgress - startProgress
+            
+            let action = SKAction.customAction(withDuration: duration) { [weak self] _, elapsedTime in
+                let fraction = elapsedTime / CGFloat(duration)
+                let newProgress = startProgress + delta * fraction
+                self?.setProgress(newProgress)
+            }
+            
+            self.run(action)
+        }
 }

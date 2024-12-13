@@ -14,7 +14,7 @@ class DOLevelNode: SKNode {
     private let textNode = SKLabelNode(fontNamed: "Arial")
 
     func setup(screenSize: CGSize) {
-        position = CGPoint(x: screenSize.width / 2, y: screenSize.height - 145 - Constants.size.height / 2)
+        position = CGPoint(x: screenSize.width / 2, y: screenSize.height - 145 / 874.0 * screenSize.height - Constants.size.height / 2)
         let background = SKSpriteNode(imageNamed: "timerbackground")
         background.size = CGSize(width:150, height: 52.5)
         addChild(background)

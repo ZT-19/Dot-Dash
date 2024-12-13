@@ -88,9 +88,12 @@ class DOTimer: SKSpriteNode {
         isTimerPaused = false
         if isTexturesPrepared {
             startAnimation()
+           
         } else {
             pendingStart = true
+          
         }
+      
     }
     
     private func startAnimation() {
@@ -117,6 +120,7 @@ class DOTimer: SKSpriteNode {
         let countdownSequence = SKAction.sequence([updateTimeAction, waitAction])
         let countdownAction = SKAction.repeat(countdownSequence, count: remainingTime)
         self.run(countdownAction, withKey: "countdownTimer")
+        resume()
     }
 
     func pause() {
@@ -129,6 +133,7 @@ class DOTimer: SKSpriteNode {
         let fadeIn = SKAction.fadeIn(withDuration: 0.002)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.01)
         scaleUp.timingMode = .easeOut
+      //  print("paused")
         
     }
 
@@ -136,6 +141,7 @@ class DOTimer: SKSpriteNode {
         //guard isTimerPaused else { return }
         isTimerPaused = false
         self.speed = 1
+    //    print("resumed")
     }
 
     func stop() {
