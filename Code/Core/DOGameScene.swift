@@ -24,6 +24,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var gridSize = DOGameContext.shared.gridSize
     private let gridCenter = DOGameContext.shared.gridCenter
     private var powerUpArray = DOGameContext.shared.powerUpArray
+    // HEIGHT = 874.0, WIDTH = 402.0
     private let playableYTop = 620.0 / 874.0 * UIScreen.main.bounds.height // below the level count. All these values are scaled to 0,0 anchor
     private let playableYBottom = 140.0 / 874.0 * UIScreen.main.bounds.height// above all powerups.
     private let playableXLeft = 15.0 / 402.0 *  UIScreen.main.bounds.width// below the level count
@@ -99,7 +100,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var firstFreeze = true
     private var firstSkip = true
     private var firstFail = true
-    private var onscreentext: DOExplanationNode!
+    private var onscreentext: DOExplanationNode?
+    private var onscreenimage: DOOnscreenTutorial? // for the finger graphics during gameplay
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
@@ -120,6 +122,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(frameNode)
         addChild(progressBar)
         onscreentext = DOExplanationNode(size:size)
+        onscreenimage = DOOnscreenTutorial(size:size)
         
         
 
@@ -158,6 +161,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
         addChild(timerNode)
         timerNode.start()//WK
+     
         
         print(playableYTop)
         print(playableYBottom)
@@ -168,7 +172,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         progressBar.zPosition = 6
         levelNode.zPosition = 6
         
-        intermission(code: 0)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [self] in
+            if gameInfo.level == 1 {
+                print("entered on screen tutorial")
+                 addChild(onscreenimage!)
+             //   onscreenimage?.alpha = 0.0
+        
+                 onscreenimage?.firstLevel()
+            }
+           
+        }
+      
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -299,10 +313,13 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
          */
         if inIntermission{
-            onscreentext.resetText()
-            onscreentext.removeFromParent()
+            onscreentext!.resetText()
+            onscreentext!.removeFromParent()
             timerNode.resume()
             inIntermission = false
+            if gameInfo.level == 1 {
+              
+            }
             return
             
         }
@@ -516,6 +533,168 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
         }
     }
+    func levelLoad(restart: Bool, powerupEligible:Bool = true, skipped:Bool = false) {
+       
+       
+        if isPlayerAnimating {
+            queuedLevelLoad = (restart, powerupEligible ,true)
+            return
+        }
+        /*
+        if !restart, let explodingTimer = explodingTimer {
+            explodingTimer.removeFromParent()
+            self.explodingTimer = nil
+        }
+         */
+        
+        // remove all dots and players from the scene
+        isTouchEnabled = false
+        for child in self.children {
+            if let dotNodeD = child as? DODotNode {
+                dotNodeD.removeFromParent()
+                //print("Dot removed")
+            }
+            if let dotNodeD = child as? DOPlayerNode {
+                dotNodeD.removeFromParent()
+                //print("Player removed")
+            }
+            if let trailNode = child as? DOTrailNode{
+                trailNode.removeFromParent()
+                
+            }
+        }
+        playerstart.removeFromParent()
+        childNode(withName: "redleft")?.removeFromParent()
+        childNode(withName: "redright")?.removeFromParent()
+        onscreenimage?.removeFromParent()
+        // if we are not restarting, we go to the next level
+        if (!restart) {
+            if gridSize<13 && difficulty%2==1{
+                gridSize += 1
+                backgroundNode.changeGridSize(new: gridSize)
+            }
+            
+            dotSpacingX = (playableXSize)/Double(gridSize+1)
+            dotSpacingY = (playableYSize)/Double(gridSize+1)
+            backgroundNode.setDeterminedTexture()
+            
+            gameInfo.level += 1
+           
+            difficulty += 1 // constant increase every lvl
+           
+            // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls
+          
+            /*
+            for i in 0..<n_powerups{
+                if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {// bonus level score powerup
+                    leveBonusMultiplier *= 1.5
+                }
+            
+            }
+           */
+
+           // gameInfo.score += Int(100)
+            
+     
+            timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
+                
+            timerNode.pause()
+            
+            
+            
+           
+            // draw new 2D Int Array for new level
+            /*
+            if (modCode == 2) { // mod: double difficulty
+                grid = drawGridArray(difficultyRating: difficulty * 2, initX: gridCenter, initY: gridCenter)
+                baseGrid = grid
+            }
+            else {
+             */
+ 
+            grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter,tutorialLevels: gameInfo.level)
+            
+            
+            baseGrid = grid
+            if gameInfo.level == 2{
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0){ [self] in
+                    addChild(onscreenimage!)
+                    onscreenimage?.secondLevel()
+                }
+               
+            }
+           // }
+            
+        }
+        else {
+            grid = baseGrid
+            if firstFail{
+                firstFail = false
+                intermission(code: 3)
+                
+            }
+        }
+        
+        levelNode.updateLevel(with: gameInfo.level)
+        
+        //var bonusApplied = false
+        /*
+        for i in 0..<n_powerups{
+            if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {
+                bonusApplied = true
+                scoreNode.updateScore(with: gameInfo.score, mode: 2)
+                break
+            }
+        // double score powerups stack
+        }
+         
+        if !bonusApplied{
+            scoreNode.updateScore(with: gameInfo.score, mode: 1)
+        }
+        
+         */
+        /*
+        if (modCode == 0 && !restart) {
+            explodingTimer = DOExplodingTimerNode(initialTime: bonusTime)
+            explodingTimer.setPosition(CGPoint(x: size.width / 2, y: size.height / 6))
+            addChild(explodingTimer)
+        }
+         */
+        var waitForTransition = levelTransitionTime
+        if restart{
+            waitForTransition = 0.0
+        }
+     
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
+            self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
+            if !restart{
+                timerNode.start()
+            }
+           
+            print("level timer start")
+         
+        
+            for i in 0..<n_powerups{
+                if let cpow = powerUpArray[i]{
+                    if (cpow.isActive() && cpow.isFreezeTime() ){
+                        timerNode.pause()
+                        print("freezenode still active")
+                    }
+                }
+            }
+            if (!isTouchEnabled){
+                isTouchEnabled = true
+            }
+        }
+       
+
+       // if powerupEligible && n_powerups < max_powerUps  {
+        if !restart{
+            progressBar.increaseProgress(0.2)
+        }
+    }
+    
     private func drawGridArray(difficultyRating: Int, initX: Int, initY: Int, tutorialLevels:Int = 0) -> [[Int]] {
         var randomDifficulty = difficultyRating
         var tempGrid = Array(repeating: Array(repeating: 0, count: gridSize + 2), count: gridSize + 2)
@@ -772,8 +951,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         inIntermission=true
         timerNode.pause()
         print("intermission pause")
-        onscreentext.updateText(code: code)
-        addChild(onscreentext)
+        onscreentext!.updateText(code: code)
+        addChild(onscreentext!)
         
     }
     func gameOver() {
@@ -879,160 +1058,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func levelLoad(restart: Bool, powerupEligible:Bool = true, skipped:Bool = false) {
-       
-       
-        if isPlayerAnimating {
-            queuedLevelLoad = (restart, powerupEligible ,true)
-            return
-        }
-        /*
-        if !restart, let explodingTimer = explodingTimer {
-            explodingTimer.removeFromParent()
-            self.explodingTimer = nil
-        }
-         */
-        
-        // remove all dots and players from the scene
-        isTouchEnabled = false
-        for child in self.children {
-            if let dotNodeD = child as? DODotNode {
-                dotNodeD.removeFromParent()
-                //print("Dot removed")
-            }
-            if let dotNodeD = child as? DOPlayerNode {
-                dotNodeD.removeFromParent()
-                //print("Player removed")
-            }
-            if let trailNode = child as? DOTrailNode{
-                trailNode.removeFromParent()
-                
-            }
-        }
-        playerstart.removeFromParent()
-        childNode(withName: "redleft")?.removeFromParent()
-        childNode(withName: "redright")?.removeFromParent()
-        // if we are not restarting, we go to the next level
-        if (!restart) {
-            if gridSize<13 && difficulty%2==1{
-                gridSize += 1
-                backgroundNode.changeGridSize(new: gridSize)
-            }
-            
-            dotSpacingX = (playableXSize)/Double(gridSize+1)
-            dotSpacingY = (playableYSize)/Double(gridSize+1)
-            backgroundNode.setDeterminedTexture()
-            
-            gameInfo.level += 1
-           
-            difficulty += 1 // constant increase every lvl
-           
-            // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls
-            let leveBonusMultiplier = 1.0
-            /*
-            for i in 0..<n_powerups{
-                if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {// bonus level score powerup
-                    leveBonusMultiplier *= 1.5
-                }
-            
-            }
-           */
-
-            gameInfo.score += Int(100 * leveBonusMultiplier)
-            
-     
-                timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
-                
-            timerNode.pause()
-           
-            
-            
-           
-            // draw new 2D Int Array for new level
-            /*
-            if (modCode == 2) { // mod: double difficulty
-                grid = drawGridArray(difficultyRating: difficulty * 2, initX: gridCenter, initY: gridCenter)
-                baseGrid = grid
-            }
-            else {
-             */
- 
-            grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter,tutorialLevels: gameInfo.level)
-            
-            
-            baseGrid = grid
-           // }
-            
-        }
-        else {
-            grid = baseGrid
-            if firstFail{
-                firstFail = false
-                intermission(code: 3)
-                
-            }
-        }
-        
-        levelNode.updateLevel(with: gameInfo.level)
-        
-        //var bonusApplied = false
-        /*
-        for i in 0..<n_powerups{
-            if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {
-                bonusApplied = true
-                scoreNode.updateScore(with: gameInfo.score, mode: 2)
-                break
-            }
-        // double score powerups stack
-        }
-         
-        if !bonusApplied{
-            scoreNode.updateScore(with: gameInfo.score, mode: 1)
-        }
-        
-         */
-        /*
-        if (modCode == 0 && !restart) {
-            explodingTimer = DOExplodingTimerNode(initialTime: bonusTime)
-            explodingTimer.setPosition(CGPoint(x: size.width / 2, y: size.height / 6))
-            addChild(explodingTimer)
-        }
-         */
-        var waitForTransition = levelTransitionTime
-        if restart{
-            waitForTransition = 0.0
-        }
-     
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
-            self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
-            timerNode.start()
-            print("level timer start")
-         
-        
-            for i in 0..<n_powerups{
-                if let cpow = powerUpArray[i]{
-                    if (cpow.isActive() && cpow.isFreezeTime() ){  
-                        timerNode.pause()
-                        print("freezenode still active")
-                    }
-                }
-            }
-            if (!isTouchEnabled){
-                isTouchEnabled = true
-            }
-        }
-       
-
-       // if powerupEligible && n_powerups < max_powerUps  {
-        if !restart{
-            progressBar.increaseProgress(0.2)
-        }
-        
-        
-       
-    }
-    
+   
     // translates matrix index to position on screen
     func coordCalculate(indices: CGPoint) -> CGPoint {
         return CGPoint(
