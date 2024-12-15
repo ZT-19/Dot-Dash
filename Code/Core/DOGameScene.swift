@@ -136,8 +136,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         dotSpacingY = (playableYSize)/Double(gridSize+1)
         // center grid on screen and draw it
         let gridWidth = CGFloat(gridSize) * dotSpacingX
-        offsetX = playableXLeft - 3 / 402.0 *  UIScreen.main.bounds.width
-        offsetY = playableYBottom + 58 / 874.0 * UIScreen.main.bounds.height
+        offsetX = playableXLeft * (0.85)
+        offsetY = playableYBottom * (1.43)
+        
+        
+      //  offsetX -= 0.007463 *  UIScreen.main.bounds.width
+       // offsetY += 0.06636 * UIScreen.main.bounds.height
         
         // clear grid
         grid = Array(
@@ -348,7 +352,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         let deltaY = lastPosition.y - firstPosition.y
         
         // hardcoded dead zone
-        if sqrt((deltaX * deltaX + deltaY * deltaY)) < 35.0 {
+        if sqrt((deltaX * deltaX + deltaY * deltaY)) < 0.087 * size.width {
             return
         }
         
@@ -616,10 +620,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             
             baseGrid = grid
-            if gameInfo.level == 2{
+            
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5.0){ [self] in
-                    addChild(onscreenimage!)
-                    onscreenimage?.secondLevel()
+                    if gameInfo.level == 2{
+                        addChild(onscreenimage!)
+                        onscreenimage?.secondLevel()
                 }
                
             }

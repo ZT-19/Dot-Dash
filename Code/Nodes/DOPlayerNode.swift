@@ -37,7 +37,7 @@ class DOPlayerNode: SKNode {
         self.setScale(1.0)
     
     // Scale down to 0
-    let scaleAction = SKAction.scale(to: 0.0, duration: 0.3)
+    let scaleAction = SKAction.scale(to: 0.0, duration: 0.5)
     
     // Optional: Add easing for smoother animation
     scaleAction.timingMode = .easeOut
@@ -49,7 +49,7 @@ class DOPlayerNode: SKNode {
         self.setScale(0)
     
     // Scale up to normal size
-    let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
+    let scaleAction = SKAction.scale(to: 1.0, duration: 0.3)
     
     // Optional: Add easing for smoother animation
     scaleAction.timingMode = .easeOut
