@@ -7,34 +7,56 @@
 
 import SpriteKit
 
-class DOPlayerNode: SKShapeNode {
+class DOPlayerNode: SKNode {
     var gridX: Int
     var gridY: Int
-    init(radius: CGFloat = 27, position: CGPoint = .zero, gridPosition: CGPoint = .zero, fadeAni: Bool = true) {
+    private let sprite: SKSpriteNode
+    private var skins = [
+        "rook1",
+        "rook2"
+   
+    ]
+    var rng = SystemRandomNumberGenerator()
+    init(size: CGSize = .zero, position: CGPoint = .zero, gridPosition: CGPoint = .zero) {
         self.gridX = Int(gridPosition.x)
         self.gridY = Int(gridPosition.y)
-        
+        sprite = SKSpriteNode(imageNamed:  skins[Int.random(in: (0)...(skins.count-1), using: &rng)])
+        self.sprite.size = size
         super.init()
-        
-        // Fix: Make rect dimensions match the radius
-        let rect = CGRect(
-                x: -radius/2,  // Center the rect
-                y: -radius/2,  // Center the rect
-                width: radius,  // Use full radius for width
-                height: radius  // Use full radius for height
-            )
-        self.path = CGPath(ellipseIn: rect, transform: nil)
-        
         self.position = position
-        self.lineWidth = 0.0
-        self.fillColor = .white
-        self.fillTexture = SKTexture(imageNamed: "player")
-        self.zPosition = 20
+        
+        
+        self.zPosition = 3
+        addChild(sprite)
+        fadeIn()
     }
     func getLoc() -> (Int, Int){
         return (gridX,gridY)
     }
- 
+    func fadeOut(){
+        self.setScale(1.0)
+    
+    // Scale down to 0
+    let scaleAction = SKAction.scale(to: 0.0, duration: 0.5)
+    
+    // Optional: Add easing for smoother animation
+    scaleAction.timingMode = .easeOut
+    
+    self.run(scaleAction)
+        
+    }
+    func fadeIn(){
+        self.setScale(0)
+    
+    // Scale up to normal size
+    let scaleAction = SKAction.scale(to: 1.0, duration: 0.3)
+    
+    // Optional: Add easing for smoother animation
+    scaleAction.timingMode = .easeOut
+    
+    self.run(scaleAction)
+        
+    }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

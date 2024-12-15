@@ -5,12 +5,12 @@
       "scale" : "1x"
     },
     {
-      "filename" : "brokenplanet@2x.png",
+      "filename" : "circle@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "brokenplanet@3x.png",
+      "filename" : "circle@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
