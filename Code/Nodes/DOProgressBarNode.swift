@@ -44,7 +44,7 @@ class DOProgressBarNode: SKNode {
           
         }
     func setup(screenSize: CGSize) {
-        position = CGPoint(x: screenSize.width / 2, y: background.size.height*2)
+        position = CGPoint(x: screenSize.width / 2, y: min(background.size.height * 2,screenSize.height / 10))
         
     }
     

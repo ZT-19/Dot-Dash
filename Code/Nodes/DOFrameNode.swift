@@ -18,10 +18,10 @@ class DOFrameNode: SKNode {
       
     }
     func setup(screenSize: CGSize) {
-        self.frameSprite.anchorPoint = CGPoint(x: 0, y: 0)
+      //  self.frameSprite.anchorPoint = CGPoint(x: 0, y: 0)
         frameSprite.size = screenSize
-        position = CGPoint(x:0,y:0)
-        //position = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
+       // position = CGPoint(x:0,y:0)
+        position = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
        
     }
     
