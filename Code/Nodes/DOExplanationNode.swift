@@ -11,6 +11,7 @@ class DOExplanationNode: SKNode {
     
     private var overlay: SKSpriteNode
     private var picture: SKSpriteNode
+    private var size: CGSize
     
     let message:[[String]] = [[
         "Swipe to control the Rook.",
@@ -28,14 +29,19 @@ class DOExplanationNode: SKNode {
     ],
     ["Swiping off screen", "results in a level restart."]]
     init(size: CGSize){
+        self.size = size
         overlay = SKSpriteNode(color: UIColor.black.withAlphaComponent(0.7), size: size)
                 overlay.zPosition = 30
         point = CGPoint(x: size.width / 2, y: size.height / 2)
         picture = SKSpriteNode()
+      
+        
         super.init()
         
         overlay.position = point
         addChild(overlay)
+        
+      
 
     }
 
@@ -51,6 +57,7 @@ class DOExplanationNode: SKNode {
             fatalError("init(coder:) has not been implemented")
         }
     func updateText(code: Int) {
+        resetText()
         var yPosition = point.y * 0.75 + CGFloat((30 * message[code].count) / 2)
         
         for line in message[code] {
@@ -83,9 +90,11 @@ class DOExplanationNode: SKNode {
             addChild(picture)
             
         }
-        else{
-            picture.removeFromParent()
+        else if code == 0{
+            overlay.removeFromParent()
+       
         }
+       
         let click2continue = SKLabelNode(text: "Tap anywhere to continue.")
         let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.8)
         let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.8)

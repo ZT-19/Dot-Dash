@@ -40,10 +40,8 @@ class DOTimer: SKSpriteNode {
     init(radius: CGFloat, levelTime: Int = 20, completion: @escaping () -> Void) {
         self.totalTime = levelTime
         self.remainingTime = totalTime
-<<<<<<< HEAD
-=======
         self.timeFreeze = Date()
->>>>>>> justin
+
         super.init(texture: nil, color: .clear, size: CGSize(width: radius*2, height: radius*2))
         timerService = DOTimerTrackerService(circleSize: CGSize(width: radius*2, height: radius*2)) { [weak self] in
             self?.isTexturesPrepared = true
@@ -62,11 +60,6 @@ class DOTimer: SKSpriteNode {
     }
 
     private func setupTimerAppearance(radius: CGFloat, currTime: Int = 20) {
-<<<<<<< HEAD
-        timeLabel = SKLabelNode(fontNamed: "PPNeueMontreal-Bold")
-        timeLabel.fontSize = 14
-        timeLabel.fontColor = lightPurple
-=======
        
         timeLabel = SKLabelNode(fontNamed: "PPNeueMontreal-Bold")
         timeLabel.fontSize = 14
@@ -221,8 +214,6 @@ class DOTimer: SKSpriteNode {
         let minutes = remainingTime / 60
         let seconds = remainingTime % 60
         timeLabel.text = String(format: "%02d:%02d", minutes, seconds)
-        
-
         if remainingTime < 5 {
             timeLabel.fontColor = .black
             innerCircle.fillColor = red
