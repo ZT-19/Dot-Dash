@@ -95,6 +95,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var powerupCurr = PowerUpType.freezeTime
     private var n_powerups = 0
     private var max_powerUps = 3
+    public var activePowerUp: DOPowerUpNode? = nil
 
     private var inIntermission = false
     private var firstFreeze = true
@@ -157,7 +158,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
        
         
         
-        // setup timer node
+
         timerNode = DOTimer(radius: 30, levelTime: 20) { [weak self] in
             // Timer setup completed callback if needed
             //self?.gameOver()
@@ -244,6 +245,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                  //   timerNode.addTime(existingPowerup.getTimeStart(),stealth: true)
                     if !frozen{
                         timerNode.resume()
+                        timerNode.freezeEffect(active: false)
                     }
                     
                 }
@@ -331,16 +333,19 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             if let cpow = powerUpArray[i]{
                 if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive() && !isPlayerAnimating){
                         
-                        cpow.startCountdown()
-                
-                 
+                        cpow.startCountdown {
+                            self.fadeInAllPowerUps()
+                            print("works")
+                        }
+       
                         if (cpow.isFreezeTime()){
                             timerNode.pause()
+                            timerNode.freezeEffect(active: true)
                             print("freezenode actiavted")
                         }
-                    else{
+                        else{
                         levelLoad(restart: false)
-                    }
+                        }
                     print("poweurp used")
                     return
                 }
@@ -426,6 +431,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 
                    
                 self.dotCount -= 1
+                
+                // generate haptic feedback on collision
+                
+                let feedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+                feedbackGenerator.impactOccurred()
             
                 // update score
                 
@@ -955,6 +965,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         // 0 for basic tutorial, 1 for first freeze, 2 for first level skip
         inIntermission=true
         timerNode.pause()
+        //timerNode.freezeEffect(active: true)
         print("intermission pause")
         onscreentext!.updateText(code: code)
         addChild(onscreentext!)
@@ -1063,7 +1074,164 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-   
+
+    func levelLoad(restart: Bool, powerupEligible:Bool = true, skipped:Bool = false) {
+       
+       
+        if isPlayerAnimating {
+            queuedLevelLoad = (restart, powerupEligible ,true)
+            return
+        }
+        /*
+        if !restart, let explodingTimer = explodingTimer {
+            explodingTimer.removeFromParent()
+            self.explodingTimer = nil
+        }
+         */
+        
+        // remove all dots and players from the scene
+        isTouchEnabled = false
+        for child in self.children {
+            if let dotNodeD = child as? DODotNode {
+                dotNodeD.removeFromParent()
+                //print("Dot removed")
+            }
+            if let dotNodeD = child as? DOPlayerNode {
+                dotNodeD.removeFromParent()
+                //print("Player removed")
+            }
+            if let trailNode = child as? DOTrailNode{
+                trailNode.removeFromParent()
+                
+            }
+        }
+        playerstart.removeFromParent()
+        // if we are not restarting, we go to the next level
+        if (!restart) {
+            if gridSize<13 && difficulty%2==1{
+                gridSize += 1
+                backgroundNode.changeGridSize(new: gridSize)
+            }
+            
+            dotSpacingX = (playableXSize)/Double(gridSize+1)
+            dotSpacingY = (playableYSize)/Double(gridSize+1)
+            backgroundNode.setDeterminedTexture()
+            
+            gameInfo.level += 1
+           
+            difficulty += 1 // constant increase every lvl
+           
+            // if (gameInfo.level % 6 == 0) {  difficulty += 1 } // gradually increase difficulty every 6 lvls
+            let leveBonusMultiplier = 1.0
+            /*
+            for i in 0..<n_powerups{
+                if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {// bonus level score powerup
+                    leveBonusMultiplier *= 1.5
+                }
+            
+            }
+           */
+
+            gameInfo.score += Int(100 * leveBonusMultiplier)
+            timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
+
+            timerNode.pause()
+
+            // draw new 2D Int Array for new level
+            if (modCode == 2) { // mod: double difficulty
+                grid = drawGridArray(difficultyRating: difficulty * 2, initX: gridCenter, initY: gridCenter)
+                baseGrid = grid
+            }
+            else {
+                grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter)
+                baseGrid = grid
+            }
+            
+        }
+        else {
+            grid = baseGrid
+            if firstFail{
+                firstFail = false
+                intermission(code: 3)
+                
+            }
+        }
+        
+        levelNode.updateLevel(with: gameInfo.level)
+        
+        //var bonusApplied = false
+        /*
+        for i in 0..<n_powerups{
+            if (powerUpArray[i] != nil && powerUpArray[i]!.isActive() && powerUpArray[i]!.islevelScoreBonus()) {
+                bonusApplied = true
+                scoreNode.updateScore(with: gameInfo.score, mode: 2)
+                break
+            }
+        // double score powerups stack
+        }
+         
+        if !bonusApplied{
+            scoreNode.updateScore(with: gameInfo.score, mode: 1)
+        }
+        
+         */
+        /*
+        if (modCode == 0 && !restart) {
+            explodingTimer = DOExplodingTimerNode(initialTime: bonusTime)
+            explodingTimer.setPosition(CGPoint(x: size.width / 2, y: size.height / 6))
+            addChild(explodingTimer)
+        }
+         */
+        var waitForTransition = levelTransitionTime
+        if restart{
+            waitForTransition = 0.0
+        }
+     
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
+            self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
+            timerNode.start()
+            print("level timer start")
+         
+        
+            for i in 0..<n_powerups{
+                if let cpow = powerUpArray[i]{
+                    if (cpow.isActive() && cpow.isFreezeTime() ){  
+                        timerNode.pause()
+                        timerNode.freezeEffect(active: true)
+                        print("freezenode still active")
+                    }
+                }
+            }
+            if (!isTouchEnabled){
+                isTouchEnabled = true
+            }
+        }
+       
+
+       // if powerupEligible && n_powerups < max_powerUps  {
+        if !restart{
+            progressBar.increaseProgress(3.8)
+        }
+        
+        
+       
+    }
+    func fadeOutOtherPowerUps(except activatedPowerUp: DOPowerUpNode) {
+        for powerUp in powerUpArray {
+            if let powerUp = powerUp, powerUp != activatedPowerUp {
+                powerUp.fadeOutPart()
+            }
+        }
+    }
+
+    func fadeInAllPowerUps() {
+        for powerUp in powerUpArray {
+            powerUp?.fadeInPart()
+            print(powerUp?.isActive())
+        }
+    }
+    
     // translates matrix index to position on screen
     func coordCalculate(indices: CGPoint) -> CGPoint {
         return CGPoint(

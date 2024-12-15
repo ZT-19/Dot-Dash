@@ -15,10 +15,19 @@ class DOTimerNode: SKNode {
     private var timeFreeze: Date
     private var timeFrozenCompensation:Double = 0
 
+   // New properties for circular animation
+    private var innerCircle: SKShapeNode!
+    private var textureNode: SKSpriteNode!
+    private var timerService: DOTimerTrackerService!
+    private var isTexturesPrepared = false
+    private var pendingStart = false
+    private let radius: CGFloat = 30 // Adjust size as needed
+
     init(initialTime: TimeInterval) {
         self.remainingTime = initialTime
         self.timeFreeze = Date()
         super.init()
+        setupTimerService()
         setup()
     }
 
@@ -26,34 +35,59 @@ class DOTimerNode: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private func setupTimerService() {
+        timerService = DOTimerTrackerService(circleSize: CGSize(width: radius*2, height: radius*2)) { [weak self] in
+            self?.isTexturesPrepared = true
+            if self?.pendingStart == true {
+                DispatchQueue.main.async {
+                    self?.startAnimation()
+                }
+            }
+        }
+    }
+
+    func start() {
+        if isTexturesPrepared {
+            startAnimation()
+        } else {
+            pendingStart = true
+        }
+    }
+
+    // Modify setup() in DOTimerNode
     private func setup() {
+        // Setup circle background
+        innerCircle = SKShapeNode(circleOfRadius: radius)
+        innerCircle.fillColor = .gray
+        innerCircle.strokeColor = .clear
+        innerCircle.zPosition = 1
+        addChild(innerCircle)
+
+        // Setup texture node for animation
+        textureNode = SKSpriteNode(texture: nil, color: .clear, size: CGSize(width: radius*2, height: radius*2))
+        textureNode.zPosition = 2
+        addChild(textureNode)
+
+        // Setup timer label
         timerLabel.text = "\(Int(remainingTime))"
         timerLabel.fontSize = 24
         timerLabel.fontColor = .white
+        timerLabel.verticalAlignmentMode = .center
+        timerLabel.horizontalAlignmentMode = .center
+        timerLabel.zPosition = 3
         addChild(timerLabel)
     }
-    private func emitTimeParticle(seconds: TimeInterval) {
-    let particle = SKLabelNode(fontNamed: "Arial")
-    particle.text = "+\(Int(seconds))"
-    particle.fontSize = 12
-    particle.fontColor = .white
-    particle.position = CGPoint(x: timerLabel.frame.maxX + 10, y: timerLabel.frame.midY)
-    addChild(particle)
-    
-    // Animation sequence
-    let moveUp = SKAction.moveBy(x: 10, y: 15, duration: 0.7)
-    let fadeOut = SKAction.fadeOut(withDuration: 0.7)
-    let scale = SKAction.scale(to: 0.7, duration: 0.7)
-    let group = SKAction.group([moveUp, fadeOut, scale])
-    let remove = SKAction.removeFromParent()
-    let sequence = SKAction.sequence([group, remove])
-    
-    particle.run(sequence)
-}
+      private func startAnimation() {
+        let textures = timerService.getAllTextures()
+        guard !textures.isEmpty else { return }
+        
+        let totalDuration = remainingTime
+        let animation = SKAction.animate(with: textures, timePerFrame: totalDuration / TimeInterval(textures.count))
+        textureNode.run(animation, withKey: "countdownAnimation")
+    }
 
     func update(_ currentTime: TimeInterval) -> Bool {
         if (timerPaused){
-            
             return false
         }
         
@@ -97,25 +131,28 @@ class DOTimerNode: SKNode {
     func addTime(_ seconds: TimeInterval, stealth: Bool = false) {
         remainingTime += seconds
         timerLabel.text = "Time: \(Int(remainingTime))"
-        if !stealth{
-            emitTimeParticle(seconds: seconds)
-        }
-          
     }
-    func pause(){
-        if timerPaused{
+    func pause() {
+        if timerPaused {
             timeFrozenCompensation += Date().timeIntervalSince(timeFreeze)
         }
         timeFreeze = Date()
+        timerPaused = true
         
-        timerPaused=true
+        // Pause animation
+        textureNode.isPaused = true
     }
-    func resume(){
-      //  remainingTime = TimeInterval(timeFreeze)
-        addTime(timeFrozenCompensation+Date().timeIntervalSince(timeFreeze),stealth: true)
-        timeFrozenCompensation=0
-        timerPaused=false
+
+    // Modified resume function
+    func resume() {
+        addTime(timeFrozenCompensation + Date().timeIntervalSince(timeFreeze), stealth: true)
+        timeFrozenCompensation = 0
+        timerPaused = false
+        
+        // Resume animation
+        textureNode.isPaused = false
     }
+
     func setPosition(_ position: CGPoint) {
         timerLabel.position = position
     }
