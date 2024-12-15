@@ -14,28 +14,21 @@ class DOTimer: SKSpriteNode {
     private var timeLabel: SKLabelNode!
     private var innerCircle: SKShapeNode!
     private var textureNode: SKSpriteNode!
-<<<<<<< HEAD
-    private var freezeNode: SKSpriteNode!
-    private var timerService: DOTimerTrackerService!
-    private var isTimerPaused = false
-=======
     private var timerService: DOTimerTrackerService!
     private var isTimerPaused = false
     private var timeFreeze: Date
     private var timeFrozenCompensation:Double = 0
->>>>>>> justin
+
     public var hasEnded: Bool = false
     private(set) var playedTick: Bool = false
     private var isTexturesPrepared = false
     private var pendingStart = false
     
     var purple = UIColor(red: 180/255.0, green: 122/255.0, blue: 254/255.0, alpha: 1.0)
-<<<<<<< HEAD
-    var lightPurple = UIColor(red: 220/255.0, green: 197/255.0, blue: 250/255.0, alpha: 1.0)
-=======
+
     var lightSquare = UIColor(red: 247/255.0, green: 229/255.0, blue: 205/255.0, alpha: 1.0)
     var darkSquare = UIColor(red: 211/255.0, green: 178/255.0, blue: 157/255.0, alpha: 1.0)
->>>>>>> justin
+
     var white = UIColor(red: 250/255.0, green: 250/255.0, blue: 250/255.0, alpha: 1.0)
     var blue = UIColor(red: 23/255.0, green: 143/255.0, blue: 255/255.0, alpha: 1.0)
     var gray = UIColor(red: 217/255.0, green: 217/255.0, blue: 217/255.0, alpha: 1.0)
@@ -78,7 +71,6 @@ class DOTimer: SKSpriteNode {
         timeLabel = SKLabelNode(fontNamed: "PPNeueMontreal-Bold")
         timeLabel.fontSize = 14
         timeLabel.fontColor = .black
->>>>>>> justin
         timeLabel.position = CGPoint(x: 0, y: 0)
         timeLabel.horizontalAlignmentMode = .center
         timeLabel.verticalAlignmentMode = .center
@@ -87,11 +79,9 @@ class DOTimer: SKSpriteNode {
         addChild(timeLabel)
         
         innerCircle = SKShapeNode(circleOfRadius: radius - 4)
-<<<<<<< HEAD
-        innerCircle.fillColor = lightPurple
-=======
+
         innerCircle.fillColor = darkSquare
->>>>>>> justin
+
         innerCircle.strokeColor = .clear
         innerCircle.lineWidth = 0
         innerCircle.position = CGPoint(x: 0, y: 0)
@@ -102,16 +92,8 @@ class DOTimer: SKSpriteNode {
         textureNode.position = CGPoint(x: 0, y: 0)
         addChild(textureNode)
         
-<<<<<<< HEAD
-        freezeNode = SKSpriteNode(imageNamed: "wh_timer_freeze")
-        freezeNode.size = CGSize(width: radius*3, height: radius*3)
-        freezeNode.position = CGPoint(x: 0, y: 0)
-        freezeNode.zPosition = 2
-        freezeNode.alpha = 0.0
-        addChild(freezeNode)
-        
-=======
->>>>>>> justin
+
+
         selfRad = radius
     }
     func timeLeft() -> Int {
@@ -121,18 +103,14 @@ class DOTimer: SKSpriteNode {
         isTimerPaused = false
         if isTexturesPrepared {
             startAnimation()
-<<<<<<< HEAD
-        } else {
-            pendingStart = true
-        }
-=======
+
            
         } else {
             pendingStart = true
           
         }
       
->>>>>>> justin
+
     }
     
     private func startAnimation() {
@@ -141,12 +119,9 @@ class DOTimer: SKSpriteNode {
             print("Warning: Timer textures array is empty")
             return
         }
-        
-<<<<<<< HEAD
-        let totalDuration = TimeInterval(remainingTime)
-=======
+
         let totalDuration = TimeInterval(remainingTime-1) // so the timer is completely empty at t=0 
->>>>>>> justin
+
         let animation = SKAction.animate(with: textures, timePerFrame: totalDuration / TimeInterval(textures.count))
         textureNode.run(animation, withKey: "countdownAnimation")
 
@@ -157,26 +132,14 @@ class DOTimer: SKSpriteNode {
             if self.remainingTime <= 0 {
                 self.stop()
             }
-<<<<<<< HEAD
-            print(remainingTime)
-=======
            // print(remainingTime)
->>>>>>> justin
+
         }
         let waitAction = SKAction.wait(forDuration: 1.0)
         let countdownSequence = SKAction.sequence([updateTimeAction, waitAction])
         let countdownAction = SKAction.repeat(countdownSequence, count: remainingTime)
         self.run(countdownAction, withKey: "countdownTimer")
-<<<<<<< HEAD
-    }
 
-    func pause() {
-        guard !isTimerPaused else { return }
-        isTimerPaused = true
-        self.speed = 0.01
-        
-        //freezeNode.setScale(1.2)
-=======
         resume()
     }
 
@@ -186,42 +149,30 @@ class DOTimer: SKSpriteNode {
         }
         isTimerPaused = true
         self.speed = 0.0
->>>>>>> justin
-        
+
         let fadeIn = SKAction.fadeIn(withDuration: 0.002)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.01)
         scaleUp.timingMode = .easeOut
-<<<<<<< HEAD
-        
-        /*freezeNode.run(fadeIn)
-        freezeNode.run(scaleUp) {
-            self.innerCircle.fillColor = self.gray
-            self.timeLabel.fontColor = self.white
-            self.speed = 0
-        }*/
+        //innerCircle.fillColor = blue
+        print("paused")
     }
-
-    func resume() {
-        guard isTimerPaused else { return }
-        isTimerPaused = false
-        self.speed = 1
-        
-        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-        freezeNode.run(fadeOut) {
-            self.innerCircle.fillColor = self.lightPurple
-            self.updateTimeLabel()
+    func freezeEffect(active: Bool) {
+        if (active) {
+            innerCircle.fillColor = blue
         }
-=======
-      //  print("paused")
-        
+        else {
+            innerCircle.fillColor = darkSquare
+            
+        }
+
     }
 
     func resume() {
         //guard isTimerPaused else { return }
         isTimerPaused = false
         self.speed = 1
+        //innerCircle.fillColor = darkSquare
     //    print("resumed")
->>>>>>> justin
     }
 
     func stop() {
@@ -231,20 +182,7 @@ class DOTimer: SKSpriteNode {
         self.removeAction(forKey: "countdownTimer")
         textureNode.removeAction(forKey: "countdownAnimation")
     }
-<<<<<<< HEAD
-    /*
-    func resetTimer(level: Int) {
-        hasEnded = false
-        playedTick = false
-        remainingTime = setTime(level)
-        print("setting time to \(totalTime)")
-        //remainingTime = setTime(level)//totalTime
-        setupTimerAppearance(radius: self.selfRad, currTime: remainingTime)
-        updateTimeLabel()
-    }*/
 
-    private func updateTimeLabel() {
-=======
     
     func resetTimer(timeLeft: Int) {
            // Stop existing animations
@@ -280,29 +218,22 @@ class DOTimer: SKSpriteNode {
     
     private func updateTimeLabel() {
   
->>>>>>> justin
         let minutes = remainingTime / 60
         let seconds = remainingTime % 60
         timeLabel.text = String(format: "%02d:%02d", minutes, seconds)
         
-<<<<<<< HEAD
-        if remainingTime < 8 {
-            timeLabel.fontColor = red
-=======
+
         if remainingTime < 5 {
             timeLabel.fontColor = .black
             innerCircle.fillColor = red
->>>>>>> justin
             if !playedTick {
                 playedTick = true
                 //SKTAudio.sharedInstance().playSoundEffect(.mmTick)
             }
         } else {
-<<<<<<< HEAD
-            timeLabel.fontColor = isTimerPaused ? .black : white
-=======
+
             timeLabel.fontColor = isTimerPaused ? .gray : .black
->>>>>>> justin
+
         }
     }
 }

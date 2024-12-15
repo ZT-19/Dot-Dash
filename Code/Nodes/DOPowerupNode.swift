@@ -140,7 +140,7 @@ class DOPowerUpNode: SKNode {
             fadeIn()
     }
 
-    func startCountdown() {
+    func startCountdown(completion: @escaping () -> Void) {
         // create draining animation
         turnedOn = true
         self.remainingTime = countdownDuration
@@ -162,6 +162,11 @@ class DOPowerUpNode: SKNode {
         
         // run countdown and removal sequence
         self.run(SKAction.sequence([countdownAction, removeAction]))
+        
+        if let scene = self.scene as? GameSKScene {
+                scene.activePowerUp = self
+                scene.fadeOutOtherPowerUps(except: self)
+            }
     }
 
     func getPosition() -> CGPoint {
@@ -211,5 +216,13 @@ class DOPowerUpNode: SKNode {
     
     self.run(scaleAction)
         
+    }
+    
+    func fadeOutPart() {
+        self.sprite.alpha = 0.5
+    }
+
+    func fadeInPart() {
+        self.sprite.alpha = 1
     }
 }
