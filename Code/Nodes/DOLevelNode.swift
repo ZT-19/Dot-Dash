@@ -15,9 +15,11 @@ class DOLevelNode: SKNode {
 
     func setup(screenSize: CGSize) {
         position = CGPoint(x: screenSize.width / 2, y: screenSize.height - 167.5 / 874.0 * screenSize.height)
+
         let background = SKSpriteNode(imageNamed: "timerbackground")
         background.size = CGSize(width:150, height: 52.5)
         addChild(background)
+
         updateLevel(with: 1)
         textNode.verticalAlignmentMode = .center
         addChild(textNode)
