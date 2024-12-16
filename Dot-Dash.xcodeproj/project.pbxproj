@@ -10,6 +10,11 @@
 		2B39B0762CFA321000DA44B4 /* DOStarNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B39B0752CFA320D00DA44B4 /* DOStarNode.swift */; };
 		2B621E762D039E3B00B9EC37 /* DOTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B621E752D039E3900B9EC37 /* DOTimer.swift */; };
 		2B621E782D039E4E00B9EC37 /* DOTimerTrackerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B621E772D039E4700B9EC37 /* DOTimerTrackerService.swift */; };
+		2B68F7C32D10AD0E008B963F /* levelcompletion.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B68F7C22D10AD0E008B963F /* levelcompletion.mp3 */; };
+		2B68F7C42D10AD0E008B963F /* collisionsound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B68F7C12D10AD0E008B963F /* collisionsound.mp3 */; };
+		2B68F7C62D10C905008B963F /* hitsoundclick.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 2B68F7C52D10C905008B963F /* hitsoundclick.m4a */; };
+		2B68F7C82D10CA1A008B963F /* backgroundmusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B68F7C72D10CA1A008B963F /* backgroundmusic.mp3 */; };
+		2B68F7CA2D10D00A008B963F /* restart.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B68F7C92D10D00A008B963F /* restart.mp3 */; };
 		2B9D80E32CF6E8DC003722E6 /* DOExplodingTimerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9D80E22CF6E8D6003722E6 /* DOExplodingTimerNode.swift */; };
 		2B9D80E52CF6EBED003722E6 /* DOPowerupNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */; };
 		870008362CFACE7A005B8218 /* DOTrailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870008352CFACE74005B8218 /* DOTrailNode.swift */; };
@@ -57,6 +62,11 @@
 		2B39B0752CFA320D00DA44B4 /* DOStarNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOStarNode.swift; sourceTree = "<group>"; };
 		2B621E752D039E3900B9EC37 /* DOTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimer.swift; sourceTree = "<group>"; };
 		2B621E772D039E4700B9EC37 /* DOTimerTrackerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimerTrackerService.swift; sourceTree = "<group>"; };
+		2B68F7C12D10AD0E008B963F /* collisionsound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = collisionsound.mp3; sourceTree = "<group>"; };
+		2B68F7C22D10AD0E008B963F /* levelcompletion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = levelcompletion.mp3; sourceTree = "<group>"; };
+		2B68F7C52D10C905008B963F /* hitsoundclick.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = hitsoundclick.m4a; sourceTree = "<group>"; };
+		2B68F7C72D10CA1A008B963F /* backgroundmusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = backgroundmusic.mp3; sourceTree = "<group>"; };
+		2B68F7C92D10D00A008B963F /* restart.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = restart.mp3; sourceTree = "<group>"; };
 		2B9D80E22CF6E8D6003722E6 /* DOExplodingTimerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOExplodingTimerNode.swift; sourceTree = "<group>"; };
 		2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOPowerupNode.swift; sourceTree = "<group>"; };
 		2BD62E642CCD7A9900B86F14 /* Dot-Dash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dot-Dash.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -166,13 +176,10 @@
 			children = (
 				2B621E772D039E4700B9EC37 /* DOTimerTrackerService.swift */,
 				2B621E752D039E3900B9EC37 /* DOTimer.swift */,
-
 				87671E1A2D0D117C00CE802B /* DOOnscreenTutorial.swift */,
-
 				874566152D064DEA005D9792 /* DOFrameNode.swift */,
 				876B51512D03CD3100AAEE04 /* DOTimer.swift */,
 				876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */,
-
 				2B39B0752CFA320D00DA44B4 /* DOStarNode.swift */,
 				2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */,
 				870008352CFACE74005B8218 /* DOTrailNode.swift */,
@@ -212,6 +219,11 @@
 			isa = PBXGroup;
 			children = (
 				87BF02D82CDD4C7B002A1821 /* Assets.xcassets */,
+				2B68F7C72D10CA1A008B963F /* backgroundmusic.mp3 */,
+				2B68F7C12D10AD0E008B963F /* collisionsound.mp3 */,
+				2B68F7C22D10AD0E008B963F /* levelcompletion.mp3 */,
+				2B68F7C52D10C905008B963F /* hitsoundclick.m4a */,
+				2B68F7C92D10D00A008B963F /* restart.mp3 */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -347,6 +359,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B68F7CA2D10D00A008B963F /* restart.mp3 in Resources */,
+				2B68F7C32D10AD0E008B963F /* levelcompletion.mp3 in Resources */,
+				2B68F7C42D10AD0E008B963F /* collisionsound.mp3 in Resources */,
+				2B68F7C62D10C905008B963F /* hitsoundclick.m4a in Resources */,
+				2B68F7C82D10CA1A008B963F /* backgroundmusic.mp3 in Resources */,
 				87BF02DA2CDD4C7B002A1821 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
