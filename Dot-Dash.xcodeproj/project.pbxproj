@@ -17,9 +17,8 @@
 		874566162D064DF0005D9792 /* DOFrameNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874566152D064DEA005D9792 /* DOFrameNode.swift */; };
 		876448ED2D07E80100E819FD /* DOplayerStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876448EC2D07E80100E819FD /* DOplayerStart.swift */; };
 		87671E1B2D0D118400CE802B /* DOOnscreenTutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87671E1A2D0D117C00CE802B /* DOOnscreenTutorial.swift */; };
-		876B51522D03CD3100AAEE04 /* DOTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51512D03CD3100AAEE04 /* DOTimer.swift */; };
-		876B51542D03CD3700AAEE04 /* DOTimerTrackerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */; };
 		876B51632D03D92000AAEE04 /* DOExplanationNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B51622D03D92000AAEE04 /* DOExplanationNode.swift */; };
+		87929AC22D0F983B001A905E /* DOLayoutInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87929AC12D0F983B001A905E /* DOLayoutInfo.swift */; };
 		87BF02C92CDD4738002A1821 /* DOPlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */; };
 		87BF02CC2CDD476A002A1821 /* DOGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CB2CDD476A002A1821 /* DOGameScene.swift */; };
 		87BF02CD2CDD476A002A1821 /* DOGameContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BF02CA2CDD476A002A1821 /* DOGameContext.swift */; };
@@ -67,9 +66,8 @@
 		874566152D064DEA005D9792 /* DOFrameNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOFrameNode.swift; sourceTree = "<group>"; };
 		876448EC2D07E80100E819FD /* DOplayerStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOplayerStart.swift; sourceTree = "<group>"; };
 		87671E1A2D0D117C00CE802B /* DOOnscreenTutorial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOOnscreenTutorial.swift; sourceTree = "<group>"; };
-		876B51512D03CD3100AAEE04 /* DOTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimer.swift; sourceTree = "<group>"; };
-		876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOTimerTrackerService.swift; sourceTree = "<group>"; };
 		876B51622D03D92000AAEE04 /* DOExplanationNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOExplanationNode.swift; sourceTree = "<group>"; };
+		87929AC12D0F983B001A905E /* DOLayoutInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOLayoutInfo.swift; sourceTree = "<group>"; };
 		87BF02C22CDD4738002A1821 /* DOPlayerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOPlayerNode.swift; sourceTree = "<group>"; };
 		87BF02CA2CDD476A002A1821 /* DOGameContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameContext.swift; sourceTree = "<group>"; };
 		87BF02CB2CDD476A002A1821 /* DOGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOGameScene.swift; sourceTree = "<group>"; };
@@ -166,13 +164,8 @@
 			children = (
 				2B621E772D039E4700B9EC37 /* DOTimerTrackerService.swift */,
 				2B621E752D039E3900B9EC37 /* DOTimer.swift */,
-
 				87671E1A2D0D117C00CE802B /* DOOnscreenTutorial.swift */,
-
 				874566152D064DEA005D9792 /* DOFrameNode.swift */,
-				876B51512D03CD3100AAEE04 /* DOTimer.swift */,
-				876B51532D03CD3700AAEE04 /* DOTimerTrackerService.swift */,
-
 				2B39B0752CFA320D00DA44B4 /* DOStarNode.swift */,
 				2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */,
 				870008352CFACE74005B8218 /* DOTrailNode.swift */,
@@ -204,6 +197,7 @@
 			isa = PBXGroup;
 			children = (
 				87BF02D52CDD4A4A002A1821 /* DOGameInfo.swift */,
+				87929AC12D0F983B001A905E /* DOLayoutInfo.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -376,7 +370,6 @@
 				87671E1B2D0D118400CE802B /* DOOnscreenTutorial.swift in Sources */,
 				87BF02D72CDD4A4A002A1821 /* DOGameInfo.swift in Sources */,
 				87405C522D026CFD00DF81A1 /* DOProgressBarNode.swift in Sources */,
-				876B51522D03CD3100AAEE04 /* DOTimer.swift in Sources */,
 				87DB9B712CDDF1AB0096130C /* DOLevelNode.swift in Sources */,
 				2B9D80E32CF6E8DC003722E6 /* DOExplodingTimerNode.swift in Sources */,
 				2B621E782D039E4E00B9EC37 /* DOTimerTrackerService.swift in Sources */,
@@ -386,13 +379,13 @@
 				87BF02E12CDD4C80002A1821 /* Dependencies.swift in Sources */,
 				87C1A7112CDEC7FF0033FDD1 /* DOGameOverNode.swift in Sources */,
 				876B51632D03D92000AAEE04 /* DOExplanationNode.swift in Sources */,
-				876B51542D03CD3700AAEE04 /* DOTimerTrackerService.swift in Sources */,
 				2B39B0762CFA321000DA44B4 /* DOStarNode.swift in Sources */,
 				87BF02E22CDD4C80002A1821 /* GameType.swift in Sources */,
 				87BF02E32CDD4C80002A1821 /* GameContext.swift in Sources */,
 				870008362CFACE7A005B8218 /* DOTrailNode.swift in Sources */,
 				87BF02D12CDD48C8002A1821 /* DOScoreNode.swift in Sources */,
 				87BF02F02CDD8E89002A1821 /* DODotNode.swift in Sources */,
+				87929AC22D0F983B001A905E /* DOLayoutInfo.swift in Sources */,
 				87BF02C92CDD4738002A1821 /* DOPlayerNode.swift in Sources */,
 				87BF02CC2CDD476A002A1821 /* DOGameScene.swift in Sources */,
 				87BF02CD2CDD476A002A1821 /* DOGameContext.swift in Sources */,
