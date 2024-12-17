@@ -652,7 +652,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             if progressBar.getProgress()<1 && inIntermission == false{
                 print(Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)))
             
-                if  Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)) > 0.8{
+                if  Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)) > 0.5{
                     print("congratulate entered")
                  
                     levelClearText?.congratulate()
@@ -1059,6 +1059,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         backgroundMusicPlayer = nil
         
         self.gameOverScreen=true
+        shakeScreen()
         var removeCount = 0.0
         let nodes = self.children // Get all nodes in the scene
         for (index, node) in nodes.enumerated() {
