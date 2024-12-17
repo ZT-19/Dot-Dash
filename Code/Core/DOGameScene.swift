@@ -105,7 +105,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var firstFreeze = true
     private var firstSkip = true
     private var onscreentext: DOExplanationNode?
-    private var levelClearText: DOExplanationNode?
     private var onscreenimage: DOOnscreenTutorial? // for the finger graphics during gameplay
     
     private var backgroundMusicPlayer: AVAudioPlayer?
@@ -131,12 +130,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width*0.7, height: 30))
         progressBar.setup(screenSize: size)
         frameNode.setup(screenSize: CGSize(width: size.width+1, height: size.height))
+        frameNode.setupPowerups(powerUpNodeRadius: powerUpNodeRadius, powerUpRadius: powerupRadius)
         
         addChild(backgroundNode)
         addChild(frameNode)
         addChild(progressBar)
         onscreentext = DOExplanationNode(size:size)
-        levelClearText = DOExplanationNode(size:size)
         onscreenimage = DOOnscreenTutorial(size:size)
         
         self.camera = cameraNode
@@ -192,7 +191,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [self] in
             if gameInfo.level == 1 {
-                print("entered on screen tutorial")
+              
                  addChild(onscreenimage!)
              //   onscreenimage?.alpha = 0.0
         
@@ -655,27 +654,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
            // gameInfo.score += Int(100)
           
-            if progressBar.getProgress()<1 && inIntermission == false{
-                print(Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)))
-            
-                if  Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)) > 0.5{
-                    print("congratulate entered")
-                 
-                    levelClearText?.congratulate()
-                if (childNode(withName: "OST") != nil){
-                    print("BAD")
-                    childNode(withName: "OST")?.removeFromParent()
-                }
-                    addChild(levelClearText!)
-                    levelClearText!.name = "OST"
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [self] in
-                    levelClearText?.removeFromParent()
-                    
-                }
-                }
-               
-            }
-              
      
             timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
                 
@@ -756,7 +734,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
             self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
-            if !restart{
+            if !restart && !inIntermission{
                 timerNode.start()
             }
            
@@ -780,7 +758,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)//TEST
+            progressBar.increaseProgress(1.2)//TEST
         }
     }
     
@@ -1076,6 +1054,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         self.gameOverScreen=true
         shakeScreen()
+        shakeScreen()
         var removeCount = 0.0
         let nodes = self.children // Get all nodes in the scene
         for (index, node) in nodes.enumerated() {
@@ -1138,7 +1117,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         x_powerUp_position += (UIScreen.main.bounds.width/2 - powerUpNodeRadius) * CGFloat(n_powerups)
         
        
-        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 75 / 874.0 * UIScreen.main.bounds.height )
+        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 65)
         powerupCurr = powerupTypes.randomElement(using: &rng)!
         /*
         while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){
@@ -1146,7 +1125,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
          */
         powerUpArray[self.n_powerups] = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
-        powerUpArray[self.n_powerups]?.zPosition = 5
+        powerUpArray[self.n_powerups]?.zPosition = 8
         addChild(powerUpArray[self.n_powerups]!)
         if (findActiveFreeze()) { // needed to tint newly added powerups
             powerUpArray[self.n_powerups]?.fadeOutPart()

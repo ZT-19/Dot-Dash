@@ -22,10 +22,12 @@ class DOLevelNode: SKNode {
 
         let background = SKSpriteNode(imageNamed: "timerbackground")
         background.size = CGSize(width: 96, height: 40)
+        background.name = "back"
         addChild(background)
 
         updateLevel(with: 1)
         textNode.fontSize = 24
+        textNode.fontName = "Arial Rounded MT Bold"
         textNode.verticalAlignmentMode = .center
         addChild(textNode)
         
@@ -37,6 +39,12 @@ class DOLevelNode: SKNode {
 
     func updateLevel(with level: Int) {
         textNode.text = "Level \(level)"
+        if (level>9){
+            if let back = childNode(withName: "back") as? SKSpriteNode {
+                back.size = CGSize(width: 106, height: 40)
+            }
+            
+        }
     }
     
 }

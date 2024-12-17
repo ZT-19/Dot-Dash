@@ -10,6 +10,7 @@ import SpriteKit
 class DOFrameNode: SKNode {
     private let frameSprite: SKSpriteNode
     
+    
     override init() {
         //starSprite = SKSpriteNode(imageNamed: "backgroundstar3x")
         frameSprite = SKSpriteNode(texture: SKTexture(imageNamed: "frame"))
@@ -48,6 +49,21 @@ class DOFrameNode: SKNode {
         
         
        
+    }
+    func setupPowerups(powerUpNodeRadius: Double, powerUpRadius: Double){
+        var xpos = powerUpNodeRadius - frameSprite.size.width/2
+        let ypos = 65 + powerUpNodeRadius - frameSprite.size.height/2
+        
+        for i in 0..<3{
+            var placeholder = SKSpriteNode(texture: SKTexture(imageNamed: "powerupEmpty"))
+        
+ 
+            placeholder.size = CGSize(width: powerUpRadius*2 - 3, height: powerUpRadius * 2 - 3)
+            placeholder.position = CGPoint(x:xpos,y:ypos)
+            print(i)
+            addChild(placeholder)
+            xpos += (frameSprite.size.width/2-powerUpNodeRadius)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -28,11 +28,12 @@ class DOTimer: SKSpriteNode {
 
     var lightSquare = UIColor(red: 247/255.0, green: 229/255.0, blue: 205/255.0, alpha: 1.0)
     var darkSquare = UIColor(red: 211/255.0, green: 178/255.0, blue: 157/255.0, alpha: 1.0)
+    var darkcolor = UIColor(red:125/255.0, green: 99/255.0, blue: 71/255.0, alpha: 1.0)
 
     var white = UIColor(red: 250/255.0, green: 250/255.0, blue: 250/255.0, alpha: 1.0)
-    var blue = UIColor(red: 23/255.0, green: 143/255.0, blue: 255/255.0, alpha: 1.0)
+    var blue = UIColor(red: 67/255.0, green: 182/255.0, blue: 247/255.0, alpha: 1.0)
     var gray = UIColor(red: 217/255.0, green: 217/255.0, blue: 217/255.0, alpha: 1.0)
-    var red = UIColor(red: 243/255.0, green: 80/255.0, blue: 76/255.0, alpha: 1.0)
+    var red = UIColor(red: 177/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
     
     private var selfRad = 0.0
     private var selfTime = 20
@@ -61,19 +62,19 @@ class DOTimer: SKSpriteNode {
 
     private func setupTimerAppearance(radius: CGFloat, currTime: Int = 20) {
        
-        timeLabel = SKLabelNode(fontNamed: "PPNeueMontreal-Bold")
-        timeLabel.fontSize = 24
-        timeLabel.fontColor = .black
+        timeLabel = SKLabelNode(fontNamed: "Arial Rounded MT Bold")
+        timeLabel.fontSize = 48
+        timeLabel.fontColor = .white
         timeLabel.position = CGPoint(x: 0, y: 0)
         timeLabel.horizontalAlignmentMode = .center
         timeLabel.verticalAlignmentMode = .center
         timeLabel.zPosition = 10
-        timeLabel.text = "00:\(totalTime)"
+        timeLabel.text = "\(totalTime)"
         addChild(timeLabel)
         
         innerCircle = SKShapeNode(circleOfRadius: radius - 4)
 
-        innerCircle.fillColor = darkSquare
+        innerCircle.fillColor = darkcolor
 
         innerCircle.strokeColor = .clear
         innerCircle.lineWidth = 0
@@ -150,7 +151,7 @@ class DOTimer: SKSpriteNode {
             innerCircle.fillColor = blue
         }
         else {
-            innerCircle.fillColor = darkSquare
+            innerCircle.fillColor = darkcolor
             
         }
 
@@ -160,7 +161,7 @@ class DOTimer: SKSpriteNode {
         //guard isTimerPaused else { return }
         isTimerPaused = false
         self.speed = 1
-        //innerCircle.fillColor = darkSquare
+        //innerCircle.fillColor = darkcolor
     //    print("resumed")
     }
 
@@ -190,8 +191,8 @@ class DOTimer: SKSpriteNode {
     // Reset texture node
     textureNode.removeAllActions()
     textureNode.texture = timerService.getAllTextures().first
-    timeLabel.fontColor = .black
-    innerCircle.fillColor = darkSquare
+    timeLabel.fontColor = .white
+    innerCircle.fillColor = darkcolor
     // If timer should auto-start
     if !isTimerPaused {
         startAnimation()
@@ -207,11 +208,11 @@ class DOTimer: SKSpriteNode {
     
     private func updateTimeLabel() {
   
-        let minutes = remainingTime / 60
-        let seconds = remainingTime % 60
-        timeLabel.text = String(format: "%02d:%02d", minutes, seconds)
+      //  let minutes = remainingTime / 60
+     //   let seconds = remainingTime % 60
+        timeLabel.text = "\(remainingTime)"
         if remainingTime < 5 {
-            timeLabel.fontColor = .black
+            timeLabel.fontColor = .white
             innerCircle.fillColor = red
             if !playedTick {
                 playedTick = true
@@ -219,7 +220,7 @@ class DOTimer: SKSpriteNode {
             }
         } else {
 
-            timeLabel.fontColor = isTimerPaused ? .gray : .black
+           // timeLabel.fontColor = isTimerPaused ? .gray : .white
 
         }
     }

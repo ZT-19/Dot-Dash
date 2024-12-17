@@ -8,7 +8,7 @@ enum PowerUpType {
 
 class DOPowerUpNode: SKNode {
     private var sprite: SKSpriteNode
-    private let countdownLabel: SKLabelNode
+   // private let countdownLabel: SKLabelNode
     private let maskNode: SKShapeNode
     private let maskHeight: CGFloat
     private let radius: CGFloat
@@ -43,13 +43,14 @@ class DOPowerUpNode: SKNode {
         sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
         
         // initialize countdown label
+        /*
         countdownLabel = SKLabelNode(fontNamed: "Arial")
         countdownLabel.fontSize = 12
         countdownLabel.fontColor = .white
         countdownLabel.text = "\(Int(countdownDuration))"
         countdownLabel.verticalAlignmentMode = .center
         countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.3))
-        
+        */
         overlayNode = SKCropNode()
         let overlayShape = SKShapeNode(circleOfRadius: radius)
         overlayShape.fillColor = .black
@@ -67,7 +68,7 @@ class DOPowerUpNode: SKNode {
             
         cropNode.addChild(sprite)
         self.addChild(cropNode)
-        self.addChild(countdownLabel)
+       // self.addChild(countdownLabel)
 
         overlayNode.addChild(overlayShape)
         overlayNode.maskNode = maskNode
@@ -86,14 +87,14 @@ class DOPowerUpNode: SKNode {
             sprite = SKSpriteNode(imageNamed: "powerupFreeze")
             sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
             //  powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
-            countdownLabel.fontSize = 10
+          //  countdownLabel.fontSize = 10
             //powerupLabel.fontSize = 20
             break
         case .skipLevel:
             sprite = SKSpriteNode(imageNamed: "powerupSkip")
             sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
             //powerupLabel.attributedText = NSAttributedString(string: "→", attributes: attributes)
-            countdownLabel.fontSize = 0
+          //  countdownLabel.fontSize = 0
             //powerupLabel.fontSize = 20
         default: // or inactive
             sprite = SKSpriteNode(imageNamed: "powerupDefault")
@@ -124,7 +125,7 @@ class DOPowerUpNode: SKNode {
             guard let self = self else { return }
             
             self.remainingTime = max(0, self.countdownDuration - elapsedTime)
-            self.countdownLabel.text = "\(Int(ceil(self.remainingTime)))"
+        //    self.countdownLabel.text = "\(Int(ceil(self.remainingTime)))"
         }
         
         // group drain animations to run simultaneously
@@ -140,7 +141,7 @@ class DOPowerUpNode: SKNode {
         ])
         
         // combine
-        var fullSequence = SKAction.sequence([
+        let fullSequence = SKAction.sequence([
             popSequence,
             drainGroup,
             removeAction
