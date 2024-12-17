@@ -193,7 +193,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
            
         }
-        
+        /*
         let debug = SKShapeNode(path:CGPath(ellipseIn: CGRect(
             x: -30/2,  // Center the rect
             y: -30/2,  // Center the rect
@@ -205,7 +205,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         debug.zPosition = 34234
         print("DSF")
         addChild(debug)
-        
+        */
       
     }
     

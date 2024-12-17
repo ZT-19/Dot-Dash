@@ -12,6 +12,8 @@ class DOExplanationNode: SKNode {
     private var overlay: SKSpriteNode
     private var picture: SKSpriteNode
     private var size: CGSize
+    let scaleUp = SKAction.scale(to: 1.0, duration: 0.4)
+    let fadeInAni = SKAction.fadeAlpha(to: 1.0, duration: 0.6)
     
     let message:[[String]] = [[
         "Swipe to control the Rook.",
@@ -72,6 +74,8 @@ class DOExplanationNode: SKNode {
             label.position = CGPoint(x: point.x, y: yPosition)
             label.zPosition = 31
                addChild(label)
+            label.alpha = 0
+            label.run(fadeInAni)
             
                
                // Adjust Y position for the next line
@@ -82,14 +86,19 @@ class DOExplanationNode: SKNode {
             picture.position = CGPoint(x:point.x,y:point.y * 1.15)
             picture.zPosition = 31
             addChild(picture)
-            picture.alpha = 0
-            let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 1)
+           // picture.alpha = 0
+           // picture.run(fadeInAni)
+            picture.setScale(0.0)
+            picture.run(scaleUp)
+           
         }
         else if code == 1 {
             picture = SKSpriteNode(imageNamed: "powerupFreeze")
             picture.position = CGPoint(x:point.x,y:point.y * 1.15)
             picture.zPosition = 31
             addChild(picture)
+            picture.setScale(0.0)
+            picture.run(scaleUp)
             
         }
         else if code == 0{
