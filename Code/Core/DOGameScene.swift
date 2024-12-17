@@ -263,6 +263,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
        */
         for i in 0..<n_powerups{
+            
             if let existingPowerup = powerUpArray[i], existingPowerup.isSpent() {
                 //existingPowerup.removeFromParent()
                 if existingPowerup.isFreezeTime(){
@@ -366,19 +367,19 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive() && !isPlayerAnimating){
                         
                         cpow.startCountdown {
+                         
                             self.fadeInAllPowerUps()
-                            print("works")
+                           
                         }
        
                         if (cpow.isFreezeTime()){
                             timerNode.pause()
                             timerNode.freezeEffect(active: true)
-                            print("freezenode actiavted")
                         }
                         else{
                         levelLoad(restart: false)
                         }
-                    print("poweurp used")
+                    
                     return
                 }
             }
@@ -597,6 +598,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
          */
         
         // remove all dots and players from the scene
+        for i in 0..<n_powerups{
+            print(powerUpArray[i]?.getTimeLeft())
+        }
         isTouchEnabled = false
         for child in self.children {
             if let dotNodeD = child as? DODotNode {
@@ -881,7 +885,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-        print(String(i)+" "+String(j))
+     //   print(String(i)+" "+String(j))
         
     }
 
@@ -1049,7 +1053,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         inIntermission=true
         timerNode.pause()
         //timerNode.freezeEffect(active: true)
-        print("intermission pause")
         onscreentext!.updateText(code: code)
         addChild(onscreentext!)
         
@@ -1113,22 +1116,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
     }
 
-    //this seems to be a useless duplicate of levelload
-    func levelClear() {
-        levelTransition()
-        gameInfo.level += 1
-        levelNode.updateLevel(with: gameInfo.level)
-    }
-    
-    func levelTransition(){
-        let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y, duration: 2.0)
-        playerNode.run(playerTransition1)
-        self.removeAllChildren()
-        addChild(backgroundNode)
-      //  addChild(scoreNode)
-        addChild(levelNode)
-    }
-    
+
     func addPowerUp(){
         if n_powerups>=max_powerUps{
             return
