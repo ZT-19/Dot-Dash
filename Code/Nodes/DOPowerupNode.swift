@@ -32,9 +32,10 @@ class DOPowerUpNode: SKNode {
         self.countdownDuration = duration
         self.remainingTime = self.countdownDuration
         self.maskHeight = radius * 2
-        
-        if type == PowerUpType.skipLevel {
-            self.countdownDuration = 0.05
+               
+        if (type==PowerUpType.skipLevel){
+            countdownDuration = 0.05
+            self.remainingTime = countdownDuration
         }
         
         sprite = SKSpriteNode(imageNamed: "powerupDefault")
@@ -109,6 +110,7 @@ class DOPowerUpNode: SKNode {
     }
     
     func startCountdown(completion: @escaping () -> Void) {
+        print("Powerup countdown started")
         turnedOn = true
         self.remainingTime = countdownDuration
         
@@ -150,6 +152,7 @@ class DOPowerUpNode: SKNode {
             ])
         }
         */
+        
         self.run(fullSequence)
         
         if let scene = self.scene as? GameSKScene {

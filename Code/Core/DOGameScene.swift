@@ -368,19 +368,18 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         }
                         cpow.startCountdown {
                             //self.fadeInAllPowerUps()
-                            print("DEBUG: start countdown")
+                            // the oncompletion functions for startCountdown is outdated now
                         }
        
                         if (cpow.isFreezeTime()){
                             timerNode.pause()
                             timerNode.freezeEffect(active: true)
                             print("freezenode activated")
-                            //activePowerUp = cpow
                         }
                         else{
                         levelLoad(restart: false)
                         }
-                    print("poweurp used")
+                    
                     return
                 }
             }
@@ -599,6 +598,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
          */
         
         // remove all dots and players from the scene
+        for i in 0..<n_powerups{
+            print(powerUpArray[i]?.getTimeLeft())
+        }
         isTouchEnabled = false
         for child in self.children {
             if let dotNodeD = child as? DODotNode {
@@ -891,7 +893,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-        print(String(i)+" "+String(j))
+     //   print(String(i)+" "+String(j))
         
     }
 
@@ -1067,7 +1069,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         inIntermission=true
         timerNode.pause()
         //timerNode.freezeEffect(active: true)
-        print("intermission pause")
         onscreentext!.updateText(code: code)
         addChild(onscreentext!)
         
@@ -1131,22 +1132,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
     }
 
-    //this seems to be a useless duplicate of levelload
-    func levelClear() {
-        levelTransition()
-        gameInfo.level += 1
-        levelNode.updateLevel(with: gameInfo.level)
-    }
-    
-    func levelTransition(){
-        let playerTransition1 = SKAction.moveBy(x: 0, y: UIScreen.main.bounds.size.height - playerNode.position.y, duration: 2.0)
-        playerNode.run(playerTransition1)
-        self.removeAllChildren()
-        addChild(backgroundNode)
-      //  addChild(scoreNode)
-        addChild(levelNode)
-    }
-    
+
     func addPowerUp(){
         if n_powerups>=max_powerUps{
             return
