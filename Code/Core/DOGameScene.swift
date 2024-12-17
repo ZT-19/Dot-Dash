@@ -42,7 +42,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     var rng = SystemRandomNumberGenerator()
     let backgroundNode = DOBackgroundNode()
-    //let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
     let gameOverNode = DOGameOverNode()
     let frameNode = DOFrameNode()
@@ -162,11 +161,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         
 
-        timerNode = DOTimer(radius: 30, levelTime: 20) { [weak self] in
+        timerNode = DOTimer(radius: 50, levelTime: 20) { [weak self] in
             // Timer setup completed callback if needed
             //self?.gameOver()
         }
-        timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
+        timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 7)
         addChild(timerNode)
         timerNode.start()//WK
      
@@ -192,7 +191,46 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
            
         }
-      
+        
+        // currently broken restart button
+        // setupRestartButton()
+    }
+    func setupRestartButton() {
+        let restartButton = SKSpriteNode(color: .red, size: CGSize(width: 120, height: 40))
+        restartButton.position = CGPoint(x: self.size.width - 80, y: self.size.height - 40)
+        restartButton.name = "restartButton"
+        restartButton.zPosition = 100
+        
+        let restartLabel = SKLabelNode(text: "Restart")
+        restartLabel.fontName = "Arial"
+        restartLabel.fontSize = 20
+        restartLabel.fontColor = .white
+        restartLabel.verticalAlignmentMode = .center
+        
+        restartButton.addChild(restartLabel)
+        self.addChild(restartButton)
+    }
+    func restartGame() {
+        // Reset game state
+        gameInfo.score = 0
+        gameInfo.level = 1
+        difficulty = 1
+        gridSize = DOGameContext.shared.gridSize
+        
+        // Remove all existing nodes
+        self.removeAllChildren()
+        
+        // Reset powerups
+        n_powerups = 0
+        powerUpArray = Array(repeating: nil, count: max_powerUps)
+        
+        // Create new scene
+        if let view = self.view {
+            let newScene = GameSKScene()
+            newScene.size = self.size
+            newScene.scaleMode = self.scaleMode
+            view.presentScene(newScene, transition: SKTransition.fade(withDuration: 0.5))
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -285,7 +323,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
       
         // modifier states
     }
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {
             return
@@ -656,6 +693,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         else {
             let soundAction = SKAction.playSoundFileNamed("restart.mp3", waitForCompletion: false)
             self.run(soundAction)
+
             grid = baseGrid
             if firstFail{
                 firstFail = false
@@ -1002,6 +1040,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
     }
     func gameOver() {
+        backgroundMusicPlayer?.stop()
+        backgroundMusicPlayer = nil
+        
         self.gameOverScreen=true
         var removeCount = 0.0
         let nodes = self.children // Get all nodes in the scene
