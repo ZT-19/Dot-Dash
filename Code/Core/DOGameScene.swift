@@ -99,7 +99,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var powerupCurr = PowerUpType.freezeTime
     private var n_powerups = 0
     private var max_powerUps = 3
-    public var activePowerUp: DOPowerUpNode? = nil
+    public var activePowerUp: DOPowerUpNode? 
 
     private var inIntermission = false
     private var firstFreeze = true
@@ -220,7 +220,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(restartButton)
     }
     func restartGame() {
-        // Reset game state
+        // reset game state
         gameInfo.score = 0
         gameInfo.level = 1
         difficulty = 1
@@ -243,7 +243,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(_ currentTime: TimeInterval) {
-       
         
         if let timer = timerNode, timer.parent != nil {
                 if timer.timeLeft() <= 0 {
@@ -253,17 +252,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     addRedBorder()
                 }
             }
-      /*
-        if let explodingTimer = explodingTimer {
-            if !(powerupNode != nil && powerupNode.isFreezeTime() && powerupNode.isActive()) {
-                if explodingTimer.update(currentTime) {
-                    gameOver()
-                }
-            }
-        }
-       */
-        for i in 0..<n_powerups{
-            
+        for i in 0..<n_powerups {
             if let existingPowerup = powerUpArray[i], existingPowerup.isSpent() {
                 //existingPowerup.removeFromParent()
                 if existingPowerup.isFreezeTime(){
@@ -275,12 +264,18 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         }
                        
                     }
-                 //   timerNode.addTime(existingPowerup.getTimeStart(),stealth: true)
+                    // timerNode.addTime(existingPowerup.getTimeStart(),stealth: true)
                     if !frozen{
                         timerNode.resume()
                         timerNode.freezeEffect(active: false)
                     }
                     
+                    for j in 0..<n_powerups {
+                        if (i != j) {
+                            print("DEBUG: \(j)")
+                            powerUpArray[j]?.fadeInPart()
+                        }
+                    }
                 }
                 /* currently disabled feature
                 if existingPowerup.isExtraSlot(){
@@ -366,15 +361,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             if let cpow = powerUpArray[i]{
                 if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive() && !isPlayerAnimating){
                         
+                        for j in 0..<n_powerups{
+                            if i != j, let npow = powerUpArray[j] {
+                                npow.fadeOutPart()
+                            }
+                        }
                         cpow.startCountdown {
-                         
-                            self.fadeInAllPowerUps()
-                           
+                            //self.fadeInAllPowerUps()
+                            // the oncompletion functions for startCountdown is outdated now
                         }
        
                         if (cpow.isFreezeTime()){
                             timerNode.pause()
                             timerNode.freezeEffect(active: true)
+                            print("freezenode activated")
                         }
                         else{
                         levelLoad(restart: false)
@@ -678,6 +678,13 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
                 
             timerNode.pause()
+            for i in 0..<n_powerups{
+                if let cpow = powerUpArray[i]{
+                    if (cpow.isActive() && cpow.isFreezeTime() ){
+                        timerNode.freezeEffect(active: true)
+                    }
+                }
+            }
             
             
             
@@ -763,6 +770,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 if let cpow = powerUpArray[i]{
                     if (cpow.isActive() && cpow.isFreezeTime() ){
                         timerNode.pause()
+                        timerNode.freezeEffect(active: true)
                         print("freezenode still active")
                     }
                 }
@@ -775,7 +783,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(1)//TEST
+            progressBar.increaseProgress(0.2)//TEST
         }
     }
     
@@ -1047,6 +1055,14 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             print("Could not create audio player: \(error)")
         }
     }
+    private func findActiveFreeze() -> Bool {
+        for i in 0..<n_powerups {
+            if let existingPowerup = powerUpArray[i], existingPowerup.isFreezeTime(), existingPowerup.isActive() {
+                return true
+            }
+        }
+        return false
+    }
     
     func intermission(code: Int){
         // 0 for basic tutorial, 1 for first freeze, 2 for first level skip
@@ -1135,6 +1151,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         powerUpArray[self.n_powerups] = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
         powerUpArray[self.n_powerups]?.zPosition = 5
         addChild(powerUpArray[self.n_powerups]!)
+        if (findActiveFreeze()) { // needed to tint newly added powerups
+            powerUpArray[self.n_powerups]?.fadeOutPart()
+        }
         showPowerupNotification()
         //print("Powerup gained: \(powerupCurr)")
         n_powerups += 1
@@ -1148,15 +1167,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             firstFreeze = false
         }
     }
-    
-
-    func fadeOutOtherPowerUps(except activatedPowerUp: DOPowerUpNode) {
-        for powerUp in powerUpArray {
-            if let powerUp = powerUp, powerUp != activatedPowerUp {
-                powerUp.fadeOutPart()
-            }
-        }
-    }
 
     func fadeInAllPowerUps() {
         for powerUp in powerUpArray {
@@ -1164,6 +1174,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             print(powerUp?.isActive())
         }
     }
+    
     func shakeScreen(){
         let shakeAmount: CGFloat = 12.5
         let duration = 0.05

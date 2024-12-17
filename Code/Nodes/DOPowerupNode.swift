@@ -25,6 +25,7 @@ class DOPowerUpNode: SKNode {
     private var turnedOn = false
     private let overlayNode: SKCropNode
     private let cropNode: SKCropNode = SKCropNode()
+    private var shadeOverlay: SKShapeNode?
 
     init(radius: CGFloat, type: PowerUpType, position: CGPoint, duration: TimeInterval = 15.0) {
         self.type = type
@@ -150,13 +151,12 @@ class DOPowerUpNode: SKNode {
                 removeAction
             ])
         }
-         */
+        */
         
         self.run(fullSequence)
         
         if let scene = self.scene as? GameSKScene {
             scene.activePowerUp = self
-            scene.fadeOutOtherPowerUps(except: self)
         }
     }
 
@@ -210,10 +210,27 @@ class DOPowerUpNode: SKNode {
     }
     
     func fadeOutPart() {
-        self.sprite.alpha = 0.5
+        //self.sprite.alpha = 1
+        //print("DEBUG: Tinted")
+        
+        shadeOverlay?.removeFromParent()
+            
+            // Create new shade
+            let shade = SKShapeNode(circleOfRadius: radius)
+            shade.fillColor = .black
+            shade.strokeColor = .clear
+            shade.alpha = 0.7
+            shade.position = .zero
+            
+            // Store reference and add to node
+            shadeOverlay = shade
+            self.addChild(shade)
     }
 
     func fadeInPart() {
         self.sprite.alpha = 1
+        
+        shadeOverlay?.removeFromParent()
+        shadeOverlay = nil
     }
 }
