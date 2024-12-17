@@ -31,22 +31,30 @@ class DOLayoutInfo {
         if screenSize.width < 376.0 {
             setUpSE()
         }
-        if screenSize.width > 403.0{
+        else if screenSize.width < 394.0{
+            setUpRegular()
+        }
+        else if screenSize.width > 403.0{
             setUpProMax()
         }
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
+        offsetX = playableXLeft
+       offsetY = playableYBottom
     }
     func setUpSE(){
-        self.playableYBottom = 140
-        playableYTop = 500
-        playableXRight = 375
-        playableXLeft = 30
-        offsetX = playableXLeft - 16
-        offsetY = playableYBottom + 17
+        self.playableYBottom = 145
+        playableYTop = 535
+        playableXRight = 370
+        playableXLeft = 5
+     
       
     }
     func setUpRegular(){
+        self.playableYBottom = 180
+        playableYTop = 670
+        playableXRight = 383
+        playableXLeft = 10
         
     }
     func setUpProMax(){
@@ -55,7 +63,7 @@ class DOLayoutInfo {
         playableXRight = 430
         playableXLeft = 10
         offsetX = playableXLeft - 0.5
-        offsetY = playableYBottom 
+        offsetY = playableYBottom
     }
     
     

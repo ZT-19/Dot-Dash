@@ -144,8 +144,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         dotSpacingX = (playableXSize)/Double(gridSize+1)
         dotSpacingY = (playableYSize)/Double(gridSize+1)
         // center grid on screen and draw it
-        let gridWidth = CGFloat(gridSize) * dotSpacingX
-        offsetX = layoutInfo.offsetX
+        offsetX = layoutInfo.offsetX // offset is same as the smaller *playable* value, just easier to work with
         offsetY = layoutInfo.offsetY
         
         
@@ -166,11 +165,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
        
         
         
-
+        
         timerNode = DOTimer(radius: 30, levelTime: 20) { [weak self] in
             // Timer setup completed callback if needed
             //self?.gameOver()
         }
+         
         timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
         addChild(timerNode)
         timerNode.start()//WK
@@ -203,7 +203,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             height: 30  // Use full radius for height
         ), transform: nil))
         debug.fillColor = .red
-        debug.position = CGPoint(x:size.width/2,y:playableYTop)
+        debug.position = CGPoint(x:playableXRight,y:playableYTop)
         debug.zPosition = 34234
         print("DSF")
         addChild(debug)
