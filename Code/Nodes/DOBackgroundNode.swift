@@ -10,47 +10,37 @@ class DOBackgroundNode: SKSpriteNode {
     private var gridSize = DOGameContext.shared.gridSize
     private var playableXSize:Double // right-left
     private var playableYSize:Double // top - bottom
-    private let playableYTop = 620.0 / 874.0 * UIScreen.main.bounds.height // below the level count. All these values are scaled to 0,0 anchor
-    private let playableYBottom = 140.0 / 874.0 * UIScreen.main.bounds.height// above all powerups.
-    private let playableXLeft = 15.0 / 402.0 *  UIScreen.main.bounds.width// below the level count
-    private let playableXRight = 397.0 / 402.0 *  UIScreen.main.bounds.width// above all powerups.
+    private var playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor.
+    private var playableYBottom = 140.0// above all powerups. These are default values for Pro
+    private var playableXLeft = 15.0// below the level count
+    private var playableXRight = 397.0// above all powerups.
     private let eps = 3.0
     private var alt = false // to make sure chess rows alternate
     private let const_zpos = -30.0
     private let transitionTime = 1.4
     
     private var rng = SystemRandomNumberGenerator()
-    init() {
-        let texture = SKTexture(imageNamed: backgrounds[0])
+    init(size:CGSize) {
+        let texture = SKTexture(imageNamed: "tanbackground")
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
-        super.init(texture: texture, color: .clear, size: texture.size())
+        super.init(texture: texture, color: .clear, size:size)
     }
     func changeGridSize(new:Int){
         gridSize=new
     }
     private func addStars(gridSize: Int = 13) {
    
-        
+        print(playableYBottom)
         // generate random number of stars (40-50)
-        
+        alt = false
         var yPosition = playableYTop
        
-        /*
-        let debug = SKShapeNode(path:CGPath(ellipseIn: CGRect(
-            x: -30/2,  // Center the rect
-            y: -30/2,  // Center the rect
-            width: 30,  // Use full radius for width
-            height: 30  // Use full radius for height
-        ), transform: nil))
-        debug.fillColor = .red
-        debug.position = CGPoint(x:0,y:playableYBottom - size.height/2)
-       
-        addChild(debug)
-        */
+            
       
         //now using the first tile laid around the border of the frame fill the part above the playable part
         yPosition = playableYTop + (playableYSize/Double(gridSize+1))
+        
         while yPosition <= size.height + eps{
             var xPosition = playableXLeft
             if alt{
@@ -65,10 +55,13 @@ class DOBackgroundNode: SKSpriteNode {
             }
             
             yPosition += (playableYSize/Double(gridSize+1))
-            print(alt)
+           
             alt = (alt == false) // switches alt
         }
-        
+        if alt == false{
+            alt = true // check if alternating compared to the first row laid down
+            // first row is always alt = false
+        }
         yPosition = playableYTop
         while yPosition >= 0 - eps{
             var xPosition = playableXLeft
@@ -91,15 +84,10 @@ class DOBackgroundNode: SKSpriteNode {
         }
        
         yPosition = 0.0
-        var xPosition = playableXLeft
-        while xPosition <= playableXRight + eps{
-            let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1) * 2, color: UIColor(red: 79.0/255, green: 76.0/255, blue: 72.0/255, alpha: 1))
-            
-        
-            addChild(star)
-           
-            xPosition += playableXSize/Double(gridSize+1)
-        }
+        let boardedge = DOStarNode(position: CGPoint(x: 0, y: -size.height/2 - playableYSize/Double(gridSize+1)), screenHeight: size.height, width:  size.width, height: playableYSize/Double(gridSize+1) * 3, color: UIColor(red: 79.0/255, green: 76.0/255, blue: 72.0/255, alpha: 1))
+        boardedge.useEdgeTexture()
+        addChild(boardedge)
+      
 
         /*
         let starCount = Int.random(in: 40...50, using: &rng)
@@ -144,8 +132,14 @@ func setDeterminedTexture(id: Int = 0, secret: Bool = false) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup(screenSize: CGSize) {
+    func setup(screenSize: CGSize, ytop:CGFloat, ybottom: CGFloat, xleft: CGFloat, xright:CGFloat) {
         position = CGPoint(x: screenSize.width / 2, y: screenSize.height / 2)
+        playableYTop = ytop
+        playableYBottom = ybottom
+        playableXLeft = xleft
+        playableXRight = xright
+        playableXSize = playableXRight-playableXLeft
+        playableYSize = playableYTop-playableYBottom
         animateCurrentStarsDown()
         
         let wait = SKAction.wait(forDuration: 0.01)
@@ -153,6 +147,7 @@ func setDeterminedTexture(id: Int = 0, secret: Bool = false) {
             self?.removeAllChildren()
             self?.addStars(gridSize: self!.gridSize)
         }
+        
         
         run(SKAction.sequence([wait, setupAction]))
     }

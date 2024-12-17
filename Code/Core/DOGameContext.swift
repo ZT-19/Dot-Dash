@@ -12,7 +12,6 @@ import GameplayKit
 public class DOGameContext {
     static let shared = DOGameContext()  // singleton instance
     private(set) var scene: DOGameScene!
-    private(set) var stateMachine: GKStateMachine?  // needed to manage states
     
     // define parameters for the grid, which will track positions of DODotNodes
     var grid: [[Int]]

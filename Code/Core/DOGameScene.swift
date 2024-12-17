@@ -26,10 +26,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private let gridCenter = DOGameContext.shared.gridCenter
     private var powerUpArray = DOGameContext.shared.powerUpArray
     // HEIGHT = 874.0, WIDTH = 402.0
-    private let playableYTop = 620.0 / 874.0 * UIScreen.main.bounds.height // below the level count. All these values are scaled to 0,0 anchor
-    private let playableYBottom = 140.0 / 874.0 * UIScreen.main.bounds.height// above all powerups.
-    private let playableXLeft = 15.0 / 402.0 *  UIScreen.main.bounds.width// below the level count
-    private let playableXRight = 397.0  / 402.0 *  UIScreen.main.bounds.width // above all powerups.
+    private var playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor
+    private var playableYBottom = 140.0 // above all powerups.
+    private var playableXLeft = 15.0// below the level count
+    private var playableXRight = 397.0   // above all powerups.
     private var playableXSize:Double = 1.00 // right-left ,will be set in didmove
     private var playableYSize:Double = 10.0// top - bottom will be set in didmove
     private var dotSpacingX: Double = 69 // temporary value, changes depending on gridsize
@@ -41,13 +41,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var dotCount: Int = 0
     
     var rng = SystemRandomNumberGenerator()
-    let backgroundNode = DOBackgroundNode()
+
+    let backgroundNode = DOBackgroundNode(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+    //let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
     let gameOverNode = DOGameOverNode()
     let frameNode = DOFrameNode()
     var playerNode = DOPlayerNode()
     var playerstart = DOplayerStart()
+    let cameraNode = SKCameraNode()
     private var gameInfo = DOGameInfo()
+    private var layoutInfo = DOLayoutInfo(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
     private var gameOverScreen = false
     private var isTouchEnabled = true
     
@@ -102,6 +106,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var firstSkip = true
     private var firstFail = true
     private var onscreentext: DOExplanationNode?
+    private var levelClearText: DOExplanationNode?
     private var onscreenimage: DOOnscreenTutorial? // for the finger graphics during gameplay
     
     private var backgroundMusicPlayer: AVAudioPlayer?
@@ -110,14 +115,21 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         self.backgroundColor = .gray
         self.physicsWorld.contactDelegate = self
         
+        print("sizeinfo")
         print(size.height)
         print(size.width)
+        
+        playableXLeft = layoutInfo.playableXLeft
+        playableXRight = layoutInfo.playableXRight
+        playableYTop = layoutInfo.playableYTop
+        playableYBottom = layoutInfo.playableYBottom
+        
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
         
-        backgroundNode.setup(screenSize: size)
+        backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
         gameOverNode.setup(screenSize: size)
-        progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width*0.5, height: 30))
+        progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width*0.7, height: 30))
         progressBar.setup(screenSize: size)
         frameNode.setup(screenSize: CGSize(width: size.width+1, height: size.height))
         
@@ -125,9 +137,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(frameNode)
         addChild(progressBar)
         onscreentext = DOExplanationNode(size:size)
+        levelClearText = DOExplanationNode(size:size)
         onscreenimage = DOOnscreenTutorial(size:size)
         
-        
+        self.camera = cameraNode
+        self.addChild(cameraNode)
+        self.camera?.position = CGPoint(x:size.width/2,y:size.height/2)
 
      //   scoreNode.setup(screenSize: size)
        // addChild(scoreNode)
@@ -138,9 +153,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         dotSpacingX = (playableXSize)/Double(gridSize+1)
         dotSpacingY = (playableYSize)/Double(gridSize+1)
         // center grid on screen and draw it
-        let gridWidth = CGFloat(gridSize) * dotSpacingX
-        offsetX = playableXLeft * (0.85)
-        offsetY = playableYBottom * (1.43)
+        offsetX = layoutInfo.offsetX // offset is same as the smaller *playable* value, just easier to work with
+        offsetY = layoutInfo.offsetY
         
         
       //  offsetX -= 0.007463 *  UIScreen.main.bounds.width
@@ -155,10 +169,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter,tutorialLevels: 1)
         baseGrid = grid
         placeDotsFromGrid(grid: grid)
-        
-        
-       
-        
         
 
         timerNode = DOTimer(radius: 50, levelTime: 20) { [weak self] in
@@ -191,7 +201,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
            
         }
-        
         // currently broken restart button
         // setupRestartButton()
     }
@@ -241,27 +250,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     gameOver()
                 }
             else if timer.timeLeft() <= 10{
-                if self.childNode(withName: "redleft") == nil{
-                  
-                    let leftRed = SKSpriteNode(texture: SKTexture(imageNamed: "redleft"))
-                    leftRed.size = CGSize(width: size.width/5, height:size.height/2)
-                    leftRed.position = CGPoint(x:leftRed.size.width/3,y: size.height/2)
-                    leftRed.zPosition = 23
-                    leftRed.name = "redleft"
-                    leftRed.alpha = 0.0
-                    addChild(leftRed)
-                    let rightRed = SKSpriteNode(texture: SKTexture(imageNamed: "redright"))
-                    rightRed.size = CGSize(width: size.width/5, height:size.height/2)
-                    rightRed.position = CGPoint(x:size.width-rightRed.size.width/3,y: size.height/2)
-                    rightRed.zPosition = 23
-                    rightRed.name = "redright"
-                    rightRed.alpha = 0.0
-                    addChild(rightRed)
-                    let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 7)
-                    rightRed.run(fadeIn)
-                    leftRed.run(fadeIn)
-                    
-                    }
+                    addRedBorder()
                 }
             }
       /*
@@ -626,6 +615,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         playerstart.removeFromParent()
         childNode(withName: "redleft")?.removeFromParent()
         childNode(withName: "redright")?.removeFromParent()
+        childNode(withName: "redtop")?.removeFromParent()
+        childNode(withName: "redbottom")?.removeFromParent()
         onscreenimage?.removeFromParent()
         // if we are not restarting, we go to the next level
         if (!restart) {
@@ -657,7 +648,28 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
            */
 
            // gameInfo.score += Int(100)
+          
+            if progressBar.getProgress()<1 && inIntermission == false{
+                print(Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)))
             
+                if  Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)) > 0.8{
+                    print("congratulate entered")
+                 
+                    levelClearText?.congratulate()
+                if (childNode(withName: "OST") != nil){
+                    print("BAD")
+                    childNode(withName: "OST")?.removeFromParent()
+                }
+                    addChild(levelClearText!)
+                    levelClearText!.name = "OST"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [self] in
+                    levelClearText?.removeFromParent()
+                    
+                }
+                }
+               
+            }
+              
      
             timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
                 
@@ -730,6 +742,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var waitForTransition = levelTransitionTime
         if restart{
             waitForTransition = 0.0
+            shakeScreen()
         }
      
 
@@ -766,8 +779,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var randomDifficulty = difficultyRating
         var tempGrid = Array(repeating: Array(repeating: 0, count: gridSize + 2), count: gridSize + 2)
         if tutorialLevels==1 || tutorialLevels == 2{
-            tempGrid[1][1] = 2
-            tempGrid[gridSize][1] = 1
+            tempGrid[1][3] = 2
+            tempGrid[gridSize][3] = 1
             if tutorialLevels == 2{
                 
                     tempGrid[gridSize][gridSize] = 1
@@ -868,6 +881,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
+        print(String(i)+" "+String(j))
+        
     }
 
     private func addPlayer(at gridPosition: (Int, Int), offsetX: CGFloat, offsetY: CGFloat) {
@@ -1160,7 +1175,62 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             print(powerUp?.isActive())
         }
     }
-    
+    func shakeScreen(){
+        let shakeAmount: CGFloat = 12.5
+        let duration = 0.05
+        let shakeAction = SKAction.sequence([
+            SKAction.moveBy(x: shakeAmount, y: 0, duration: duration),
+            SKAction.moveBy(x: -shakeAmount * 2, y: 0, duration: duration),
+            SKAction.moveBy(x: shakeAmount, y: 0, duration: duration),
+            SKAction.moveBy(x: 0, y: shakeAmount, duration: duration),
+            SKAction.moveBy(x: 0, y: -shakeAmount * 2, duration: duration),
+            SKAction.moveBy(x: 0, y: shakeAmount, duration: duration)
+        ])
+        cameraNode.run(shakeAction)
+        self.camera?.position = CGPoint(x:size.width/2,y:size.height/2)
+    }
+    func addRedBorder(){
+        if self.childNode(withName: "redleft") == nil{
+          
+            let leftRed = SKSpriteNode(texture: SKTexture(imageNamed: "redleft"))
+            leftRed.size = CGSize(width: size.width/5, height:size.height)
+            leftRed.position = CGPoint(x:leftRed.size.width/3,y: size.height/2)
+            leftRed.zPosition = frameNode.zPosition - 1
+            leftRed.name = "redleft"
+            leftRed.alpha = 0.0
+            addChild(leftRed)
+            let rightRed = SKSpriteNode(texture: SKTexture(imageNamed: "redright"))
+            rightRed.size = CGSize(width: size.width/5, height:size.height)
+            rightRed.position = CGPoint(x:size.width-rightRed.size.width/3,y: size.height/2)
+            rightRed.zPosition = frameNode.zPosition - 1
+            rightRed.name = "redright"
+            rightRed.alpha = 0.0
+            addChild(rightRed)
+            let topRed = SKSpriteNode(texture: SKTexture(imageNamed: "redbottom"))
+            topRed.size = CGSize(width: size.width, height:playableYSize / 8)
+            topRed.position = CGPoint(x:size.width/2,y: size.height * 0.76)
+            topRed.zPosition = frameNode.zPosition - 1
+            topRed.name = "redtop"
+            topRed.alpha = 0.0
+            addChild(topRed)
+            let bottomRed = SKSpriteNode(texture: SKTexture(imageNamed: "redtop"))
+            bottomRed.size = CGSize(width: size.width, height:playableYSize / 8)
+            bottomRed.position = CGPoint(x:size.width/2,y: size.height * 0.24)
+            bottomRed.zPosition = frameNode.zPosition - 1
+            bottomRed.name = "redbottom"
+            bottomRed.alpha = 0.0
+            addChild(bottomRed)
+            
+            
+            let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 7)
+            rightRed.run(fadeIn)
+            leftRed.run(fadeIn)
+            topRed.run(fadeIn)
+            bottomRed.run(fadeIn)
+            
+            
+        }
+    }
     // translates matrix index to position on screen
     func coordCalculate(indices: CGPoint) -> CGPoint {
         return CGPoint(
