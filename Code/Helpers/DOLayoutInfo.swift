@@ -11,10 +11,10 @@ import UIKit
 class DOLayoutInfo {
     var screenSize: CGSize
     // ALL DEFAULT VALUES ARE FOR PRO
-    var playableYTop = 700.0 // below the level count. All these values are scaled to 0,0 anchor
+    var playableYTop = 690.0 // below the level count. All these values are scaled to 0,0 anchor
     var playableYBottom = 200.0 // above all powerups.
-    var playableXLeft = 15.0 // below the level count
-  var playableXRight = 397.0  // above all powerups.
+    var playableXLeft = 10.0 // below the level count
+  var playableXRight = 392.0  // above all powerups.
     var playableXSize:Double = 1.00 // right-left ,will be set in didmove
      var playableYSize:Double = 10.0// top - bottom will be set in didmove
     var offsetX: CGFloat = 0

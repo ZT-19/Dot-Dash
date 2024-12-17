@@ -13,7 +13,9 @@ class DOExplanationNode: SKNode {
     private var picture: SKSpriteNode
     private var size: CGSize
     let scaleUp = SKAction.scale(to: 1.0, duration: 0.4)
+    let scaleDown = SKAction.scale(to: 0.0, duration: 0.4)
     let fadeInAni = SKAction.fadeAlpha(to: 1.0, duration: 0.6)
+    private var rng = SystemRandomNumberGenerator()
     
     let message:[[String]] = [[
         "Swipe to control the Rook.",
@@ -30,6 +32,14 @@ class DOExplanationNode: SKNode {
         ,"Instantly clears current level."
     ],
     ["Swiping off screen", "results in a level restart."]]
+    let winmessage:[[String]] = [[
+        "Outstanding","Move"
+    ],
+       [ "Well", "Played!"],
+    ["Well", "done!"],
+    ["Big"],
+    ["!!!"]
+    ]
     init(size: CGSize){
         self.size = size
         overlay = SKSpriteNode(color: UIColor.black.withAlphaComponent(0.7), size: size)
@@ -121,16 +131,57 @@ class DOExplanationNode: SKNode {
         click2continue.run(SKAction.repeatForever(flashingSequence))
         
     }
+    func congratulate(){
+        resetText()
+        overlay.removeFromParent()
+        var yPosition = point.y
+        var code = Int.random(in: 0..<winmessage.count, using: &rng)
+        let back = SKSpriteNode(imageNamed: "timerbackground")
+       
+        addChild(back)
+      
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+            back.run(scaleDown)
+        }
+        print(code)
+        for line in winmessage[code] {
+               // Create an SKLabelNode for each line
+               let label = SKLabelNode(text: line)
+                
+               label.fontSize = 30
+            label.fontName="Helvetica"
+         
+               label.fontColor = .white
+               label.horizontalAlignmentMode = .center
+            label.position = CGPoint(x: point.x, y: yPosition)
+            label.zPosition = 31
+               addChild(label)
+            label.setScale(0.0)
+            label.run(scaleUp)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+                label.run(scaleDown)
+                
+            }
+               
+               // Adjust Y position for the next line
+               yPosition -= 30  // 30 is the line spacing
+           }
+        back.size = CGSize(width: size.width/2, height: 30 * CGFloat(winmessage[code].count) + 30)
+        back.position = CGPoint(x: point.x, y: point.y - 15 * CGFloat(winmessage[code].count) + 22.5)
+        back.setScale(0.0)
+        back.run(scaleUp)
+        back.zPosition = 31
+     
+    }
     func fadeIn(){
         self.setScale(0)
-    
-    // Scale up to normal size
-    let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
-    
-    // Optional: Add easing for smoother animation
-    scaleAction.timingMode = .easeOut
-    
-    self.run(scaleAction)
         
+        // Scale up to normal size
+        let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
+        
+        // Optional: Add easing for smoother animation
+        scaleAction.timingMode = .easeOut
+        
+        self.run(scaleAction)
     }
 }

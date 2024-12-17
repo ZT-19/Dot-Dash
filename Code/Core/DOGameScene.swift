@@ -104,6 +104,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var firstSkip = true
     private var firstFail = true
     private var onscreentext: DOExplanationNode?
+    private var levelClearText: DOExplanationNode?
     private var onscreenimage: DOOnscreenTutorial? // for the finger graphics during gameplay
     
     override func didMove(to view: SKView) {
@@ -132,6 +133,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         addChild(frameNode)
         addChild(progressBar)
         onscreentext = DOExplanationNode(size:size)
+        levelClearText = DOExplanationNode(size:size)
         onscreenimage = DOOnscreenTutorial(size:size)
         
         self.camera = cameraNode
@@ -609,7 +611,28 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
            */
 
            // gameInfo.score += Int(100)
+          
+            if progressBar.getProgress()<1 && inIntermission == false{
+                print(Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)))
             
+                if  Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)) > 0.8{
+                    print("congratulate entered")
+                 
+                    levelClearText?.congratulate()
+                if (childNode(withName: "OST") != nil){
+                    print("BAD")
+                    childNode(withName: "OST")?.removeFromParent()
+                }
+                    addChild(levelClearText!)
+                    levelClearText!.name = "OST"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [self] in
+                    levelClearText?.removeFromParent()
+                    
+                }
+                }
+               
+            }
+              
      
             timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
                 
