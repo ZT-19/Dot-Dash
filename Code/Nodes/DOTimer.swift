@@ -96,11 +96,8 @@ class DOTimer: SKSpriteNode {
         isTimerPaused = false
         if isTexturesPrepared {
             startAnimation()
-
-           
         } else {
             pendingStart = true
-          
         }
       
 
@@ -146,7 +143,6 @@ class DOTimer: SKSpriteNode {
         let fadeIn = SKAction.fadeIn(withDuration: 0.002)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.01)
         scaleUp.timingMode = .easeOut
-        //innerCircle.fillColor = blue
         print("paused")
     }
     func freezeEffect(active: Bool) {
@@ -194,8 +190,8 @@ class DOTimer: SKSpriteNode {
     // Reset texture node
     textureNode.removeAllActions()
     textureNode.texture = timerService.getAllTextures().first
-        timeLabel.fontColor = .gray
-        innerCircle.fillColor = darkSquare
+    timeLabel.fontColor = .black
+    innerCircle.fillColor = darkSquare
     // If timer should auto-start
     if !isTimerPaused {
         startAnimation()

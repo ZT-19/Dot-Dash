@@ -5,8 +5,6 @@
 //  Created by Justin Chen on 11/7/24.
 //
 
-
-
 import SpriteKit
 
 class DOGameOverNode: SKNode {
@@ -21,7 +19,7 @@ class DOGameOverNode: SKNode {
         textNode.verticalAlignmentMode = .center
         addChild(textNode)
         
-        setupRestartButton(screenSize: screenSize)
+        //setupRestartButton(screenSize: screenSize)
     }
 
     private func setupRestartButton(screenSize: CGSize) {
@@ -54,11 +52,3 @@ extension DOGameOverNode {
         static let size = CGSize(width: 280, height: 90)
     }
 }
-
-//
-//  DOScoreNode.swift
-//  Dot Dash Score
-//
-//  Created by Justin Chen, 11/4/2024
-
-
