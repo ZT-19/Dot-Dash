@@ -96,11 +96,8 @@ class DOTimer: SKSpriteNode {
         isTimerPaused = false
         if isTexturesPrepared {
             startAnimation()
-
-           
         } else {
             pendingStart = true
-          
         }
       
 
@@ -193,8 +190,8 @@ class DOTimer: SKSpriteNode {
     // Reset texture node
     textureNode.removeAllActions()
     textureNode.texture = timerService.getAllTextures().first
-        timeLabel.fontColor = .gray
-        innerCircle.fillColor = darkSquare
+    timeLabel.fontColor = .black
+    innerCircle.fillColor = darkSquare
     // If timer should auto-start
     if !isTimerPaused {
         startAnimation()
