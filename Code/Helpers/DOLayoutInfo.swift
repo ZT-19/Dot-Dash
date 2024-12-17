@@ -11,8 +11,8 @@ import UIKit
 class DOLayoutInfo {
     var screenSize: CGSize
     // ALL DEFAULT VALUES ARE FOR PRO
-    var playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor
-    var playableYBottom = 140.0 // above all powerups.
+    var playableYTop = 700.0 // below the level count. All these values are scaled to 0,0 anchor
+    var playableYBottom = 200.0 // above all powerups.
     var playableXLeft = 15.0 // below the level count
   var playableXRight = 397.0  // above all powerups.
     var playableXSize:Double = 1.00 // right-left ,will be set in didmove
@@ -43,6 +43,7 @@ class DOLayoutInfo {
        offsetY = playableYBottom
     }
     func setUpSE(){
+        print("Using SE")
         self.playableYBottom = 145
         playableYTop = 535
         playableXRight = 370
@@ -51,6 +52,7 @@ class DOLayoutInfo {
       
     }
     func setUpRegular(){
+        print ("using regular")
         self.playableYBottom = 180
         playableYTop = 670
         playableXRight = 383
@@ -58,6 +60,7 @@ class DOLayoutInfo {
         
     }
     func setUpProMax(){
+        print ("using max")
         self.playableYBottom = 210
         playableYTop = 750
         playableXRight = 430

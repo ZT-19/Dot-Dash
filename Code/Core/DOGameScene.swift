@@ -47,6 +47,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     let frameNode = DOFrameNode()
     var playerNode = DOPlayerNode()
     var playerstart = DOplayerStart()
+    let cameraNode = SKCameraNode()
     private var gameInfo = DOGameInfo()
     private var layoutInfo = DOLayoutInfo(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
     private var gameOverScreen = false
@@ -133,7 +134,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         onscreentext = DOExplanationNode(size:size)
         onscreenimage = DOOnscreenTutorial(size:size)
         
-        
+        self.camera = cameraNode
+        self.addChild(cameraNode)
+        self.camera?.position = CGPoint(x:size.width/2,y:size.height/2)
 
      //   scoreNode.setup(screenSize: size)
        // addChild(scoreNode)
@@ -160,11 +163,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         grid = drawGridArray(difficultyRating: difficulty, initX: gridCenter, initY: gridCenter,tutorialLevels: 1)
         baseGrid = grid
         placeDotsFromGrid(grid: grid)
-        
-        
-       
-        
-        
         
         timerNode = DOTimer(radius: 30, levelTime: 20) { [weak self] in
             // Timer setup completed callback if needed
@@ -681,6 +679,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var waitForTransition = levelTransitionTime
         if restart{
             waitForTransition = 0.0
+            shakeScreen()
         }
      
 
@@ -1093,6 +1092,20 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             powerUp?.fadeInPart()
             print(powerUp?.isActive())
         }
+    }
+    func shakeScreen(){
+        let shakeAmount: CGFloat = 12.5
+        let duration = 0.05
+        let shakeAction = SKAction.sequence([
+            SKAction.moveBy(x: shakeAmount, y: 0, duration: duration),
+            SKAction.moveBy(x: -shakeAmount * 2, y: 0, duration: duration),
+            SKAction.moveBy(x: shakeAmount, y: 0, duration: duration),
+            SKAction.moveBy(x: 0, y: shakeAmount, duration: duration),
+            SKAction.moveBy(x: 0, y: -shakeAmount * 2, duration: duration),
+            SKAction.moveBy(x: 0, y: shakeAmount, duration: duration)
+        ])
+        cameraNode.run(shakeAction)
+        self.camera?.position = CGPoint(x:size.width/2,y:size.height/2)
     }
     func addRedBorder(){
         if self.childNode(withName: "redleft") == nil{

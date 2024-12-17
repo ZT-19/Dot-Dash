@@ -82,6 +82,8 @@ class DOExplanationNode: SKNode {
             picture.position = CGPoint(x:point.x,y:point.y * 1.15)
             picture.zPosition = 31
             addChild(picture)
+            picture.alpha = 0
+            let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 1)
         }
         else if code == 1 {
             picture = SKSpriteNode(imageNamed: "powerupFreeze")
