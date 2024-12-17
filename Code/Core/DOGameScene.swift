@@ -758,7 +758,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(1)//TEST
         }
     }
     
