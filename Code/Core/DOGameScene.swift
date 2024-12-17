@@ -2,6 +2,7 @@
 
 import SpriteKit
 import SwiftUI
+import AVFoundation
 
 public struct DOGameScene: View {
     public var body: some View {
@@ -40,6 +41,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var dotCount: Int = 0
     
     var rng = SystemRandomNumberGenerator()
+
     let backgroundNode = DOBackgroundNode(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
     //let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
@@ -107,6 +109,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var levelClearText: DOExplanationNode?
     private var onscreenimage: DOOnscreenTutorial? // for the finger graphics during gameplay
     
+    private var backgroundMusicPlayer: AVAudioPlayer?
+    
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
         self.physicsWorld.contactDelegate = self
@@ -166,12 +170,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         baseGrid = grid
         placeDotsFromGrid(grid: grid)
         
-        timerNode = DOTimer(radius: 30, levelTime: 20) { [weak self] in
+
+        timerNode = DOTimer(radius: 50, levelTime: 20) { [weak self] in
             // Timer setup completed callback if needed
             //self?.gameOver()
         }
-         
-        timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 8)
+        timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 7)
         addChild(timerNode)
         timerNode.start()//WK
      
@@ -185,6 +189,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         progressBar.zPosition = 6
         levelNode.zPosition = 6
         
+        playBackgroundMusic()
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [self] in
             if gameInfo.level == 1 {
                 print("entered on screen tutorial")
@@ -195,20 +201,45 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
            
         }
-        /*
-        let debug = SKShapeNode(path:CGPath(ellipseIn: CGRect(
-            x: -30/2,  // Center the rect
-            y: -30/2,  // Center the rect
-            width: 30,  // Use full radius for width
-            height: 30  // Use full radius for height
-        ), transform: nil))
-        debug.fillColor = .red
-        debug.position = CGPoint(x:playableXRight,y:playableYTop)
-        debug.zPosition = 34234
-        print("DSF")
-        addChild(debug)
-        */
-      
+        // currently broken restart button
+        // setupRestartButton()
+    }
+    func setupRestartButton() {
+        let restartButton = SKSpriteNode(color: .red, size: CGSize(width: 120, height: 40))
+        restartButton.position = CGPoint(x: self.size.width - 80, y: self.size.height - 40)
+        restartButton.name = "restartButton"
+        restartButton.zPosition = 100
+        
+        let restartLabel = SKLabelNode(text: "Restart")
+        restartLabel.fontName = "Arial"
+        restartLabel.fontSize = 20
+        restartLabel.fontColor = .white
+        restartLabel.verticalAlignmentMode = .center
+        
+        restartButton.addChild(restartLabel)
+        self.addChild(restartButton)
+    }
+    func restartGame() {
+        // Reset game state
+        gameInfo.score = 0
+        gameInfo.level = 1
+        difficulty = 1
+        gridSize = DOGameContext.shared.gridSize
+        
+        // Remove all existing nodes
+        self.removeAllChildren()
+        
+        // Reset powerups
+        n_powerups = 0
+        powerUpArray = Array(repeating: nil, count: max_powerUps)
+        
+        // Create new scene
+        if let view = self.view {
+            let newScene = GameSKScene()
+            newScene.size = self.size
+            newScene.scaleMode = self.scaleMode
+            view.presentScene(newScene, transition: SKTransition.fade(withDuration: 0.5))
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -281,7 +312,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
       
         // modifier states
     }
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {
             return
@@ -293,6 +323,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         guard let touch = touches.first else {
             return
         }
+        
         handleTouchEnd(touch)
     }
 
@@ -424,6 +455,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         
                     }
                 }
+                
+                let soundAction = SKAction.playSoundFileNamed("hitsoundclick.m4a", waitForCompletion: false)
+                self.run(soundAction)
                 
                 // remove dot
                 grid[currentX][currentY] = 0
@@ -586,6 +620,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         onscreenimage?.removeFromParent()
         // if we are not restarting, we go to the next level
         if (!restart) {
+            let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
+            self.run(soundAction)
+            
             if gridSize<13 && difficulty%2==1{
                 gridSize += 1
                 backgroundNode.changeGridSize(new: gridSize)
@@ -666,6 +703,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
         }
         else {
+            let soundAction = SKAction.playSoundFileNamed("restart.mp3", waitForCompletion: false)
+            self.run(soundAction)
+
             grid = baseGrid
             if firstFail{
                 firstFail = false
@@ -731,7 +771,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(1)//TEST
         }
     }
     
@@ -988,6 +1028,22 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         print(cnt)
             return Int(cnt)
     }
+    private func playBackgroundMusic() {
+        guard let url = Bundle.main.url(forResource: "backgroundmusic", withExtension: "mp3") else {
+            print("Cannot find backgroundmusic.mp3")
+            return
+        }
+        
+        do {
+            backgroundMusicPlayer = try AVAudioPlayer(contentsOf: url)
+            backgroundMusicPlayer?.numberOfLoops = -1 // loop indefinitely
+            backgroundMusicPlayer?.volume = 0.5 // could be adjusted lower to be more subtle in the background
+            backgroundMusicPlayer?.play()
+        } catch {
+            print("Could not create audio player: \(error)")
+        }
+    }
+    
     func intermission(code: Int){
         // 0 for basic tutorial, 1 for first freeze, 2 for first level skip
         inIntermission=true
@@ -999,6 +1055,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
     }
     func gameOver() {
+        backgroundMusicPlayer?.stop()
+        backgroundMusicPlayer = nil
+        
         self.gameOverScreen=true
         var removeCount = 0.0
         let nodes = self.children // Get all nodes in the scene

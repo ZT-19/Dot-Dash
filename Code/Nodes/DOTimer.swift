@@ -62,7 +62,7 @@ class DOTimer: SKSpriteNode {
     private func setupTimerAppearance(radius: CGFloat, currTime: Int = 20) {
        
         timeLabel = SKLabelNode(fontNamed: "PPNeueMontreal-Bold")
-        timeLabel.fontSize = 14
+        timeLabel.fontSize = 24
         timeLabel.fontColor = .black
         timeLabel.position = CGPoint(x: 0, y: 0)
         timeLabel.horizontalAlignmentMode = .center
