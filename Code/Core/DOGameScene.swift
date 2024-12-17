@@ -104,7 +104,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var inIntermission = false
     private var firstFreeze = true
     private var firstSkip = true
-    private var firstFail = true
     private var onscreentext: DOExplanationNode?
     private var levelClearText: DOExplanationNode?
     private var onscreenimage: DOOnscreenTutorial? // for the finger graphics during gameplay
@@ -413,7 +412,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
 
         var (currentX, currentY) = playerNode.getLoc()
-        
+        let (startX, startY) = playerNode.getLoc()
+        let startPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY ))
 
         while currentX > 0 && currentY > 0 && currentX < self.gridSize + 1 && currentY < self.gridSize + 1 {
             
@@ -421,19 +421,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             currentY = currentY + yv
             
          
-            let startPoint = coordCalculate(indices: CGPoint(x: currentX - xv, y: currentY - yv))
+           
             let endPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
-            if xv==0{
-                self.addChild(DOTrailNode(position: endPoint,
-                                             vertical: xv == 0,
-                                          startPoint: startPoint, size:CGSize(width: dotSpacingX/4, height: dotSpacingY))) // height is argument for length, width for width
-            }
-            else{
-                self.addChild(DOTrailNode(position: endPoint,
-                                             vertical: xv == 0,
-                                          startPoint: startPoint, size:CGSize(width: dotSpacingY/4, height: dotSpacingX)))
-            }
-            
+          
             if grid[currentX][currentY] == 1 {
                 let newPlayerPosition = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
                 let slideAction = SKAction.move(to: newPlayerPosition, duration: 0.2)
@@ -456,6 +446,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         
                     }
                 }
+                if xv==0{
+                    self.addChild(DOTrailNode(position: newPlayerPosition,
+                                                 vertical: xv == 0,
+                                              startPoint: startPoint, size:CGSize(width: dotSpacingX/4, height: dotSpacingY * Double(abs(currentY - startY))))) // height is argument for length, width for width
+                }
+                else{
+                    self.addChild(DOTrailNode(position: newPlayerPosition,
+                                                 vertical: xv == 0,
+                                              startPoint: startPoint, size:CGSize(width: dotSpacingY/4, height: dotSpacingX * Double(abs(currentX - startX)))))
+                }
+                
                 
                 let soundAction = SKAction.playSoundFileNamed("hitsoundclick.m4a", waitForCompletion: false)
                 self.run(soundAction)
@@ -567,7 +568,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             powerupEligible = false
            
-            if (modCode == 1) {
+            if (modCode == 1) { // ancient code for difficulty modifiers
                 gameOver()
             }
             else {
@@ -575,6 +576,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 levelLoad(restart: true,powerupEligible: powerupEligible)
             }
         }
+        
         else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
            
@@ -718,11 +720,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             self.run(soundAction)
 
             grid = baseGrid
-            if firstFail{
-                firstFail = false
-                intermission(code: 3)
-                
-            }
         }
         
         levelNode.updateLevel(with: gameInfo.level)

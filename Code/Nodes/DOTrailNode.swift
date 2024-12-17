@@ -17,13 +17,13 @@ class DOTrailNode: SKNode {
         
         
             if vertical {
-                trailSprite = SKSpriteNode(imageNamed: "trailVert")
+                trailSprite = SKSpriteNode(imageNamed: "trail")
                 trailSprite.size = CGSize(width: wid, height: long)
                 trailSprite.anchorPoint = position.y > startPoint.y ? CGPoint(x: 0.5, y: 0) : CGPoint(x: 0.5, y: 1)
                 trailSprite.yScale = 0
                 trailSprite.xScale = 1
             } else {
-                trailSprite = SKSpriteNode(imageNamed: "trailHoriz")
+                trailSprite = SKSpriteNode(imageNamed: "trail")
                 trailSprite.size = CGSize(width: long, height: wid)
                 trailSprite.anchorPoint = position.x > startPoint.x ? CGPoint(x: 0, y: 0.5) : CGPoint(x: 1, y: 0.5)
                 trailSprite.xScale = 0
