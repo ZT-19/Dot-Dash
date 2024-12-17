@@ -146,7 +146,6 @@ class DOTimer: SKSpriteNode {
         let fadeIn = SKAction.fadeIn(withDuration: 0.002)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.01)
         scaleUp.timingMode = .easeOut
-        //innerCircle.fillColor = blue
         print("paused")
     }
     func freezeEffect(active: Bool) {
