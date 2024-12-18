@@ -1,4 +1,5 @@
 import SpriteKit
+import UIKit
 
 enum PowerUpType {
     case freezeTime
@@ -113,6 +114,7 @@ class DOPowerUpNode: SKNode {
         print("Powerup countdown started")
         turnedOn = true
         self.remainingTime = countdownDuration
+        DOHapticsManager.shared.trigger(.powerUpUsed)
         
         // 1. pop animation
         let popSequence = createPopAnimation()

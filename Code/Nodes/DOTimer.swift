@@ -36,6 +36,7 @@ class DOTimer: SKSpriteNode {
     
     private var selfRad = 0.0
     private var selfTime = 20
+    private var endSfx = true
 
     init(radius: CGFloat, levelTime: Int = 20, completion: @escaping () -> Void) {
         self.totalTime = levelTime
@@ -100,7 +101,6 @@ class DOTimer: SKSpriteNode {
             pendingStart = true
         }
       
-
     }
     
     private func startAnimation() {
@@ -151,9 +151,7 @@ class DOTimer: SKSpriteNode {
         }
         else {
             innerCircle.fillColor = darkSquare
-            
         }
-
     }
 
     func resume() {
@@ -161,7 +159,7 @@ class DOTimer: SKSpriteNode {
         isTimerPaused = false
         self.speed = 1
         //innerCircle.fillColor = darkSquare
-    //    print("resumed")
+        //print("resumed")
     }
 
     func stop() {
@@ -174,53 +172,69 @@ class DOTimer: SKSpriteNode {
 
     
     func resetTimer(timeLeft: Int) {
-           // Stop existing animations
-    self.removeAction(forKey: "countdownTimer")
-    textureNode.removeAction(forKey: "countdownAnimation")
-    
+        // Stop existing animations
+        self.removeAction(forKey: "countdownTimer")
+        textureNode.removeAction(forKey: "countdownAnimation")
+        
         totalTime = timeLeft
-    // Reset state
-    hasEnded = false
-    playedTick = false
-    remainingTime = totalTime
-    
-    // Update visuals
-    updateTimeLabel()
-    
-    // Reset texture node
-    textureNode.removeAllActions()
-    textureNode.texture = timerService.getAllTextures().first
-    timeLabel.fontColor = .black
-    innerCircle.fillColor = darkSquare
-    // If timer should auto-start
-    if !isTimerPaused {
-        startAnimation()
+        // Reset state
+        hasEnded = false
+        playedTick = false
+        remainingTime = totalTime
+        
+        // Update visuals
+        updateTimeLabel()
+        
+        // Reset texture node
+        textureNode.removeAllActions()
+        textureNode.texture = timerService.getAllTextures().first
+        timeLabel.fontColor = .black
+        innerCircle.fillColor = darkSquare
+        // If timer should auto-start
+        if !isTimerPaused {
+            startAnimation()
+        }
     }
+    
+    func endSound() {
+        if (endSfx) {
+            let volumeAction = SKAction.changeVolume(to: 0.3, duration: 0)
+            let soundAction = SKAction.playSoundFileNamed("gameover.mp3", waitForCompletion: false)
+            let sequence = SKAction.sequence([volumeAction, soundAction])
+            self.run(sequence)
+            
+            endSfx = false
+        }
     }
-    /*
-    func resetTimer(timeLeft: Int = 20) {
-            hasEnded = false
-            playedTick = false
-            remainingTime = totalTime
-            updateTimeLabel()
-        }*/
     
     private func updateTimeLabel() {
-  
         let minutes = remainingTime / 60
         let seconds = remainingTime % 60
         timeLabel.text = String(format: "%02d:%02d", minutes, seconds)
-        if remainingTime < 5 {
+        
+        var oneTimeEffect = true
+        
+        if remainingTime <= 5 {
             timeLabel.fontColor = .black
             innerCircle.fillColor = red
+            
+            if (remainingTime != 0) {
+                let warningSound = SKAction.playSoundFileNamed("tick.mp3", waitForCompletion: false)
+                self.run(warningSound)
+            }
+            
+            if (oneTimeEffect) {
+                DOHapticsManager.shared.trigger(.timeLow)
+                oneTimeEffect = false
+                // TODO: play lowtime rattle
+            }
             if !playedTick {
                 playedTick = true
                 //SKTAudio.sharedInstance().playSoundEffect(.mmTick)
             }
         } else {
-
-            timeLabel.fontColor = isTimerPaused ? .gray : .black
-
+            timeLabel.fontColor = isTimerPaused ? .black : .black
         }
     }
+    
 }

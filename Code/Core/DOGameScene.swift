@@ -456,9 +456,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         
                     }
                 }
-                
-                let soundAction = SKAction.playSoundFileNamed("hitsoundclick.m4a", waitForCompletion: false)
-                self.run(soundAction)
+                if dotCount > 1 {
+                    let soundAction = SKAction.playSoundFileNamed("hitsoundclick.m4a", waitForCompletion: false)
+                    self.run(soundAction)
+                }
                 
                 // remove dot
                 grid[currentX][currentY] = 0
@@ -577,10 +578,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
         else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
-           
+            // should only be played here instead of in levelLoad() to avoid overlapping effects
+            DOHapticsManager.shared.trigger(.levelComplete)
+            
             levelLoad(restart: false,powerupEligible: powerupEligible)
             powerupEligible = true
-            
         }
     }
     func levelLoad(restart: Bool, powerupEligible:Bool = true, skipped:Bool = false) {
@@ -624,8 +626,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         onscreenimage?.removeFromParent()
         // if we are not restarting, we go to the next level
         if (!restart) {
-            let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
-            self.run(soundAction)
+            let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
+            let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
+            let sequence = SKAction.sequence([volumeAction, soundAction])
+            self.run(sequence)
             
             if gridSize<13 && difficulty%2==1{
                 gridSize += 1
@@ -714,9 +718,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
         }
         else {
-            let soundAction = SKAction.playSoundFileNamed("restart.mp3", waitForCompletion: false)
-            self.run(soundAction)
-
+            let volumeAction = SKAction.changeVolume(to: 0.5, duration: 0)
+            let soundAction = SKAction.playSoundFileNamed("restart1.mp3", waitForCompletion: false)
+            let sequence = SKAction.sequence([volumeAction, soundAction])
+            self.run(sequence)
+            
             grid = baseGrid
             if firstFail{
                 firstFail = false
@@ -1041,7 +1047,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             return Int(cnt)
     }
     private func playBackgroundMusic() {
-        guard let url = Bundle.main.url(forResource: "backgroundmusic", withExtension: "mp3") else {
+        guard let url = Bundle.main.url(forResource: "backgroundmusic1", withExtension: "mp3") else {
             print("Cannot find backgroundmusic.mp3")
             return
         }
@@ -1049,7 +1055,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         do {
             backgroundMusicPlayer = try AVAudioPlayer(contentsOf: url)
             backgroundMusicPlayer?.numberOfLoops = -1 // loop indefinitely
-            backgroundMusicPlayer?.volume = 0.5 // could be adjusted lower to be more subtle in the background
+            backgroundMusicPlayer?.volume = 0.03 // could be adjusted lower to be more subtle in the background
             backgroundMusicPlayer?.play()
         } catch {
             print("Could not create audio player: \(error)")
@@ -1074,8 +1080,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
     }
     func gameOver() {
+        timerNode.endSound()
         backgroundMusicPlayer?.stop()
         backgroundMusicPlayer = nil
+        DOHapticsManager.shared.trigger(.gameOver)
         
         self.gameOverScreen=true
         shakeScreen()
