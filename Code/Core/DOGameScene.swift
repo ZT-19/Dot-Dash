@@ -367,7 +367,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                             }
                         }
                         cpow.startCountdown {
-                            //self.fadeInAllPowerUps()
                             // the oncompletion functions for startCountdown is outdated now
                         }
        
@@ -626,8 +625,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         onscreenimage?.removeFromParent()
         // if we are not restarting, we go to the next level
         if (!restart) {
-            let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
-            let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
+            let volumeAction = SKAction.changeVolume(to: 0.05, duration: 0)
+            let soundAction = SKAction.playSoundFileNamed("levelcompletion5.mp3", waitForCompletion: false)
+            soundAction.speed = 0.7
             let sequence = SKAction.sequence([volumeAction, soundAction])
             self.run(sequence)
             
@@ -1176,13 +1176,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
     }
 
-    func fadeInAllPowerUps() {
-        for powerUp in powerUpArray {
-            powerUp?.fadeInPart()
-            print(powerUp?.isActive())
-        }
-    }
-    
     func shakeScreen(){
         let shakeAmount: CGFloat = 12.5
         let duration = 0.05

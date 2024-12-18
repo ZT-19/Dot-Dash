@@ -25,6 +25,11 @@
 		2B6F2ED42D127EA100CF03C3 /* gameover.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B6F2ED32D127EA100CF03C3 /* gameover.mp3 */; };
 		2B6F2ED62D12819A00CF03C3 /* levelcompletion3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B6F2ED52D12819A00CF03C3 /* levelcompletion3.mp3 */; };
 		2B6F2ED82D12824A00CF03C3 /* restart1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B6F2ED72D12824A00CF03C3 /* restart1.mp3 */; };
+		2B6F2EF42D129BC100CF03C3 /* levelcompletion4.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B6F2EF32D129BC100CF03C3 /* levelcompletion4.mp3 */; };
+		2B6F2EF62D129C3500CF03C3 /* levelcompletion5.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B6F2EF52D129C3500CF03C3 /* levelcompletion5.mp3 */; };
+		2B6F2EF82D12A94F00CF03C3 /* gameover1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B6F2EF72D12A94F00CF03C3 /* gameover1.mp3 */; };
+		2B6F2EFA2D12A97300CF03C3 /* gameover2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B6F2EF92D12A97300CF03C3 /* gameover2.mp3 */; };
+		2B6F2EFC2D12A97900CF03C3 /* gameover3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 2B6F2EFB2D12A97900CF03C3 /* gameover3.mp3 */; };
 		2B9D80E32CF6E8DC003722E6 /* DOExplodingTimerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9D80E22CF6E8D6003722E6 /* DOExplodingTimerNode.swift */; };
 		2B9D80E52CF6EBED003722E6 /* DOPowerupNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */; };
 		870008362CFACE7A005B8218 /* DOTrailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870008352CFACE74005B8218 /* DOTrailNode.swift */; };
@@ -86,6 +91,11 @@
 		2B6F2ED32D127EA100CF03C3 /* gameover.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = gameover.mp3; sourceTree = "<group>"; };
 		2B6F2ED52D12819A00CF03C3 /* levelcompletion3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = levelcompletion3.mp3; sourceTree = "<group>"; };
 		2B6F2ED72D12824A00CF03C3 /* restart1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = restart1.mp3; sourceTree = "<group>"; };
+		2B6F2EF32D129BC100CF03C3 /* levelcompletion4.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = levelcompletion4.mp3; sourceTree = "<group>"; };
+		2B6F2EF52D129C3500CF03C3 /* levelcompletion5.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = levelcompletion5.mp3; sourceTree = "<group>"; };
+		2B6F2EF72D12A94F00CF03C3 /* gameover1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = gameover1.mp3; sourceTree = "<group>"; };
+		2B6F2EF92D12A97300CF03C3 /* gameover2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = gameover2.mp3; sourceTree = "<group>"; };
+		2B6F2EFB2D12A97900CF03C3 /* gameover3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = gameover3.mp3; sourceTree = "<group>"; };
 		2B9D80E22CF6E8D6003722E6 /* DOExplodingTimerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOExplodingTimerNode.swift; sourceTree = "<group>"; };
 		2B9D80E42CF6EBE9003722E6 /* DOPowerupNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DOPowerupNode.swift; sourceTree = "<group>"; };
 		2BD62E642CCD7A9900B86F14 /* Dot-Dash.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dot-Dash.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -236,14 +246,18 @@
 		87BF02D92CDD4C7B002A1821 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
+				2B6F2EF52D129C3500CF03C3 /* levelcompletion5.mp3 */,
 				87BF02D82CDD4C7B002A1821 /* Assets.xcassets */,
+				2B6F2EF92D12A97300CF03C3 /* gameover2.mp3 */,
 				2B68F7C72D10CA1A008B963F /* backgroundmusic.mp3 */,
+				2B6F2EFB2D12A97900CF03C3 /* gameover3.mp3 */,
 				2B68F7C12D10AD0E008B963F /* collisionsound.mp3 */,
 				2B68F7C22D10AD0E008B963F /* levelcompletion.mp3 */,
 				2B68F7C52D10C905008B963F /* hitsoundclick.m4a */,
 				2B68F7C92D10D00A008B963F /* restart.mp3 */,
 				2B68F7CB2D1116AB008B963F /* 1x1_#FFFFFFFF.png */,
 				2B68F7CD2D111769008B963F /* whitepixel.png */,
+				2B6F2EF32D129BC100CF03C3 /* levelcompletion4.mp3 */,
 				2B6F2ECB2D12788800CF03C3 /* backgroundmusic1.mp3 */,
 				2B6F2ECD2D127B2900CF03C3 /* tick.mp3 */,
 				2B6F2ECF2D127CFF00CF03C3 /* levelcompletion1.mp3 */,
@@ -251,6 +265,7 @@
 				2B6F2ED32D127EA100CF03C3 /* gameover.mp3 */,
 				2B6F2ED52D12819A00CF03C3 /* levelcompletion3.mp3 */,
 				2B6F2ED72D12824A00CF03C3 /* restart1.mp3 */,
+				2B6F2EF72D12A94F00CF03C3 /* gameover1.mp3 */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -387,19 +402,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B6F2ED82D12824A00CF03C3 /* restart1.mp3 in Resources */,
+				2B6F2EF62D129C3500CF03C3 /* levelcompletion5.mp3 in Resources */,
 				2B6F2ED42D127EA100CF03C3 /* gameover.mp3 in Resources */,
+				2B6F2EFA2D12A97300CF03C3 /* gameover2.mp3 in Resources */,
 				2B68F7CE2D111769008B963F /* whitepixel.png in Resources */,
 				2B68F7CC2D1116AB008B963F /* 1x1_#FFFFFFFF.png in Resources */,
 				2B68F7CA2D10D00A008B963F /* restart.mp3 in Resources */,
 				2B68F7C32D10AD0E008B963F /* levelcompletion.mp3 in Resources */,
 				2B68F7C42D10AD0E008B963F /* collisionsound.mp3 in Resources */,
 				2B68F7C62D10C905008B963F /* hitsoundclick.m4a in Resources */,
+				2B6F2EF82D12A94F00CF03C3 /* gameover1.mp3 in Resources */,
+				2B6F2EFC2D12A97900CF03C3 /* gameover3.mp3 in Resources */,
 				2B68F7C82D10CA1A008B963F /* backgroundmusic.mp3 in Resources */,
 				2B6F2ECE2D127B2900CF03C3 /* tick.mp3 in Resources */,
 				2B6F2ED62D12819A00CF03C3 /* levelcompletion3.mp3 in Resources */,
 				2B6F2ECC2D12788800CF03C3 /* backgroundmusic1.mp3 in Resources */,
 				87BF02DA2CDD4C7B002A1821 /* Assets.xcassets in Resources */,
 				2B6F2ED12D127CFF00CF03C3 /* levelcompletion2.mp3 in Resources */,
+				2B6F2EF42D129BC100CF03C3 /* levelcompletion4.mp3 in Resources */,
 				2B6F2ED22D127CFF00CF03C3 /* levelcompletion1.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

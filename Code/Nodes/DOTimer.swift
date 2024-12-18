@@ -199,7 +199,7 @@ class DOTimer: SKSpriteNode {
     func endSound() {
         if (endSfx) {
             let volumeAction = SKAction.changeVolume(to: 0.3, duration: 0)
-            let soundAction = SKAction.playSoundFileNamed("gameover.mp3", waitForCompletion: false)
+            let soundAction = SKAction.playSoundFileNamed("gameover3.mp3", waitForCompletion: false)
             let sequence = SKAction.sequence([volumeAction, soundAction])
             self.run(sequence)
             
