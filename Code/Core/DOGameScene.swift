@@ -577,9 +577,22 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
+            let scaleUp = SKAction.scale(to: 1.25, duration: 0.3)
+            
+            // slide to corner while shrinking
+            let shrink = SKAction.scale(to: 0.5, duration: 0.4)
+            let fadeOut = SKAction.fadeOut(withDuration: 0.4)
+            
+            // combine pop-in and slide animations
+            let popIn = SKAction.group([scaleUp])
+            let exitGroup = SKAction.group([shrink, fadeOut])
+            playerNode.run(SKAction.sequence([scaleUp,exitGroup]))
+            flashGreenBorder()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [self] in
+                levelLoad(restart: false,powerupEligible: powerupEligible)
+                powerupEligible = true
+            }
            
-            levelLoad(restart: false,powerupEligible: powerupEligible)
-            powerupEligible = true
             
         }
     }
@@ -598,9 +611,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
          */
         
         // remove all dots and players from the scene
-        for i in 0..<n_powerups{
-            print(powerUpArray[i]?.getTimeLeft())
-        }
         isTouchEnabled = false
         for child in self.children {
             if let dotNodeD = child as? DODotNode {
@@ -625,7 +635,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             childNode(withName: "redright")?.removeFromParent()
             childNode(withName: "redtop")?.removeFromParent()
             childNode(withName: "redbottom")?.removeFromParent()
-            flashGreenBorder()
+           
             
             let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
             self.run(soundAction)
@@ -781,7 +791,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var currentY = initY
 
         tempGrid[initX][initY] = 2 // first location is player
-
+        print("Size: " + String(gridSize))
         
         // vars to handle unsolvable levels
         var prevDir = -1
@@ -798,8 +808,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             var newX = currentX, newY=currentY
             switch direction {
             case 0: // right
-                if currentX < gridSize - 2 {
-                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                if currentX < gridSize - 1 {
+                    changeAmount = Int.random(in: 1...(gridSize - currentX), using: &rng)
                     newX += changeAmount
                     break
                 }
@@ -810,8 +820,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     break
                 }
             case 2: // down
-                if currentY < gridSize - 2 {
-                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                if currentY < gridSize - 1 {
+                    changeAmount = Int.random(in: 1...(gridSize - currentY), using: &rng)
                     newY += changeAmount
                     break
                 }
@@ -870,7 +880,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-     //   print(String(i)+" "+String(j))
+       print(String(i)+" "+String(j))
         
     }
 
@@ -1210,8 +1220,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     func flashGreenBorder(){
-        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
-        let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.5)
+        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.35)
+        let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.35)
         let flashingSequence = SKAction.sequence([fadeIn,fadeOut])
         if self.childNode(withName: "greenleft") == nil{
           
@@ -1249,7 +1259,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             leftgreen.run(flashingSequence)
             topgreen.run(flashingSequence)
             bottomgreen.run(flashingSequence)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [self] in
                 rightgreen.removeFromParent()
                 leftgreen.removeFromParent()
                 topgreen.removeFromParent()
