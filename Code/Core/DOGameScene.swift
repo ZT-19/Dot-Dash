@@ -178,8 +178,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         timerNode.start()//WK
      
         
-        print(playableYTop)
-        print(playableYBottom)
+        
         
         backgroundNode.zPosition = -CGFloat.greatestFiniteMagnitude // hardcoded to the back layer
         frameNode.zPosition = 5
@@ -618,13 +617,16 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         playerstart.removeFromParent()
-        childNode(withName: "redleft")?.removeFromParent()
-        childNode(withName: "redright")?.removeFromParent()
-        childNode(withName: "redtop")?.removeFromParent()
-        childNode(withName: "redbottom")?.removeFromParent()
+       
         onscreenimage?.removeFromParent()
         // if we are not restarting, we go to the next level
         if (!restart) {
+            childNode(withName: "redleft")?.removeFromParent()
+            childNode(withName: "redright")?.removeFromParent()
+            childNode(withName: "redtop")?.removeFromParent()
+            childNode(withName: "redbottom")?.removeFromParent()
+            flashGreenBorder()
+            
             let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
             self.run(soundAction)
             
@@ -1130,7 +1132,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         if (findActiveFreeze()) { // needed to tint newly added powerups
             powerUpArray[self.n_powerups]?.fadeOutPart()
         }
-        showPowerupNotification()
+        //showPowerupNotification()
         //print("Powerup gained: \(powerupCurr)")
         n_powerups += 1
         progressBar.setProgress(0.0)
@@ -1147,7 +1149,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     func fadeInAllPowerUps() {
         for powerUp in powerUpArray {
             powerUp?.fadeInPart()
-            print(powerUp?.isActive())
+          
         }
     }
     
@@ -1206,6 +1208,56 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             
         }
+    }
+    func flashGreenBorder(){
+        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
+        let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.5)
+        let flashingSequence = SKAction.sequence([fadeIn,fadeOut])
+        if self.childNode(withName: "greenleft") == nil{
+          
+            let leftgreen = SKSpriteNode(texture: SKTexture(imageNamed: "greenleft"))
+            leftgreen.size = CGSize(width: size.width/5, height:size.height)
+            leftgreen.position = CGPoint(x:leftgreen.size.width/3,y: size.height/2)
+            leftgreen.zPosition = frameNode.zPosition - 1
+            leftgreen.name = "greenleft"
+            leftgreen.alpha = 0.0
+            addChild(leftgreen)
+            let rightgreen = SKSpriteNode(texture: SKTexture(imageNamed: "greenright"))
+            rightgreen.size = CGSize(width: size.width/5, height:size.height)
+            rightgreen.position = CGPoint(x:size.width-rightgreen.size.width/3,y: size.height/2)
+            rightgreen.zPosition = frameNode.zPosition - 1
+            rightgreen.name = "greenright"
+            rightgreen.alpha = 0.0
+            addChild(rightgreen)
+            let topgreen = SKSpriteNode(texture: SKTexture(imageNamed: "greentop"))
+            topgreen.size = CGSize(width: size.width, height:playableYSize / 8)
+            topgreen.position = CGPoint(x:size.width/2,y: size.height * 0.76)
+            topgreen.zPosition = frameNode.zPosition - 1
+            topgreen.name = "greentop"
+            topgreen.alpha = 0.0
+            addChild(topgreen)
+            let bottomgreen = SKSpriteNode(texture: SKTexture(imageNamed: "greenbottom"))
+            bottomgreen.size = CGSize(width: size.width, height:playableYSize / 8)
+            bottomgreen.position = CGPoint(x:size.width/2,y: size.height * 0.24)
+            bottomgreen.zPosition = frameNode.zPosition - 1
+            bottomgreen.name = "greenbottom"
+            bottomgreen.alpha = 0.0
+            addChild(bottomgreen)
+            
+            
+            rightgreen.run(flashingSequence)
+            leftgreen.run(flashingSequence)
+            topgreen.run(flashingSequence)
+            bottomgreen.run(flashingSequence)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [self] in
+                rightgreen.removeFromParent()
+                leftgreen.removeFromParent()
+                topgreen.removeFromParent()
+                bottomgreen.removeFromParent()
+            }
+            
+        }
+        
     }
     // translates matrix index to position on screen
     func coordCalculate(indices: CGPoint) -> CGPoint {

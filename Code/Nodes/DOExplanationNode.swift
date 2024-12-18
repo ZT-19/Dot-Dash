@@ -22,12 +22,12 @@ class DOExplanationNode: SKNode {
     ]
     ,[
         "Time Freeze"
-        , "Freeze time","for 15 seconds."
+        , "Freeze time for 15 seconds."
         
     ]
     ,[
         "Level Skip"
-        ,"Instantly clears","current level."
+        ,"Instantly clears current level."
     ]]
     init(size: CGSize){
         self.size = size
@@ -63,7 +63,7 @@ class DOExplanationNode: SKNode {
         let toplabel = SKLabelNode(text: "New Powerup!")
          
         toplabel.fontSize = 30
-     toplabel.fontName="Arial Rounded MT Bold"
+     toplabel.fontName="Arial Rounded MT"
   
         toplabel.fontColor = .white
         toplabel.horizontalAlignmentMode = .center
@@ -84,6 +84,7 @@ class DOExplanationNode: SKNode {
             label.fontName="Arial Rounded MT Bold"
             if index >= 1 {
                 label.fontName = "Arial-ItalicMT"
+                label.fontSize = 20
             }
          
                label.fontColor = .white
@@ -132,9 +133,10 @@ class DOExplanationNode: SKNode {
         let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.8)
         click2continue.fontSize = 20
        
-        click2continue.fontName="Helvetica"
+        click2continue.fontName="Arial"
   
         click2continue.fontColor = .white
+        click2continue.fontSize = 20
         click2continue.position = CGPoint(x: point.x, y: yPosition)
         let flashingSequence = SKAction.sequence([fadeOut, fadeIn])
         click2continue.zPosition = 31
