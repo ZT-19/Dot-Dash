@@ -598,6 +598,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
+            timerNode.pause() // to stop the game from ending during the animation
             let scaleUp = SKAction.scale(to: 1.25, duration: 0.3)
             
             // slide to corner while shrinking
