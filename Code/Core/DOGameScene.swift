@@ -601,6 +601,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             timerNode.pause() // to stop the game from ending during the animation
             let scaleUp = SKAction.scale(to: 1.25, duration: 0.3)
             
+            let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
+            let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
+            let sequence = SKAction.sequence([volumeAction, soundAction])
+            self.run(sequence)
+            
+            
             // slide to corner while shrinking
             let shrink = SKAction.scale(to: 0.5, duration: 0.4)
             let fadeOut = SKAction.fadeOut(withDuration: 0.4)
@@ -657,13 +663,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             childNode(withName: "redright")?.removeFromParent()
             childNode(withName: "redtop")?.removeFromParent()
             childNode(withName: "redbottom")?.removeFromParent()
-           
-            
-           
-            let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
-            let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
-            let sequence = SKAction.sequence([volumeAction, soundAction])
-            self.run(sequence)
             
             if gridSize<13 && difficulty%2==1{
                 gridSize += 1
