@@ -18,28 +18,17 @@ class DOExplanationNode: SKNode {
     private var rng = SystemRandomNumberGenerator()
     
     let message:[[String]] = [[
-        "Swipe to control the Rook.",
-        "Take all Black pieces.",
-        "Advance as far as you can!"
+        "Test","test"
     ]
     ,[
-        "New Powerup: Freeze Time."
+        "Time Freeze"
         , "Freeze time for 15 seconds."
         
     ]
     ,[
-        "New Powerup: Skip Level."
+        "Level Skip"
         ,"Instantly clears current level."
-    ],
-    ["Swiping off screen", "results in a level restart."]]
-    let winmessage:[[String]] = [[
-        "Outstanding","Move"
-    ],
-       [ "Well", "Played!"],
-    ["Well", "done!"],
-    ["Big"],
-    ["!!!"]
-    ]
+    ]]
     init(size: CGSize){
         self.size = size
         overlay = SKSpriteNode(color: UIColor.black.withAlphaComponent(0.7), size: size)
@@ -71,18 +60,38 @@ class DOExplanationNode: SKNode {
     func updateText(code: Int) {
         resetText()
         var yPosition = point.y * 0.75 + CGFloat((30 * message[code].count) / 2)
+        let toplabel = SKLabelNode(text: "New Powerup!")
+         
+        toplabel.fontSize = 30
+     toplabel.fontName="Arial"
+  
+        toplabel.fontColor = .white
+        toplabel.horizontalAlignmentMode = .center
+        toplabel.position = CGPoint(x: point.x, y: point.y * 1.3)
+     toplabel.zPosition = 31
+        addChild(toplabel)
+     toplabel.alpha = 0
+     toplabel.run(fadeInAni)
         
+       
+        
+        var index = 0
         for line in message[code] {
                // Create an SKLabelNode for each line
                let label = SKLabelNode(text: line)
                 
                label.fontSize = 30
-            label.fontName="Helvetica"
+            label.fontName="Arial Rounded MT Bold"
+            if index >= 1 {
+                label.fontName = "Arial-ItalicMT"
+                label.fontSize = 20
+            }
          
                label.fontColor = .white
                label.horizontalAlignmentMode = .center
             label.position = CGPoint(x: point.x, y: yPosition)
             label.zPosition = 31
+            
                addChild(label)
             label.alpha = 0
             label.run(fadeInAni)
@@ -90,10 +99,11 @@ class DOExplanationNode: SKNode {
                
                // Adjust Y position for the next line
                yPosition -= 30  // 30 is the line spacing
+            index += 1
            }
         if code == 2{
             picture = SKSpriteNode(imageNamed: "powerupSkip")
-            picture.position = CGPoint(x:point.x,y:point.y * 1.15)
+            picture.position = CGPoint(x:point.x,y:point.y * 1.10)
             picture.zPosition = 31
             addChild(picture)
            // picture.alpha = 0
@@ -104,11 +114,13 @@ class DOExplanationNode: SKNode {
         }
         else if code == 1 {
             picture = SKSpriteNode(imageNamed: "powerupFreeze")
-            picture.position = CGPoint(x:point.x,y:point.y * 1.15)
+            picture.position = CGPoint(x:point.x,y:point.y * 1.1)
             picture.zPosition = 31
             addChild(picture)
             picture.setScale(0.0)
             picture.run(scaleUp)
+            
+        
             
         }
         else if code == 0{
@@ -121,9 +133,10 @@ class DOExplanationNode: SKNode {
         let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.8)
         click2continue.fontSize = 20
        
-        click2continue.fontName="Helvetica"
+        click2continue.fontName="Arial"
   
         click2continue.fontColor = .white
+        click2continue.fontSize = 20
         click2continue.position = CGPoint(x: point.x, y: yPosition)
         let flashingSequence = SKAction.sequence([fadeOut, fadeIn])
         click2continue.zPosition = 31
@@ -131,6 +144,7 @@ class DOExplanationNode: SKNode {
         click2continue.run(SKAction.repeatForever(flashingSequence))
         
     }
+        /*
     func congratulate(){
         resetText()
         overlay.removeFromParent()
@@ -173,6 +187,7 @@ class DOExplanationNode: SKNode {
         back.zPosition = 31
      
     }
+    */
     func fadeIn(){
         self.setScale(0)
         

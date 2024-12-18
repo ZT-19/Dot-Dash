@@ -84,8 +84,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var modNotificationLabel: SKLabelNode?
     
     // powerups
-    private let powerupRadius = 45.0 / 402.0 *  UIScreen.main.bounds.width
-    let powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
+    private var powerupRadius:CGFloat = 45.0 / 402.0 *  UIScreen.main.bounds.width
+    var powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
+    var powerupHeight: CGFloat = 133 / 402.0 *  UIScreen.main.bounds.width
 
     private let powerupTypes: [PowerUpType] = [
     //    .doubleDotScore,
@@ -104,9 +105,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var inIntermission = false
     private var firstFreeze = true
     private var firstSkip = true
-    private var firstFail = true
     private var onscreentext: DOExplanationNode?
-    private var levelClearText: DOExplanationNode?
     private var onscreenimage: DOOnscreenTutorial? // for the finger graphics during gameplay
     
     private var backgroundMusicPlayer: AVAudioPlayer?
@@ -123,6 +122,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         playableXRight = layoutInfo.playableXRight
         playableYTop = layoutInfo.playableYTop
         playableYBottom = layoutInfo.playableYBottom
+        self.powerupRadius = layoutInfo.powerupRadius
+        self.powerUpNodeRadius = layoutInfo.powerUpNodeRadius
+        powerupHeight = layoutInfo.powerUpHeight
+        
         
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
@@ -132,12 +135,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width*0.7, height: 30))
         progressBar.setup(screenSize: size)
         frameNode.setup(screenSize: CGSize(width: size.width+1, height: size.height))
+        frameNode.setupPowerups(powerUpNodeRadius: powerUpNodeRadius, powerUpRadius: powerupRadius, powerupHeight:  powerupHeight)
         
         addChild(backgroundNode)
         addChild(frameNode)
         addChild(progressBar)
         onscreentext = DOExplanationNode(size:size)
-        levelClearText = DOExplanationNode(size:size)
         onscreenimage = DOOnscreenTutorial(size:size)
         
         self.camera = cameraNode
@@ -170,18 +173,28 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         baseGrid = grid
         placeDotsFromGrid(grid: grid)
         
-
-        timerNode = DOTimer(radius: 50, levelTime: 20) { [weak self] in
-            // Timer setup completed callback if needed
-            //self?.gameOver()
+        if (size.width < 376.0){
+            // SE version
+            timerNode = DOTimer(radius: 40, levelTime: 20) { [weak self] in
+                // Timer setup completed callback if needed
+                //self?.gameOver()
+            }
+            timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 9)
+            
         }
-        timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 7)
+        else{
+            timerNode = DOTimer(radius: 50, levelTime: 20) { [weak self] in
+                // Timer setup completed callback if needed
+                //self?.gameOver()
+            }
+            timerNode.position = CGPoint(x: size.width / 2, y: size.height * 0.865)
+        }
+     
         addChild(timerNode)
         timerNode.start()//WK
      
         
-        print(playableYTop)
-        print(playableYBottom)
+        
         
         backgroundNode.zPosition = -CGFloat.greatestFiniteMagnitude // hardcoded to the back layer
         frameNode.zPosition = 5
@@ -193,7 +206,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [self] in
             if gameInfo.level == 1 {
-                print("entered on screen tutorial")
+              
                  addChild(onscreenimage!)
              //   onscreenimage?.alpha = 0.0
         
@@ -413,7 +426,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
 
         var (currentX, currentY) = playerNode.getLoc()
-        
+        let (startX, startY) = playerNode.getLoc()
+        let startPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY ))
 
         while currentX > 0 && currentY > 0 && currentX < self.gridSize + 1 && currentY < self.gridSize + 1 {
             
@@ -421,19 +435,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             currentY = currentY + yv
             
          
-            let startPoint = coordCalculate(indices: CGPoint(x: currentX - xv, y: currentY - yv))
+           
             let endPoint = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
-            if xv==0{
-                self.addChild(DOTrailNode(position: endPoint,
-                                             vertical: xv == 0,
-                                          startPoint: startPoint, size:CGSize(width: dotSpacingX/4, height: dotSpacingY))) // height is argument for length, width for width
-            }
-            else{
-                self.addChild(DOTrailNode(position: endPoint,
-                                             vertical: xv == 0,
-                                          startPoint: startPoint, size:CGSize(width: dotSpacingY/4, height: dotSpacingX)))
-            }
-            
+          
             if grid[currentX][currentY] == 1 {
                 let newPlayerPosition = coordCalculate(indices: CGPoint(x: currentX, y: currentY))
                 let slideAction = SKAction.move(to: newPlayerPosition, duration: 0.2)
@@ -456,10 +460,25 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                         
                     }
                 }
+
+                if xv==0{
+                    self.addChild(DOTrailNode(position: newPlayerPosition,
+                                                 vertical: xv == 0,
+                                              startPoint: startPoint, size:CGSize(width: dotSpacingX/4, height: dotSpacingY * Double(abs(currentY - startY))))) // height is argument for length, width for width
+                }
+                else{
+                    self.addChild(DOTrailNode(position: newPlayerPosition,
+                                                 vertical: xv == 0,
+                                              startPoint: startPoint, size:CGSize(width: dotSpacingY/4, height: dotSpacingX * Double(abs(currentX - startX)))))
+                }
+                
+                
+             
                 if dotCount > 1 {
                     let soundAction = SKAction.playSoundFileNamed("hitsoundclick.m4a", waitForCompletion: false)
                     self.run(soundAction)
                 }
+
                 
                 // remove dot
                 grid[currentX][currentY] = 0
@@ -568,7 +587,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             powerupEligible = false
            
-            if (modCode == 1) {
+            if (modCode == 1) { // ancient code for difficulty modifiers
                 gameOver()
             }
             else {
@@ -576,13 +595,26 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 levelLoad(restart: true,powerupEligible: powerupEligible)
             }
         }
+        
         else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
-            // should only be played here instead of in levelLoad() to avoid overlapping effects
-            DOHapticsManager.shared.trigger(.levelComplete)
+            let scaleUp = SKAction.scale(to: 1.25, duration: 0.3)
             
-            levelLoad(restart: false,powerupEligible: powerupEligible)
-            powerupEligible = true
+            // slide to corner while shrinking
+            let shrink = SKAction.scale(to: 0.5, duration: 0.4)
+            let fadeOut = SKAction.fadeOut(withDuration: 0.4)
+            
+            // combine pop-in and slide animations
+            let popIn = SKAction.group([scaleUp])
+            let exitGroup = SKAction.group([shrink, fadeOut])
+            playerNode.run(SKAction.sequence([scaleUp,exitGroup]))
+            flashGreenBorder()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [self] in
+                  // should only be played here instead of in levelLoad() to avoid overlapping effects
+                DOHapticsManager.shared.trigger(.levelComplete)
+                levelLoad(restart: false,powerupEligible: powerupEligible)
+                powerupEligible = true
+            }      
         }
     }
     func levelLoad(restart: Bool, powerupEligible:Bool = true, skipped:Bool = false) {
@@ -600,9 +632,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
          */
         
         // remove all dots and players from the scene
-        for i in 0..<n_powerups{
-            print(powerUpArray[i]?.getTimeLeft())
-        }
         isTouchEnabled = false
         for child in self.children {
             if let dotNodeD = child as? DODotNode {
@@ -619,13 +648,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         playerstart.removeFromParent()
-        childNode(withName: "redleft")?.removeFromParent()
-        childNode(withName: "redright")?.removeFromParent()
-        childNode(withName: "redtop")?.removeFromParent()
-        childNode(withName: "redbottom")?.removeFromParent()
+       
         onscreenimage?.removeFromParent()
         // if we are not restarting, we go to the next level
         if (!restart) {
+            childNode(withName: "redleft")?.removeFromParent()
+            childNode(withName: "redright")?.removeFromParent()
+            childNode(withName: "redtop")?.removeFromParent()
+            childNode(withName: "redbottom")?.removeFromParent()
+           
+            
+           
             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
             let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
             let sequence = SKAction.sequence([volumeAction, soundAction])
@@ -657,27 +690,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
            // gameInfo.score += Int(100)
           
-            if progressBar.getProgress()<1 && inIntermission == false{
-                print(Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)))
-            
-                if  Float.random(in: 0...1, using: &rng) * log(Float(gameInfo.level-1)) > 0.5{
-                    print("congratulate entered")
-                 
-                    levelClearText?.congratulate()
-                if (childNode(withName: "OST") != nil){
-                    print("BAD")
-                    childNode(withName: "OST")?.removeFromParent()
-                }
-                    addChild(levelClearText!)
-                    levelClearText!.name = "OST"
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [self] in
-                    levelClearText?.removeFromParent()
-                    
-                }
-                }
-               
-            }
-              
      
             timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
                 
@@ -724,11 +736,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             self.run(sequence)
             
             grid = baseGrid
-            if firstFail{
-                firstFail = false
-                intermission(code: 3)
-                
-            }
         }
         
         levelNode.updateLevel(with: gameInfo.level)
@@ -765,7 +772,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
             self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
-            if !restart{
+            if !restart && !inIntermission{
                 timerNode.start()
             }
            
@@ -789,7 +796,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)//TEST
+            progressBar.increaseProgress(0.2)
         }
     }
     
@@ -810,7 +817,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         var currentY = initY
 
         tempGrid[initX][initY] = 2 // first location is player
-
+        print("Size: " + String(gridSize))
         
         // vars to handle unsolvable levels
         var prevDir = -1
@@ -827,8 +834,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             var newX = currentX, newY=currentY
             switch direction {
             case 0: // right
-                if currentX < gridSize - 2 {
-                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentX), using: &rng)
+                if currentX < gridSize - 1 {
+                    changeAmount = Int.random(in: 1...(gridSize - currentX), using: &rng)
                     newX += changeAmount
                     break
                 }
@@ -839,8 +846,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                     break
                 }
             case 2: // down
-                if currentY < gridSize - 2 {
-                    changeAmount = Int.random(in: 1...(gridSize - 1 - currentY), using: &rng)
+                if currentY < gridSize - 1 {
+                    changeAmount = Int.random(in: 1...(gridSize - currentY), using: &rng)
                     newY += changeAmount
                     break
                 }
@@ -899,7 +906,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-     //   print(String(i)+" "+String(j))
+       print(String(i)+" "+String(j))
         
     }
 
@@ -1087,6 +1094,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         
         self.gameOverScreen=true
         shakeScreen()
+        shakeScreen()
         var removeCount = 0.0
         let nodes = self.children // Get all nodes in the scene
         for (index, node) in nodes.enumerated() {
@@ -1103,7 +1111,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 * removeCount + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             self.removeAllChildren()
             // gameOverNode.updateMessage()
             self.addChild(self.gameOverNode)
@@ -1125,15 +1133,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
           //  print(node.position)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 * removeCount) {
-                let scaleAction = SKAction.fadeOut(withDuration: 0.2)
-                
+            //DispatchQueue.main.asyncAfter(deadline: .now() + 0.3 * removeCount) { [self] in
+                // let scaleAction = SKAction.fadeOut(withDuration: 0.2)
+                let rotate = SKAction.rotate(byAngle: CGFloat.random(in: -30...30, using: &rng), duration: 15)
+                let move = SKAction.move(by: CGVector(dx: CGFloat.random(in: -130...130, using: &rng), dy: -playableYSize - 50), duration: 15)
                 // Optional: Add easing for smoother animation
-                scaleAction.timingMode = .easeOut
+               // scaleAction.timingMode = .easeOut
                 
-                node.run(scaleAction)
+                node.run(rotate)
+                node.run(move)
                 
-            }
+           // }
             removeCount -= 1
                 
         }
@@ -1149,7 +1159,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         x_powerUp_position += (UIScreen.main.bounds.width/2 - powerUpNodeRadius) * CGFloat(n_powerups)
         
        
-        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 75 / 874.0 * UIScreen.main.bounds.height )
+        let position = CGPoint(x:x_powerUp_position, y: powerupHeight)
         powerupCurr = powerupTypes.randomElement(using: &rng)!
         /*
         while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){
@@ -1157,12 +1167,12 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         }
          */
         powerUpArray[self.n_powerups] = DOPowerUpNode(radius: powerupRadius, type: powerupCurr, position: position)
-        powerUpArray[self.n_powerups]?.zPosition = 5
+        powerUpArray[self.n_powerups]?.zPosition = 8
         addChild(powerUpArray[self.n_powerups]!)
         if (findActiveFreeze()) { // needed to tint newly added powerups
             powerUpArray[self.n_powerups]?.fadeOutPart()
         }
-        showPowerupNotification()
+        //showPowerupNotification()
         //print("Powerup gained: \(powerupCurr)")
         n_powerups += 1
         progressBar.setProgress(0.0)
@@ -1179,7 +1189,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     func fadeInAllPowerUps() {
         for powerUp in powerUpArray {
             powerUp?.fadeInPart()
-            print(powerUp?.isActive())
+          
         }
     }
     
@@ -1238,6 +1248,56 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             
             
         }
+    }
+    func flashGreenBorder(){
+        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.35)
+        let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.35)
+        let flashingSequence = SKAction.sequence([fadeIn,fadeOut])
+        if self.childNode(withName: "greenleft") == nil{
+          
+            let leftgreen = SKSpriteNode(texture: SKTexture(imageNamed: "greenleft"))
+            leftgreen.size = CGSize(width: size.width/5, height:size.height)
+            leftgreen.position = CGPoint(x:leftgreen.size.width/3,y: size.height/2)
+            leftgreen.zPosition = frameNode.zPosition - 1
+            leftgreen.name = "greenleft"
+            leftgreen.alpha = 0.0
+            addChild(leftgreen)
+            let rightgreen = SKSpriteNode(texture: SKTexture(imageNamed: "greenright"))
+            rightgreen.size = CGSize(width: size.width/5, height:size.height)
+            rightgreen.position = CGPoint(x:size.width-rightgreen.size.width/3,y: size.height/2)
+            rightgreen.zPosition = frameNode.zPosition - 1
+            rightgreen.name = "greenright"
+            rightgreen.alpha = 0.0
+            addChild(rightgreen)
+            let topgreen = SKSpriteNode(texture: SKTexture(imageNamed: "greentop"))
+            topgreen.size = CGSize(width: size.width, height:playableYSize / 8)
+            topgreen.position = CGPoint(x:size.width/2,y: size.height * 0.76)
+            topgreen.zPosition = frameNode.zPosition - 1
+            topgreen.name = "greentop"
+            topgreen.alpha = 0.0
+            addChild(topgreen)
+            let bottomgreen = SKSpriteNode(texture: SKTexture(imageNamed: "greenbottom"))
+            bottomgreen.size = CGSize(width: size.width, height:playableYSize / 8)
+            bottomgreen.position = CGPoint(x:size.width/2,y: size.height * 0.24)
+            bottomgreen.zPosition = frameNode.zPosition - 1
+            bottomgreen.name = "greenbottom"
+            bottomgreen.alpha = 0.0
+            addChild(bottomgreen)
+            
+            
+            rightgreen.run(flashingSequence)
+            leftgreen.run(flashingSequence)
+            topgreen.run(flashingSequence)
+            bottomgreen.run(flashingSequence)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [self] in
+                rightgreen.removeFromParent()
+                leftgreen.removeFromParent()
+                topgreen.removeFromParent()
+                bottomgreen.removeFromParent()
+            }
+            
+        }
+        
     }
     // translates matrix index to position on screen
     func coordCalculate(indices: CGPoint) -> CGPoint {
