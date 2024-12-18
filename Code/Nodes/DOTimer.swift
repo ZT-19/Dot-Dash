@@ -179,63 +179,65 @@ class DOTimer: SKSpriteNode {
         textureNode.removeAction(forKey: "countdownAnimation")
         
         totalTime = timeLeft
-    // Reset state
-    hasEnded = false
-    playedTick = false
-    remainingTime = totalTime
-    
-    // Update visuals
-    updateTimeLabel()
-    
-    // Reset texture node
-    textureNode.removeAllActions()
-    textureNode.texture = timerService.getAllTextures().first
-    timeLabel.fontColor = .white
-    innerCircle.fillColor = darkcolor
-    // If timer should auto-start
-    if !isTimerPaused {
-        startAnimation()
-    }
-    
-    func endSound() {
-        if (endSfx) {
-            let volumeAction = SKAction.changeVolume(to: 0.3, duration: 0)
-            let soundAction = SKAction.playSoundFileNamed("gameover.mp3", waitForCompletion: false)
-            let sequence = SKAction.sequence([volumeAction, soundAction])
-            self.run(sequence)
-            
-            endSfx = false
+        // Reset state
+        hasEnded = false
+        playedTick = false
+        remainingTime = totalTime
+        
+        // Update visuals
+        updateTimeLabel()
+        
+        // Reset texture node
+        textureNode.removeAllActions()
+        textureNode.texture = timerService.getAllTextures().first
+        timeLabel.fontColor = .white
+        innerCircle.fillColor = darkcolor
+        // If timer should auto-start
+        if !isTimerPaused {
+            startAnimation()
         }
     }
-    
-    private func updateTimeLabel() {
-
-  
-      //  let minutes = remainingTime / 60
-     //   let seconds = remainingTime % 60
-        timeLabel.text = "\(remainingTime)"
-        if remainingTime < 5 {
-            timeLabel.fontColor = .white
-        var oneTimeEffect = true
-            innerCircle.fillColor = red
-            
-            if (remainingTime != 0) {
-                let warningSound = SKAction.playSoundFileNamed("tick.mp3", waitForCompletion: false)
-                self.run(warningSound)
+        
+        func endSound() {
+            if (endSfx) {
+                let volumeAction = SKAction.changeVolume(to: 0.3, duration: 0)
+                let soundAction = SKAction.playSoundFileNamed("gameover.mp3", waitForCompletion: false)
+                let sequence = SKAction.sequence([volumeAction, soundAction])
+                self.run(sequence)
+                
+                endSfx = false
             }
-            
-            if (oneTimeEffect) {
-                DOHapticsManager.shared.trigger(.timeLow)
-                oneTimeEffect = false
-                // TODO: play lowtime rattle
-            }
-            if !playedTick {
-                playedTick = true
-                //SKTAudio.sharedInstance().playSoundEffect(.mmTick)
-            }
-        } else {
-           // timeLabel.fontColor = isTimerPaused ? .gray : .white
         }
-    }
+        
+        private func updateTimeLabel() {
+            
+            
+            //  let minutes = remainingTime / 60
+            //   let seconds = remainingTime % 60
+            timeLabel.text = "\(remainingTime)"
+            if remainingTime < 5 {
+                timeLabel.fontColor = .white
+                var oneTimeEffect = true
+                innerCircle.fillColor = red
+                
+                if (remainingTime != 0) {
+                    let warningSound = SKAction.playSoundFileNamed("tick.mp3", waitForCompletion: false)
+                    self.run(warningSound)
+                }
+                
+                if (oneTimeEffect) {
+                    DOHapticsManager.shared.trigger(.timeLow)
+                    oneTimeEffect = false
+                    // TODO: play lowtime rattle
+                }
+                if !playedTick {
+                    playedTick = true
+                    //SKTAudio.sharedInstance().playSoundEffect(.mmTick)
+                }
+            } else {
+                // timeLabel.fontColor = isTimerPaused ? .gray : .white
+            }
+        }
+    
     
 }
