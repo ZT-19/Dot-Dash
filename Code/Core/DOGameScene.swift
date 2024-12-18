@@ -786,7 +786,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(1.2)//TEST
+            progressBar.increaseProgress(0.2)
         }
     }
     
@@ -1099,7 +1099,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 * removeCount + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 * removeCount + 0.35) {
             self.removeAllChildren()
             // gameOverNode.updateMessage()
             self.addChild(self.gameOverNode)
@@ -1121,8 +1121,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
           //  print(node.position)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2 * removeCount) {
-                let scaleAction = SKAction.fadeOut(withDuration: 0.2)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 * removeCount) {
+                let scaleAction = SKAction.fadeOut(withDuration: 0.15)
                 
                 // Optional: Add easing for smoother animation
                 scaleAction.timingMode = .easeOut
