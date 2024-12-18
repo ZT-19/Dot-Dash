@@ -48,7 +48,7 @@ class DOLayoutInfo {
         playableXRight = 355
         playableXLeft = 20
         powerUpHeight = 93
-     
+        powerupRadius = 40
       
     }
     func setUpRegular(){

@@ -187,7 +187,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 // Timer setup completed callback if needed
                 //self?.gameOver()
             }
-            timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 7)
+            timerNode.position = CGPoint(x: size.width / 2, y: size.height * 0.865)
         }
      
         addChild(timerNode)
