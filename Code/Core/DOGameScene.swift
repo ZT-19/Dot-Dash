@@ -84,8 +84,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private var modNotificationLabel: SKLabelNode?
     
     // powerups
-    private let powerupRadius = 45.0 / 402.0 *  UIScreen.main.bounds.width
-    let powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
+    private var powerupRadius:CGFloat = 45.0 / 402.0 *  UIScreen.main.bounds.width
+    var powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
+    var powerupHeight: CGFloat = 133 / 402.0 *  UIScreen.main.bounds.width
 
     private let powerupTypes: [PowerUpType] = [
     //    .doubleDotScore,
@@ -121,6 +122,10 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         playableXRight = layoutInfo.playableXRight
         playableYTop = layoutInfo.playableYTop
         playableYBottom = layoutInfo.playableYBottom
+        self.powerupRadius = layoutInfo.powerupRadius
+        self.powerUpNodeRadius = layoutInfo.powerUpNodeRadius
+        powerupHeight = layoutInfo.powerUpHeight
+        
         
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
@@ -130,7 +135,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width*0.7, height: 30))
         progressBar.setup(screenSize: size)
         frameNode.setup(screenSize: CGSize(width: size.width+1, height: size.height))
-        frameNode.setupPowerups(powerUpNodeRadius: powerUpNodeRadius, powerUpRadius: powerupRadius)
+        frameNode.setupPowerups(powerUpNodeRadius: powerUpNodeRadius, powerUpRadius: powerupRadius, powerupHeight:  powerupHeight)
         
         addChild(backgroundNode)
         addChild(frameNode)
@@ -168,12 +173,23 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         baseGrid = grid
         placeDotsFromGrid(grid: grid)
         
-
-        timerNode = DOTimer(radius: 50, levelTime: 20) { [weak self] in
-            // Timer setup completed callback if needed
-            //self?.gameOver()
+        if (size.width < 376.0){
+            // SE version
+            timerNode = DOTimer(radius: 40, levelTime: 20) { [weak self] in
+                // Timer setup completed callback if needed
+                //self?.gameOver()
+            }
+            timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 9)
+            
         }
-        timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 7)
+        else{
+            timerNode = DOTimer(radius: 50, levelTime: 20) { [weak self] in
+                // Timer setup completed callback if needed
+                //self?.gameOver()
+            }
+            timerNode.position = CGPoint(x: size.width / 2, y: size.height - size.height / 7)
+        }
+     
         addChild(timerNode)
         timerNode.start()//WK
      
@@ -1129,7 +1145,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         x_powerUp_position += (UIScreen.main.bounds.width/2 - powerUpNodeRadius) * CGFloat(n_powerups)
         
        
-        let position = CGPoint(x:x_powerUp_position, y: powerUpNodeRadius + 65)
+        let position = CGPoint(x:x_powerUp_position, y: powerupHeight)
         powerupCurr = powerupTypes.randomElement(using: &rng)!
         /*
         while(max_powerUps>=actual_max_powerUps && powerupCurr==PowerUpType.extraSlot){

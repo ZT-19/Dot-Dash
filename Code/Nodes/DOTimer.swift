@@ -63,7 +63,7 @@ class DOTimer: SKSpriteNode {
     private func setupTimerAppearance(radius: CGFloat, currTime: Int = 20) {
        
         timeLabel = SKLabelNode(fontNamed: "Arial Rounded MT Bold")
-        timeLabel.fontSize = 48
+        timeLabel.fontSize = 0.96 * radius
         timeLabel.fontColor = .white
         timeLabel.position = CGPoint(x: 0, y: 0)
         timeLabel.horizontalAlignmentMode = .center

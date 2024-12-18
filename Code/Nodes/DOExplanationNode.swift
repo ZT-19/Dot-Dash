@@ -63,7 +63,7 @@ class DOExplanationNode: SKNode {
         let toplabel = SKLabelNode(text: "New Powerup!")
          
         toplabel.fontSize = 30
-     toplabel.fontName="Tsukushi A Round Gothic Regular"
+     toplabel.fontName="Arial"
   
         toplabel.fontColor = .white
         toplabel.horizontalAlignmentMode = .center

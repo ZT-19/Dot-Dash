@@ -17,12 +17,11 @@ class DOLayoutInfo {
   var playableXRight = 392.0  // above all powerups.
     var playableXSize:Double = 1.00 // right-left ,will be set in didmove
      var playableYSize:Double = 10.0// top - bottom will be set in didmove
-    var offsetX: CGFloat = 0
-    var offsetY: CGFloat = 0
-    
     var powerupRadius = 45.0 / 402.0 *  UIScreen.main.bounds.width
     var powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
-
+    var powerUpHeight: CGFloat = 133 / 402.0 *  UIScreen.main.bounds.width
+    var offsetX: CGFloat = 0
+    var offsetY: CGFloat = 0
     init(size:CGSize){
         screenSize = size
       
@@ -44,10 +43,11 @@ class DOLayoutInfo {
     }
     func setUpSE(){
         print("Using SE")
-        self.playableYBottom = 145
+        self.playableYBottom = 140
         playableYTop = 535
-        playableXRight = 370
-        playableXLeft = 5
+        playableXRight = 355
+        playableXLeft = 20
+        powerUpHeight = 93
      
       
     }
