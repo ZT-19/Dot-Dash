@@ -1099,7 +1099,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 * removeCount + 0.35) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             self.removeAllChildren()
             // gameOverNode.updateMessage()
             self.addChild(self.gameOverNode)
@@ -1121,15 +1121,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
           //  print(node.position)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15 * removeCount) {
-                let scaleAction = SKAction.fadeOut(withDuration: 0.15)
-                
+            //DispatchQueue.main.asyncAfter(deadline: .now() + 0.3 * removeCount) { [self] in
+                // let scaleAction = SKAction.fadeOut(withDuration: 0.2)
+                let rotate = SKAction.rotate(byAngle: CGFloat.random(in: -30...30, using: &rng), duration: 15)
+                let move = SKAction.move(by: CGVector(dx: CGFloat.random(in: -130...130, using: &rng), dy: -playableYSize - 50), duration: 15)
                 // Optional: Add easing for smoother animation
-                scaleAction.timingMode = .easeOut
+               // scaleAction.timingMode = .easeOut
                 
-                node.run(scaleAction)
+                node.run(rotate)
+                node.run(move)
                 
-            }
+           // }
             removeCount -= 1
                 
         }

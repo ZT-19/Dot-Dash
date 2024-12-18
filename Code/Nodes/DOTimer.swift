@@ -33,7 +33,7 @@ class DOTimer: SKSpriteNode {
     var white = UIColor(red: 250/255.0, green: 250/255.0, blue: 250/255.0, alpha: 1.0)
     var blue = UIColor(red: 67/255.0, green: 182/255.0, blue: 247/255.0, alpha: 1.0)
     var gray = UIColor(red: 217/255.0, green: 217/255.0, blue: 217/255.0, alpha: 1.0)
-    var red = UIColor(red: 177/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
+    var red = UIColor(red: 243/255.0, green: 80/255.0, blue: 76/255.0, alpha: 1.0)
     
     private var selfRad = 0.0
     private var selfTime = 20
