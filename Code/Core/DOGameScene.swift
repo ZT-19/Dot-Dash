@@ -130,8 +130,6 @@ class GameSKScene: SKScene {
         playableYSize = playableYTop-playableYBottom
         
         startGame()
-        // currently broken restart button
-        // setupRestartButton()
     }
     
     func startGame(){
@@ -226,7 +224,7 @@ class GameSKScene: SKScene {
     
     func setupRestartButton() {
         let restartButton = SKSpriteNode(color: .red, size: CGSize(width: 120, height: 40))
-        restartButton.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        restartButton.position = CGPoint(x: self.size.width/2, y: self.size.height/4)
         restartButton.name = "restartButton"
         restartButton.zPosition = 100
         
