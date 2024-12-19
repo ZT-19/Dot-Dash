@@ -73,7 +73,7 @@ class DOTimer: SKSpriteNode {
         timeLabel.text = "\(totalTime)"
         addChild(timeLabel)
         
-        innerCircle = SKShapeNode(circleOfRadius: radius - 4)
+        innerCircle = SKShapeNode(circleOfRadius: radius - 7)
 
         innerCircle.fillColor = darkcolor
 

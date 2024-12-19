@@ -223,14 +223,14 @@ class GameSKScene: SKScene {
     }
     
     func setupRestartButton() {
-        let restartButton = SKSpriteNode(color: .red, size: CGSize(width: 120, height: 40))
+        let restartButton = SKSpriteNode(color: .red, size: CGSize(width:  self.size.width*2/3, height: self.size.height/8))
         restartButton.position = CGPoint(x: self.size.width/2, y: self.size.height/4)
         restartButton.name = "restartButton"
         restartButton.zPosition = 100
         
         let restartLabel = SKLabelNode(text: "Restart")
         restartLabel.fontName = "Arial Rounded MT Bold"
-        restartLabel.fontSize = 20
+        restartLabel.fontSize = 60
         restartLabel.fontColor = .white
         restartLabel.verticalAlignmentMode = .center
         
@@ -352,9 +352,12 @@ class GameSKScene: SKScene {
     private func handleTouchEnd(_ touch: UITouch) {
         lastPosition = touch.location(in: self)
         if gameOverScreen{
-            print("registered")
-            restartGame()
-            return
+            if lastPosition.x >= size.width/6 && lastPosition.x <= size.width/6*5 && lastPosition.y <= size.height/16*5 && lastPosition.y >= size.height/16*3{
+                print("registered")
+                restartGame()
+                return
+            }
+           
         }
         if !isTouchEnabled{
             lastPosition = CGPoint(x: -1, y: -1)
