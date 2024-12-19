@@ -1,19 +1,18 @@
 import SpriteKit
+import UIKit
 
 enum PowerUpType {
-    case doubleDotScore
-    case levelScoreBonus
     case freezeTime
+    case skipLevel
     case inactive
 }
 
 class DOPowerUpNode: SKNode {
-    private let circleShape: SKShapeNode
-    private let countdownLabel: SKLabelNode
-    private let powerupLabel: SKLabelNode
-    private let cropNode: SKCropNode
+    private var sprite: SKSpriteNode
+   // private let countdownLabel: SKLabelNode
     private let maskNode: SKShapeNode
     private let maskHeight: CGFloat
+    private let radius: CGFloat
     
     private var countdownDuration: TimeInterval
     private var type: PowerUpType
@@ -24,105 +23,144 @@ class DOPowerUpNode: SKNode {
         .strokeWidth: 3.0,
         .font: UIFont(name: "Arial-Bold", size: 16) ?? UIFont.systemFont(ofSize: 16)
     ]
+    private var turnedOn = false
+    private let overlayNode: SKCropNode
+    private let cropNode: SKCropNode = SKCropNode()
+    private var shadeOverlay: SKShapeNode?
 
     init(radius: CGFloat, type: PowerUpType, position: CGPoint, duration: TimeInterval = 15.0) {
         self.type = type
         self.countdownDuration = duration
-        self.remainingTime = duration
+        self.remainingTime = self.countdownDuration
         self.maskHeight = radius * 2
+               
+        if (type==PowerUpType.skipLevel){
+            countdownDuration = 0.05
+            self.remainingTime = countdownDuration
+        }
         
-        circleShape = SKShapeNode(circleOfRadius: radius)
-        circleShape.fillColor = .yellow
-        circleShape.strokeColor = .darkGray
-        circleShape.lineWidth = 1
-
-        // powerup label
-        powerupLabel = SKLabelNode(fontNamed: "Arial-Bold")
-        powerupLabel.fontSize = 16
-        powerupLabel.fontColor = .white
-        powerupLabel.verticalAlignmentMode = .center
-        powerupLabel.position = CGPoint(x: 0, y: 0)
+        sprite = SKSpriteNode(imageNamed: "powerupDefault")
+        self.radius = radius
+        sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
         
-        powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
-
         // initialize countdown label
+        /*
         countdownLabel = SKLabelNode(fontNamed: "Arial")
         countdownLabel.fontSize = 12
         countdownLabel.fontColor = .white
-        countdownLabel.text = "\(Int(duration))"
+        countdownLabel.text = "\(Int(countdownDuration))"
         countdownLabel.verticalAlignmentMode = .center
-        countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.5))
+        countdownLabel.position = CGPoint(x: 0, y: -(radius * 1.3))
+        */
+        overlayNode = SKCropNode()
+        let overlayShape = SKShapeNode(circleOfRadius: radius)
+        overlayShape.fillColor = .black
+        overlayShape.strokeColor = .clear
+        overlayShape.alpha = 0.2
 
-        // initialize crop node and mask for draining animation
-        cropNode = SKCropNode()
         maskNode = SKShapeNode(rectOf: CGSize(width: radius * 2, height: radius * 4))
         maskNode.fillColor = .darkGray
         maskNode.strokeColor = .darkGray
-        // set anchor point at top by positioning
         maskNode.position = CGPoint(x: 0, y: -radius)
-
+        
         super.init()
 
-        // setup node hierarchy
-        cropNode.maskNode = maskNode
-        cropNode.addChild(circleShape)
-        self.position = position
-        self.addChild(cropNode)
-        self.addChild(powerupLabel)
-        self.addChild(countdownLabel)
-
         configureAppearance()
-        startCountdown()
+            
+        cropNode.addChild(sprite)
+        self.addChild(cropNode)
+       // self.addChild(countdownLabel)
+
+        overlayNode.addChild(overlayShape)
+        overlayNode.maskNode = maskNode
+        self.addChild(overlayNode)
+
+        self.position = position
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-
     private func configureAppearance() {
         switch type {
-        case .doubleDotScore:
-            circleShape.fillColor = .green
-            powerupLabel.attributedText = NSAttributedString(string: "2X", attributes: attributes)
-            countdownLabel.fontSize = 10
-            powerupLabel.fontSize = 20
-        case .levelScoreBonus:
-            circleShape.fillColor = .yellow
-            powerupLabel.attributedText = NSAttributedString(string: "+", attributes: attributes)
-            countdownLabel.fontSize = 10
-            powerupLabel.fontSize = 20
         case .freezeTime:
-            circleShape.fillColor = .cyan
-            powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
-            countdownLabel.fontSize = 10
-            powerupLabel.fontSize = 20
-        default:
+            sprite = SKSpriteNode(imageNamed: "powerupFreeze")
+            sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
+            //  powerupLabel.attributedText = NSAttributedString(string: "❆", attributes: attributes)
+          //  countdownLabel.fontSize = 10
+            //powerupLabel.fontSize = 20
+            break
+        case .skipLevel:
+            sprite = SKSpriteNode(imageNamed: "powerupSkip")
+            sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
+            //powerupLabel.attributedText = NSAttributedString(string: "→", attributes: attributes)
+          //  countdownLabel.fontSize = 0
+            //powerupLabel.fontSize = 20
+        default: // or inactive
+            sprite = SKSpriteNode(imageNamed: "powerupDefault")
+            sprite.size = CGSize(width: 2 * radius, height: 2 * radius)
             return
         }
+        fadeIn()
     }
-
-    private func startCountdown() {
-        // create draining animation
+    
+    private func createPopAnimation() -> SKAction {
+        let popUpAction = SKAction.scale(to: 1.3, duration: 0.05)
+        let popDownAction = SKAction.scale(to: 1.0, duration: 0.05)
+        return SKAction.sequence([popUpAction, popDownAction])
+    }
+    
+    func startCountdown(completion: @escaping () -> Void) {
+        print("Powerup countdown started")
+        turnedOn = true
+        self.remainingTime = countdownDuration
+        DOHapticsManager.shared.trigger(.powerUpUsed)
+        
+        // 1. pop animation
+        let popSequence = createPopAnimation()
+        
+        // 2. simultaneous drain animations
         let scaleAction = SKAction.scaleY(to: 0, duration: countdownDuration)
-        maskNode.run(scaleAction)
-        
-        // update countdown label
-        let countdownAction = SKAction.customAction(withDuration: countdownDuration) { [weak self] _, elapsedTime in
+    
+        let drainAction = SKAction.customAction(withDuration: countdownDuration) { [weak self] node, elapsedTime in
             guard let self = self else { return }
+            
             self.remainingTime = max(0, self.countdownDuration - elapsedTime)
-            self.countdownLabel.text = "\(Int(ceil(self.remainingTime)))"
+        //    self.countdownLabel.text = "\(Int(ceil(self.remainingTime)))"
         }
         
-        // remove node when complete
-        let removeAction = SKAction.run { [weak self] in
-            self?.removeFromParent()
-            //print("Removed powerup from node")
-        }
+        // group drain animations to run simultaneously
+        let drainGroup = SKAction.group([
+            SKAction.run { self.maskNode.run(scaleAction) },
+            drainAction
+        ])
         
-        // run countdown and removal sequence
-        self.run(SKAction.sequence([countdownAction, removeAction]))
+        // 3. Remove action with pop
+        let removeAction = SKAction.sequence([
+            createPopAnimation(),
+            SKAction.removeFromParent()
+        ])
+        
+        // combine
+        let fullSequence = SKAction.sequence([
+            popSequence,
+            drainGroup,
+            removeAction
+        ])
+        /*
+        if (self.type == .skipLevel) {
+            fullSequence = SKAction.sequence([
+                removeAction
+            ])
+        }
+        */
+        
+        self.run(fullSequence)
+        
+        if let scene = self.scene as? GameSKScene {
+            scene.activePowerUp = self
+        }
     }
 
     func getPosition() -> CGPoint {
@@ -134,7 +172,7 @@ class DOPowerUpNode: SKNode {
     func getTimeStart() -> Double{
         return self.countdownDuration
     }
-    
+    /*
     func islevelScoreBonus() -> Bool {
         return type == .levelScoreBonus
     }
@@ -142,12 +180,60 @@ class DOPowerUpNode: SKNode {
     func isDoubleDotScore() -> Bool {
         return type == .doubleDotScore
     }
+    func isExtraSlot() -> Bool {
+        return type == .extraSlot
+    }
+     */
+    func isSkipLevel() -> Bool {
+        return type == .skipLevel
+    }
     
     func isFreezeTime() -> Bool {
         return type == .freezeTime
     }
     
     func isActive() -> Bool {
-        return remainingTime > 0
+        return turnedOn
+    }
+    
+    func isSpent() -> Bool{
+        return remainingTime<=0&&turnedOn
+    }
+    func fadeIn(){
+        self.setScale(0)
+    
+    // Scale up to normal size
+    let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
+    
+    // Optional: Add easing for smoother animation
+    scaleAction.timingMode = .easeOut
+    
+    self.run(scaleAction)
+        
+    }
+    
+    func fadeOutPart() {
+        //self.sprite.alpha = 1
+        //print("DEBUG: Tinted")
+        
+        shadeOverlay?.removeFromParent()
+            
+            // Create new shade
+            let shade = SKShapeNode(circleOfRadius: radius)
+            shade.fillColor = .black
+            shade.strokeColor = .clear
+            shade.alpha = 0.7
+            shade.position = .zero
+            
+            // Store reference and add to node
+            shadeOverlay = shade
+            self.addChild(shade)
+    }
+
+    func fadeInPart() {
+        self.sprite.alpha = 1
+        
+        shadeOverlay?.removeFromParent()
+        shadeOverlay = nil
     }
 }

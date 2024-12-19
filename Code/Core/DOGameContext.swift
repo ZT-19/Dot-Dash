@@ -12,18 +12,20 @@ import GameplayKit
 public class DOGameContext {
     static let shared = DOGameContext()  // singleton instance
     private(set) var scene: DOGameScene!
-    private(set) var stateMachine: GKStateMachine?  // needed to manage states
     
     // define parameters for the grid, which will track positions of DODotNodes
     var grid: [[Int]]
-    let gridSize = 13
-    let gridCenter = 6
-    let dotSpacing: CGFloat = 30  // space between dots for layout on screen, remove hardcode later
+    var gridSize = 5
+    let startingGridSize = 5
+    var gridCenter = 6
+    var powerUpArray: [DOPowerUpNode?]
 
     // initialize array to be of size gridSize + 2 x gridSize + 2
     // outermost row and column have nothing in them, used to detect out-o-bounds
     init() {
         grid = Array(repeating: Array(repeating: 0, count: gridSize+2), count: gridSize+2)
+        gridCenter = Int(gridSize/2)
+        powerUpArray = Array(repeating: nil, count: 5)
     }
 
     func getRandomPosition() -> (Int, Int) {
