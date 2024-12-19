@@ -129,8 +129,17 @@ class GameSKScene: SKScene {
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
         
+        startGame()
+        // currently broken restart button
+        // setupRestartButton()
+    }
+    
+    func startGame(){
+        backgroundNode.removeAllChildren()
         backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
+        gameOverNode.removeAllChildren()
         gameOverNode.setup(screenSize: size)
+        
         progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width*0.7, height: 30))
         progressBar.setup(screenSize: size)
         frameNode.setup(screenSize: CGSize(width: size.width+1, height: size.height))
@@ -148,7 +157,7 @@ class GameSKScene: SKScene {
 
      //   scoreNode.setup(screenSize: size)
        // addChild(scoreNode)
-
+        levelNode.removeAllChildren()
         levelNode.setup(screenSize: size)
         addChild(levelNode)
      
@@ -213,17 +222,16 @@ class GameSKScene: SKScene {
             }
            
         }
-        // currently broken restart button
-        // setupRestartButton()
     }
+    
     func setupRestartButton() {
         let restartButton = SKSpriteNode(color: .red, size: CGSize(width: 120, height: 40))
-        restartButton.position = CGPoint(x: self.size.width - 80, y: self.size.height - 40)
+        restartButton.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         restartButton.name = "restartButton"
         restartButton.zPosition = 100
         
         let restartLabel = SKLabelNode(text: "Restart")
-        restartLabel.fontName = "Arial"
+        restartLabel.fontName = "Arial Rounded MT Bold"
         restartLabel.fontSize = 20
         restartLabel.fontColor = .white
         restartLabel.verticalAlignmentMode = .center
@@ -236,7 +244,8 @@ class GameSKScene: SKScene {
         gameInfo.score = 0
         gameInfo.level = 1
         difficulty = 1
-        gridSize = DOGameContext.shared.gridSize
+        gridSize = DOGameContext.shared.startingGridSize
+        DOGameContext.shared.gridSize = DOGameContext.shared.startingGridSize
         
         // Remove all existing nodes
         self.removeAllChildren()
@@ -246,12 +255,15 @@ class GameSKScene: SKScene {
         powerUpArray = Array(repeating: nil, count: max_powerUps)
         
         // Create new scene
+        
         if let view = self.view {
             let newScene = GameSKScene()
             newScene.size = self.size
             newScene.scaleMode = self.scaleMode
             view.presentScene(newScene, transition: SKTransition.fade(withDuration: 0.5))
         }
+         
+        startGame()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -342,22 +354,15 @@ class GameSKScene: SKScene {
     private func handleTouchEnd(_ touch: UITouch) {
         lastPosition = touch.location(in: self)
         if gameOverScreen{
+            print("registered")
+            restartGame()
             return
         }
         if !isTouchEnabled{
             lastPosition = CGPoint(x: -1, y: -1)
             return
         }
-        /*
-        if gameOverScreen{
-            gameInfo.score = 0
-            gameInfo.level = 0
-            gameOverScreen = false
-            levelClear()
-            print("You lost but what happens now")
-            return
-        }
-         */
+        
         if inIntermission{
             onscreentext!.resetText()
             onscreentext!.removeFromParent()
@@ -1046,7 +1051,6 @@ class GameSKScene: SKScene {
                 // Levels 41+: Logistic growth approaching 120 seconds
                 cnt = Double(level)
             }
-        print(cnt)
             return Int(cnt)
     }
     private func playBackgroundMusic() {
@@ -1088,7 +1092,7 @@ class GameSKScene: SKScene {
         backgroundMusicPlayer = nil
         DOHapticsManager.shared.trigger(.gameOver)
         
-        self.gameOverScreen=true
+        
         shakeScreen()
         shakeScreen()
         var removeCount = 0.0
@@ -1116,6 +1120,8 @@ class GameSKScene: SKScene {
             self.gameInfo.score = 0
             self.gameInfo.level = 0
             print("game over")
+            self.gameOverScreen=true
+            self.setupRestartButton()
         }
             
         for (index, node) in nodes.enumerated() {
@@ -1143,6 +1149,7 @@ class GameSKScene: SKScene {
             removeCount -= 1
                 
         }
+     
         
     }
 
