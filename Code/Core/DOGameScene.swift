@@ -395,6 +395,11 @@ class GameSKScene: SKScene {
                             print("freezenode activated")
                         }
                         else{
+                            let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
+                            let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
+                            let sequence = SKAction.sequence([volumeAction, soundAction])
+                            self.run(sequence)
+                            //flashGreenBorder() // yay or nay?
                         levelLoad(restart: false)
                         }
                     
@@ -798,7 +803,7 @@ class GameSKScene: SKScene {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(1.2)
         }
     }
     
