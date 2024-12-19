@@ -62,6 +62,7 @@ class GameSKScene: SKScene {
     private var yv: Int = .zero
     private var isPlayerAnimating = false
     private var queuedLevelLoad: (Bool, Bool, Bool)? // restart, powerup, active
+    private var playerLastMove = false
 
     
     // timer
@@ -331,17 +332,16 @@ class GameSKScene: SKScene {
         // modifier states
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else {
+        guard !playerLastMove, let touch = touches.first else {
             return
         }
         handleTouch(touch)
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else {
+        guard !playerLastMove, let touch = touches.first else {
             return
         }
-        
         handleTouchEnd(touch)
     }
 
@@ -367,6 +367,7 @@ class GameSKScene: SKScene {
         if inIntermission{
             onscreentext!.resetText()
             onscreentext!.removeFromParent()
+            timerNode.start() // force start after intermission
             timerNode.resume()
             inIntermission = false
             if gameInfo.level == 1 {
@@ -607,6 +608,7 @@ class GameSKScene: SKScene {
         }
         
         else if dotCount == 0 {
+            playerLastMove = true
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
             timerNode.pause() // to stop the game from ending during the animation
             let scaleUp = SKAction.scale(to: 1.25, duration: 0.35)
@@ -628,7 +630,8 @@ class GameSKScene: SKScene {
                 DOHapticsManager.shared.trigger(.levelComplete)
                 levelLoad(restart: false,powerupEligible: powerupEligible)
                 powerupEligible = true
-            }      
+                playerLastMove = false
+            }
         }
     }
     func levelLoad(restart: Bool, powerupEligible:Bool = true, skipped:Bool = false) {
@@ -783,7 +786,7 @@ class GameSKScene: SKScene {
                 timerNode.start()
             }
            
-            print("level timer start")
+            //print("level timer start")
          
         
             for i in 0..<n_powerups{
@@ -1087,10 +1090,8 @@ class GameSKScene: SKScene {
         // 0 for basic tutorial, 1 for first freeze, 2 for first level skip
         inIntermission=true
         timerNode.pause()
-        //timerNode.freezeEffect(active: true)
         onscreentext!.updateText(code: code)
         addChild(onscreentext!)
-        
     }
     func gameOver() {
         timerNode.endSound()
