@@ -396,11 +396,11 @@ class GameSKScene: SKScene {
                         }
                         else{
                             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
-                            let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
+                            let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
                             let sequence = SKAction.sequence([volumeAction, soundAction])
                             self.run(sequence)
                             //flashGreenBorder() // yay or nay?
-                        levelLoad(restart: false)
+                            levelLoad(restart: false)
                         }
                     
                     return
@@ -612,7 +612,7 @@ class GameSKScene: SKScene {
             let scaleUp = SKAction.scale(to: 1.25, duration: 0.35)
             
             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
-            let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
+            let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
             let sequence = SKAction.sequence([volumeAction, soundAction])
             self.run(sequence)
             
