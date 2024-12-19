@@ -18,7 +18,7 @@ public struct DOGameScene: View {
     }
 }
 
-class GameSKScene: SKScene, SKPhysicsContactDelegate {
+class GameSKScene: SKScene {
 
     private var grid = DOGameContext.shared.grid
     private var baseGrid = DOGameContext.shared.grid
@@ -112,7 +112,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
-        self.physicsWorld.contactDelegate = self
         
         print("sizeinfo")
         print(size.height)
@@ -130,8 +129,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
         
+        startGame()
+    }
+    
+    func startGame(){
+        backgroundNode.removeAllChildren()
         backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
+        gameOverNode.removeAllChildren()
         gameOverNode.setup(screenSize: size)
+        
         progressBar = DOProgressBarNode(size: CGSize(width: UIScreen.main.bounds.width*0.7, height: 30))
         progressBar.setup(screenSize: size)
         frameNode.setup(screenSize: CGSize(width: size.width+1, height: size.height))
@@ -149,7 +155,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
      //   scoreNode.setup(screenSize: size)
        // addChild(scoreNode)
-
+        levelNode.removeAllChildren()
         levelNode.setup(screenSize: size)
         addChild(levelNode)
      
@@ -214,18 +220,17 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             }
            
         }
-        // currently broken restart button
-        // setupRestartButton()
     }
+    
     func setupRestartButton() {
-        let restartButton = SKSpriteNode(color: .red, size: CGSize(width: 120, height: 40))
-        restartButton.position = CGPoint(x: self.size.width - 80, y: self.size.height - 40)
+        let restartButton = SKSpriteNode(color: .red, size: CGSize(width:  self.size.width*2/3, height: self.size.height/8))
+        restartButton.position = CGPoint(x: self.size.width/2, y: self.size.height/4)
         restartButton.name = "restartButton"
         restartButton.zPosition = 100
         
         let restartLabel = SKLabelNode(text: "Restart")
-        restartLabel.fontName = "Arial"
-        restartLabel.fontSize = 20
+        restartLabel.fontName = "Arial Rounded MT Bold"
+        restartLabel.fontSize = 60
         restartLabel.fontColor = .white
         restartLabel.verticalAlignmentMode = .center
         
@@ -237,7 +242,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         gameInfo.score = 0
         gameInfo.level = 1
         difficulty = 1
-        gridSize = DOGameContext.shared.gridSize
+        gridSize = DOGameContext.shared.startingGridSize
+        DOGameContext.shared.gridSize = DOGameContext.shared.startingGridSize
         
         // Remove all existing nodes
         self.removeAllChildren()
@@ -247,12 +253,15 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         powerUpArray = Array(repeating: nil, count: max_powerUps)
         
         // Create new scene
+        
         if let view = self.view {
             let newScene = GameSKScene()
             newScene.size = self.size
             newScene.scaleMode = self.scaleMode
             view.presentScene(newScene, transition: SKTransition.fade(withDuration: 0.5))
         }
+         
+        startGame()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -343,22 +352,18 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     private func handleTouchEnd(_ touch: UITouch) {
         lastPosition = touch.location(in: self)
         if gameOverScreen{
-            return
+            if lastPosition.x >= size.width/6 && lastPosition.x <= size.width/6*5 && lastPosition.y <= size.height/16*5 && lastPosition.y >= size.height/16*3{
+                print("registered")
+                restartGame()
+                return
+            }
+           
         }
         if !isTouchEnabled{
             lastPosition = CGPoint(x: -1, y: -1)
             return
         }
-        /*
-        if gameOverScreen{
-            gameInfo.score = 0
-            gameInfo.level = 0
-            gameOverScreen = false
-            levelClear()
-            print("You lost but what happens now")
-            return
-        }
-         */
+        
         if inIntermission{
             onscreentext!.resetText()
             onscreentext!.removeFromParent()
@@ -390,6 +395,11 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                             print("freezenode activated")
                         }
                         else{
+                            let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
+                            let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
+                            let sequence = SKAction.sequence([volumeAction, soundAction])
+                            self.run(sequence)
+                            //flashGreenBorder() // yay or nay?
                         levelLoad(restart: false)
                         }
                     
@@ -599,7 +609,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
             timerNode.pause() // to stop the game from ending during the animation
-            let scaleUp = SKAction.scale(to: 1.25, duration: 0.3)
+            let scaleUp = SKAction.scale(to: 1.25, duration: 0.35)
             
             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
             let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
@@ -607,12 +617,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             self.run(sequence)
             
             
-            // slide to corner while shrinking
-            let shrink = SKAction.scale(to: 0.5, duration: 0.4)
-            let fadeOut = SKAction.fadeOut(withDuration: 0.4)
+            let shrink = SKAction.scale(to: 0.5, duration: 0.35)
+            let fadeOut = SKAction.fadeOut(withDuration: 0.35)
             
-            // combine pop-in and slide animations
-            let popIn = SKAction.group([scaleUp])
             let exitGroup = SKAction.group([shrink, fadeOut])
             playerNode.run(SKAction.sequence([scaleUp,exitGroup]))
             flashGreenBorder()
@@ -796,7 +803,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(1.2)
         }
     }
     
@@ -1050,7 +1057,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
                 // Levels 41+: Logistic growth approaching 120 seconds
                 cnt = Double(level)
             }
-        print(cnt)
             return Int(cnt)
     }
     private func playBackgroundMusic() {
@@ -1092,7 +1098,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         backgroundMusicPlayer = nil
         DOHapticsManager.shared.trigger(.gameOver)
         
-        self.gameOverScreen=true
+        
         shakeScreen()
         shakeScreen()
         var removeCount = 0.0
@@ -1120,6 +1126,8 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             self.gameInfo.score = 0
             self.gameInfo.level = 0
             print("game over")
+            self.gameOverScreen=true
+            self.setupRestartButton()
         }
             
         for (index, node) in nodes.enumerated() {
@@ -1147,6 +1155,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             removeCount -= 1
                 
         }
+     
         
     }
 

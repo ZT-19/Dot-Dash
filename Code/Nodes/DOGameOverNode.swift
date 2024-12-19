@@ -23,7 +23,7 @@ class DOGameOverNode: SKNode {
     }
 
     private func setupRestartButton(screenSize: CGSize) {
-        restartButton.fontName = "Arial"
+        restartButton.fontName = "Arial Rounded MT Bold"
         restartButton.fontSize = 30
         restartButton.fontColor = .white
         restartButton.position = CGPoint(x: 0, y: -50)

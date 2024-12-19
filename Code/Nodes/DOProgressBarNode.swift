@@ -50,6 +50,7 @@ class DOProgressBarNode: SKNode {
         else{
             position = CGPoint(x: screenSize.width / 2, y: min(background.size.height * 2,screenSize.height / 10))
         }
+        setProgress(0.0) // Start fully hidden
         
     }
     
