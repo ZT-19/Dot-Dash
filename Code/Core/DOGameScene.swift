@@ -18,7 +18,7 @@ public struct DOGameScene: View {
     }
 }
 
-class GameSKScene: SKScene, SKPhysicsContactDelegate {
+class GameSKScene: SKScene {
 
     private var grid = DOGameContext.shared.grid
     private var baseGrid = DOGameContext.shared.grid
@@ -112,7 +112,6 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
-        self.physicsWorld.contactDelegate = self
         
         print("sizeinfo")
         print(size.height)
@@ -599,7 +598,7 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
         else if dotCount == 0 {
             //print("LEVEL COMPLETE | X: \(currentX) Y: \(currentY)")
             timerNode.pause() // to stop the game from ending during the animation
-            let scaleUp = SKAction.scale(to: 1.25, duration: 0.3)
+            let scaleUp = SKAction.scale(to: 1.25, duration: 0.35)
             
             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
             let soundAction = SKAction.playSoundFileNamed("levelcompletion3.mp3", waitForCompletion: false)
@@ -607,12 +606,9 @@ class GameSKScene: SKScene, SKPhysicsContactDelegate {
             self.run(sequence)
             
             
-            // slide to corner while shrinking
-            let shrink = SKAction.scale(to: 0.5, duration: 0.4)
-            let fadeOut = SKAction.fadeOut(withDuration: 0.4)
+            let shrink = SKAction.scale(to: 0.5, duration: 0.35)
+            let fadeOut = SKAction.fadeOut(withDuration: 0.35)
             
-            // combine pop-in and slide animations
-            let popIn = SKAction.group([scaleUp])
             let exitGroup = SKAction.group([shrink, fadeOut])
             playerNode.run(SKAction.sequence([scaleUp,exitGroup]))
             flashGreenBorder()
