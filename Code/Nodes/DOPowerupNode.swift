@@ -147,10 +147,10 @@ class DOPowerUpNode: SKNode {
         // combine
         let fullSequence: SKAction
         if self.type == .skipLevel {
-            // Skip steps 1 and 2
+            // this works now as long as full sequence is defined as a sequence with only one item
             fullSequence = removeAction
-        } else {
-            // Include steps 1, 2, and 3
+        }
+        else {
             fullSequence = SKAction.sequence([
                 popSequence,
                 drainGroup,
