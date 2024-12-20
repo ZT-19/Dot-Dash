@@ -163,6 +163,7 @@ class DOGameScene: SKScene {
     func startGame(){
         backgroundNode.removeAllChildren()
         backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
+        backgroundNode.changeGridSize(new: startingGridSize)
         gameOverNode.removeAllChildren()
         gameOverNode.setup(screenSize: size)
         
@@ -497,7 +498,7 @@ class DOGameScene: SKScene {
                 else{
                     self.addChild(DOTrailNode(position: newPlayerPosition,
                                                  vertical: xv == 0,
-                                              startPoint: startPoint, size:CGSize(width: dotSpacingY/4, height: dotSpacingX * Double(abs(currentX - startX)))))
+                                              startPoint: startPoint, size:CGSize(width: dotSpacingX/4, height: dotSpacingX * Double(abs(currentX - startX)))))
                 }
                 
                 
