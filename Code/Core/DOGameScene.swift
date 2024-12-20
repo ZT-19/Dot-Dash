@@ -550,12 +550,13 @@ class DOGameScene: SKScene {
                     child.removeFromParent()
                 }
             }
+            isPlayerAnimating = true
             if yv == 0 && xv == 1 {
                 // slide right offscreen
                 let rightEdge = UIScreen.main.bounds.width + playerNode.frame.width
                 let slideRight = SKAction.moveTo(x: rightEdge, duration: 0.25)
                 slideRight.timingMode = .easeIn
-                isPlayerAnimating = true
+              
                 playerNode.run(slideRight) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -572,7 +573,7 @@ class DOGameScene: SKScene {
                 let leftEdge = -playerNode.frame.width
                 let slideLeft = SKAction.moveTo(x: leftEdge, duration: 0.25)
                 slideLeft.timingMode = .easeIn
-                isPlayerAnimating = true
+              
                 playerNode.run(slideLeft) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -589,7 +590,7 @@ class DOGameScene: SKScene {
                 let topEdge = UIScreen.main.bounds.height + playerNode.frame.height
                 let slideUp = SKAction.moveTo(y: topEdge, duration: 0.25)
                 slideUp.timingMode = .easeIn
-                isPlayerAnimating = true
+               
                 playerNode.run(slideUp) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -821,9 +822,7 @@ class DOGameScene: SKScene {
             if !restart && !inIntermission && !frozen{
                 timerNode.start()
             }
-            if (!isTouchEnabled){
-                isTouchEnabled = true
-            }
+            
         }
        
 
@@ -959,7 +958,9 @@ class DOGameScene: SKScene {
         
         playerNode.name = "player"
         self.addChild(playerNode)
-        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.isTouchEnabled = true
+        }
     }
 
     private func showPowerupNotification() {

@@ -84,7 +84,7 @@ class DOExplanationNode: SKNode {
             label.fontName="Arial Rounded MT Bold"
             if index >= 1 {
                 label.fontName = "Arial-ItalicMT"
-                label.fontSize = 25
+                label.fontSize = 20
             }
          
                label.fontColor = .white
@@ -136,7 +136,7 @@ class DOExplanationNode: SKNode {
         click2continue.fontName="Arial"
   
         click2continue.fontColor = .white
-        click2continue.position = CGPoint(x: point.x, y: yPosition)
+        click2continue.position = CGPoint(x: point.x, y: yPosition * 0.8)
         let flashingSequence = SKAction.sequence([fadeOut, fadeIn])
         click2continue.zPosition = 31
         addChild(click2continue)
