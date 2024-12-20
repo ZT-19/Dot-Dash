@@ -4,27 +4,34 @@ import SpriteKit
 import SwiftUI
 import AVFoundation
 
-public struct DOGameScene: View {
-    public var body: some View {
-        SpriteView(scene: createDOGameScene())
-            .ignoresSafeArea()
-    }
+//public struct DOGameScene: View {
+//    public var body: some View {
+//        SpriteView(scene: createDOGameScene())
+//            .ignoresSafeArea()
+//    }
+//
+//    private func createDOGameScene() -> SKScene {
+//        let scene = GameSKScene()
+//        scene.size = UIScreen.main.bounds.size
+//        scene.scaleMode = .resizeFill
+//        return scene
+//    }
+//}
 
-    private func createDOGameScene() -> SKScene {
-        let scene = GameSKScene()
-        scene.size = UIScreen.main.bounds.size
-        scene.scaleMode = .resizeFill
-        return scene
-    }
-}
+class DOGameScene: SKScene {
 
-class GameSKScene: SKScene {
+//    private var grid = DOGameContext.shared.grid
+    var grid: [[Int]]
+    var baseGrid: [[Int]]
+    var gridSize = 5
+    let startingGridSize = 5
+    var gridCenter = 6
+    var powerUpArray: [DOPowerUpNode?]
+//    private var gridSize = DOGameContext.shared.gridSize
+//    private let gridCenter = DOGameContext.shared.gridCenter
+//    private var powerUpArray = DOGameContext.shared.powerUpArray
+    unowned let context: DOGameContext
 
-    private var grid = DOGameContext.shared.grid
-    private var baseGrid = DOGameContext.shared.grid
-    private var gridSize = DOGameContext.shared.gridSize
-    private let gridCenter = DOGameContext.shared.gridCenter
-    private var powerUpArray = DOGameContext.shared.powerUpArray
     // HEIGHT = 874.0, WIDTH = 402.0
     private var playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor
     private var playableYBottom = 140.0 // above all powerups.
@@ -42,7 +49,7 @@ class GameSKScene: SKScene {
     
     var rng = SystemRandomNumberGenerator()
 
-    let backgroundNode = DOBackgroundNode(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+    let backgroundNode: DOBackgroundNode
     //let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
     let gameOverNode = DOGameOverNode()
@@ -110,6 +117,26 @@ class GameSKScene: SKScene {
     private var onscreenimage: DOOnscreenTutorial? // for the finger graphics during gameplay
     
     private var backgroundMusicPlayer: AVAudioPlayer?
+    
+    init(context: DOGameContext, size: CGSize) {
+        self.context = context
+        grid = Array(repeating: Array(repeating: 0, count: gridSize+2), count: gridSize+2)
+        baseGrid = grid
+        gridCenter = Int(gridSize/2)
+        powerUpArray = Array(repeating: nil, count: 5)
+        backgroundNode = DOBackgroundNode(size: size, gridSize: gridSize)
+        super.init(size: size)
+    }
+    
+    func getRandomPosition() -> (Int, Int) {
+        let i = Int.random(in: 1..<gridSize+1)
+        let j = Int.random(in: 1..<gridSize+1)
+        return (i, j)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
@@ -243,8 +270,7 @@ class GameSKScene: SKScene {
         gameInfo.score = 0
         gameInfo.level = 1
         difficulty = 1
-        gridSize = DOGameContext.shared.startingGridSize
-        DOGameContext.shared.gridSize = DOGameContext.shared.startingGridSize
+        gridSize = startingGridSize
         
         // Remove all existing nodes
         self.removeAllChildren()
@@ -252,15 +278,6 @@ class GameSKScene: SKScene {
         // Reset powerups
         n_powerups = 0
         powerUpArray = Array(repeating: nil, count: max_powerUps)
-        
-        // Create new scene
-        
-        if let view = self.view {
-            let newScene = GameSKScene()
-            newScene.size = self.size
-            newScene.scaleMode = self.scaleMode
-            view.presentScene(newScene, transition: SKTransition.fade(withDuration: 0.5))
-        }
          
         startGame()
     }

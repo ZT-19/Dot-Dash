@@ -7,7 +7,6 @@ class DOBackgroundNode: SKSpriteNode {
     private var backgrounds = [
         "tanbackground"
     ]
-    private var gridSize = DOGameContext.shared.gridSize
     private var playableXSize:Double // right-left
     private var playableYSize:Double // top - bottom
     private var playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor.
@@ -18,13 +17,15 @@ class DOBackgroundNode: SKSpriteNode {
     private var alt = false // to make sure chess rows alternate
     private let const_zpos = -30.0
     private let transitionTime = 1.4
+    private var gridSize: Int
     
     private var rng = SystemRandomNumberGenerator()
-    init(size:CGSize) {
+    init(size:CGSize, gridSize: Int) {
         let texture = SKTexture(imageNamed: "tanbackground")
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
-        super.init(texture: texture, color: .clear, size:size)
+        self.gridSize = gridSize
+        super.init(texture: texture, color: .clear, size: size)
     }
     func changeGridSize(new:Int){
         gridSize=new
