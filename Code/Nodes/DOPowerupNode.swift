@@ -1,7 +1,7 @@
 import SpriteKit
 import UIKit
 
-enum PowerUpType {
+enum DOPowerUpType {
     case freezeTime
     case skipLevel
     case inactive
@@ -15,7 +15,7 @@ class DOPowerUpNode: SKNode {
     private let radius: CGFloat
     
     private var countdownDuration: TimeInterval
-    private var type: PowerUpType
+    private var type: DOPowerUpType
     private var remainingTime: TimeInterval
     let attributes: [NSAttributedString.Key: Any] = [
         .foregroundColor: UIColor.white,
@@ -28,13 +28,13 @@ class DOPowerUpNode: SKNode {
     private let cropNode: SKCropNode = SKCropNode()
     private var shadeOverlay: SKShapeNode?
 
-    init(radius: CGFloat, type: PowerUpType, position: CGPoint, duration: TimeInterval = 15.0) {
+    init(radius: CGFloat, type: DOPowerUpType, position: CGPoint, duration: TimeInterval = 15.0) {
         self.type = type
         self.countdownDuration = duration
         self.remainingTime = self.countdownDuration
         self.maskHeight = radius * 2
                
-        if (type==PowerUpType.skipLevel){
+        if (type==DOPowerUpType.skipLevel){
             countdownDuration = 0.05
             self.remainingTime = countdownDuration
         }

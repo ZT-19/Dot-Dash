@@ -96,7 +96,7 @@ class DOGameScene: SKScene {
     var powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
     var powerupHeight: CGFloat = 133 / 402.0 *  UIScreen.main.bounds.width
 
-    private let powerupTypes: [PowerUpType] = [
+    private let powerupTypes: [DOPowerUpType] = [
     //    .doubleDotScore,
     //    .levelScoreBonus,
         .freezeTime,
@@ -105,7 +105,7 @@ class DOGameScene: SKScene {
     ]
     private var powerupEligible = true
     private var powerupNotificationLabel: SKLabelNode?
-    private var powerupCurr = PowerUpType.freezeTime
+    private var powerupCurr = DOPowerUpType.freezeTime
     private var n_powerups = 0
     private var max_powerUps = 3
     public var activePowerUp: DOPowerUpNode? 
