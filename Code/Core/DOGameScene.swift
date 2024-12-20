@@ -4,27 +4,34 @@ import SpriteKit
 import SwiftUI
 import AVFoundation
 
-public struct DOGameScene: View {
-    public var body: some View {
-        SpriteView(scene: createDOGameScene())
-            .ignoresSafeArea()
-    }
+//public struct DOGameScene: View {
+//    public var body: some View {
+//        SpriteView(scene: createDOGameScene())
+//            .ignoresSafeArea()
+//    }
+//
+//    private func createDOGameScene() -> SKScene {
+//        let scene = GameSKScene()
+//        scene.size = UIScreen.main.bounds.size
+//        scene.scaleMode = .resizeFill
+//        return scene
+//    }
+//}
 
-    private func createDOGameScene() -> SKScene {
-        let scene = GameSKScene()
-        scene.size = UIScreen.main.bounds.size
-        scene.scaleMode = .resizeFill
-        return scene
-    }
-}
+class DOGameScene: SKScene {
 
-class GameSKScene: SKScene {
+//    private var grid = DOGameContext.shared.grid
+    var grid: [[Int]]
+    var baseGrid: [[Int]]
+    var gridSize = 5
+    let startingGridSize = 5
+    var gridCenter = 6
+    var powerUpArray: [DOPowerUpNode?]
+//    private var gridSize = DOGameContext.shared.gridSize
+//    private let gridCenter = DOGameContext.shared.gridCenter
+//    private var powerUpArray = DOGameContext.shared.powerUpArray
+    unowned let context: DOGameContext
 
-    private var grid = DOGameContext.shared.grid
-    private var baseGrid = DOGameContext.shared.grid
-    private var gridSize = DOGameContext.shared.gridSize
-    private let gridCenter = DOGameContext.shared.gridCenter
-    private var powerUpArray = DOGameContext.shared.powerUpArray
     // HEIGHT = 874.0, WIDTH = 402.0
     private var playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor
     private var playableYBottom = 140.0 // above all powerups.
@@ -42,7 +49,7 @@ class GameSKScene: SKScene {
     
     var rng = SystemRandomNumberGenerator()
 
-    let backgroundNode = DOBackgroundNode(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+    let backgroundNode: DOBackgroundNode
     //let scoreNode = DOScoreNode()
     let levelNode = DOLevelNode()
     let gameOverNode = DOGameOverNode()
@@ -111,6 +118,26 @@ class GameSKScene: SKScene {
     
     private var backgroundMusicPlayer: AVAudioPlayer?
     
+    init(context: DOGameContext, size: CGSize) {
+        self.context = context
+        grid = Array(repeating: Array(repeating: 0, count: gridSize+2), count: gridSize+2)
+        baseGrid = grid
+        gridCenter = Int(gridSize/2)
+        powerUpArray = Array(repeating: nil, count: 5)
+        backgroundNode = DOBackgroundNode(size: size, gridSize: gridSize)
+        super.init(size: size)
+    }
+    
+    func getRandomPosition() -> (Int, Int) {
+        let i = Int.random(in: 1..<gridSize+1)
+        let j = Int.random(in: 1..<gridSize+1)
+        return (i, j)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func didMove(to view: SKView) {
         self.backgroundColor = .gray
         
@@ -135,6 +162,7 @@ class GameSKScene: SKScene {
     
     func startGame(){
         backgroundNode.removeAllChildren()
+        backgroundNode.changeGridSize(new: startingGridSize)
         backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
         gameOverNode.removeAllChildren()
         gameOverNode.setup(screenSize: size)
@@ -243,8 +271,7 @@ class GameSKScene: SKScene {
         gameInfo.score = 0
         gameInfo.level = 1
         difficulty = 1
-        gridSize = DOGameContext.shared.startingGridSize
-        DOGameContext.shared.gridSize = DOGameContext.shared.startingGridSize
+        gridSize = startingGridSize
         
         // Remove all existing nodes
         self.removeAllChildren()
@@ -252,15 +279,6 @@ class GameSKScene: SKScene {
         // Reset powerups
         n_powerups = 0
         powerUpArray = Array(repeating: nil, count: max_powerUps)
-        
-        // Create new scene
-        
-        if let view = self.view {
-            let newScene = GameSKScene()
-            newScene.size = self.size
-            newScene.scaleMode = self.scaleMode
-            view.presentScene(newScene, transition: SKTransition.fade(withDuration: 0.5))
-        }
          
         startGame()
     }
@@ -289,13 +307,17 @@ class GameSKScene: SKScene {
                     }
                     // timerNode.addTime(existingPowerup.getTimeStart(),stealth: true)
                     if !frozen{
+                        if timerNode.timerStarted() == false{
+                            timerNode.start()
+                        }
                         timerNode.resume()
+                        
                         timerNode.freezeEffect(active: false)
                     }
                     
                     for j in 0..<n_powerups {
                         if (i != j) {
-                            print("DEBUG: \(j)")
+                            //print("DEBUG: \(j)")
                             powerUpArray[j]?.fadeInPart()
                         }
                     }
@@ -351,6 +373,11 @@ class GameSKScene: SKScene {
     
     private func handleTouchEnd(_ touch: UITouch) {
         lastPosition = touch.location(in: self)
+        if !isTouchEnabled || isPlayerAnimating{
+            lastPosition = CGPoint(x: -1, y: -1)
+            return
+        }
+    
         if gameOverScreen{
             if lastPosition.x >= size.width/6 && lastPosition.x <= size.width/6*5 && lastPosition.y <= size.height/16*5 && lastPosition.y >= size.height/16*3{
                 print("registered")
@@ -359,11 +386,7 @@ class GameSKScene: SKScene {
             }
            
         }
-        if !isTouchEnabled{
-            lastPosition = CGPoint(x: -1, y: -1)
-            return
-        }
-        
+       
         if inIntermission{
             onscreentext!.resetText()
             onscreentext!.removeFromParent()
@@ -393,7 +416,7 @@ class GameSKScene: SKScene {
                         if (cpow.isFreezeTime()){
                             timerNode.pause()
                             timerNode.freezeEffect(active: true)
-                            print("freezenode activated")
+                            //print("freezenode activated")
                         }
                         else{
                             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
@@ -480,7 +503,7 @@ class GameSKScene: SKScene {
                 else{
                     self.addChild(DOTrailNode(position: newPlayerPosition,
                                                  vertical: xv == 0,
-                                              startPoint: startPoint, size:CGSize(width: dotSpacingY/4, height: dotSpacingX * Double(abs(currentX - startX)))))
+                                              startPoint: startPoint, size:CGSize(width: dotSpacingX/4, height: dotSpacingX * Double(abs(currentX - startX)))))
                 }
                 
                 
@@ -527,12 +550,13 @@ class GameSKScene: SKScene {
                     child.removeFromParent()
                 }
             }
+            isPlayerAnimating = true
             if yv == 0 && xv == 1 {
                 // slide right offscreen
                 let rightEdge = UIScreen.main.bounds.width + playerNode.frame.width
                 let slideRight = SKAction.moveTo(x: rightEdge, duration: 0.25)
                 slideRight.timingMode = .easeIn
-                isPlayerAnimating = true
+              
                 playerNode.run(slideRight) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -549,7 +573,7 @@ class GameSKScene: SKScene {
                 let leftEdge = -playerNode.frame.width
                 let slideLeft = SKAction.moveTo(x: leftEdge, duration: 0.25)
                 slideLeft.timingMode = .easeIn
-                isPlayerAnimating = true
+              
                 playerNode.run(slideLeft) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -566,7 +590,7 @@ class GameSKScene: SKScene {
                 let topEdge = UIScreen.main.bounds.height + playerNode.frame.height
                 let slideUp = SKAction.moveTo(y: topEdge, duration: 0.25)
                 slideUp.timingMode = .easeIn
-                isPlayerAnimating = true
+               
                 playerNode.run(slideUp) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -605,6 +629,7 @@ class GameSKScene: SKScene {
               
                 levelLoad(restart: true,powerupEligible: powerupEligible)
             }
+            
         }
         
         else if dotCount == 0 {
@@ -681,7 +706,10 @@ class GameSKScene: SKScene {
             
             dotSpacingX = (playableXSize)/Double(gridSize+1)
             dotSpacingY = (playableYSize)/Double(gridSize+1)
+           
             backgroundNode.setDeterminedTexture()
+            
+         
             
             gameInfo.level += 1
            
@@ -700,10 +728,8 @@ class GameSKScene: SKScene {
 
            // gameInfo.score += Int(100)
           
-     
-            timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
-                
             timerNode.pause()
+            timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
             for i in 0..<n_powerups{
                 if let cpow = powerUpArray[i]{
                     if (cpow.isActive() && cpow.isFreezeTime() ){
@@ -782,25 +808,21 @@ class GameSKScene: SKScene {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
             self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
-            if !restart && !inIntermission{
-                timerNode.start()
-            }
-           
-            //print("level timer start")
-         
-        
+            var frozen = false
             for i in 0..<n_powerups{
                 if let cpow = powerUpArray[i]{
                     if (cpow.isActive() && cpow.isFreezeTime() ){
-                        timerNode.pause()
+                        //timerNode.pause()
                         timerNode.freezeEffect(active: true)
-                        print("freezenode still active")
+                        //print("freezenode still active")
+                        frozen = true
                     }
                 }
             }
-            if (!isTouchEnabled){
-                isTouchEnabled = true
+            if !restart && !inIntermission && !frozen{
+                timerNode.start()
             }
+            
         }
        
 
@@ -916,7 +938,7 @@ class GameSKScene: SKScene {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-       print(String(i)+" "+String(j))
+       //print(String(i)+" "+String(j))
         
     }
 
@@ -936,7 +958,9 @@ class GameSKScene: SKScene {
         
         playerNode.name = "player"
         self.addChild(playerNode)
-        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.isTouchEnabled = true
+        }
     }
 
     private func showPowerupNotification() {

@@ -7,7 +7,6 @@ class DOBackgroundNode: SKSpriteNode {
     private var backgrounds = [
         "tanbackground"
     ]
-    private var gridSize = DOGameContext.shared.gridSize
     private var playableXSize:Double // right-left
     private var playableYSize:Double // top - bottom
     private var playableYTop = 620.0 // below the level count. All these values are scaled to 0,0 anchor.
@@ -18,26 +17,25 @@ class DOBackgroundNode: SKSpriteNode {
     private var alt = false // to make sure chess rows alternate
     private let const_zpos = -30.0
     private let transitionTime = 1.4
+    private var gridSize: Int
     
     private var rng = SystemRandomNumberGenerator()
-    init(size:CGSize) {
+    init(size:CGSize, gridSize: Int) {
         let texture = SKTexture(imageNamed: "tanbackground")
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
-        super.init(texture: texture, color: .clear, size:size)
+        self.gridSize = gridSize
+        super.init(texture: texture, color: .clear, size: size)
     }
     func changeGridSize(new:Int){
         gridSize=new
     }
-    private func addStars(gridSize: Int = 13) {
-   
-        print(playableYBottom)
-        // generate random number of stars (40-50)
+    private func addStars(gridSize: Int) {
+       
         alt = false
         var yPosition = playableYTop
        
-            
-      
+    
         //now using the first tile laid around the border of the frame fill the part above the playable part
         yPosition = playableYTop + (playableYSize/Double(gridSize+1))
         
@@ -140,6 +138,10 @@ func setDeterminedTexture(id: Int = 0, secret: Bool = false) {
         playableXRight = xright
         playableXSize = playableXRight-playableXLeft
         playableYSize = playableYTop-playableYBottom
+        
+        staticBackgroundCreate(gridSize: gridSize)
+        /*
+        addStars(gridSize: gridSize)
         animateCurrentStarsDown()
         
         let wait = SKAction.wait(forDuration: 0.01)
@@ -150,5 +152,61 @@ func setDeterminedTexture(id: Int = 0, secret: Bool = false) {
         
         
         run(SKAction.sequence([wait, setupAction]))
+         */
     }
+    
+    func staticBackgroundCreate(gridSize: Int){
+         alt = false
+         var yPosition = playableYTop
+        
+     
+         //now using the first tile laid around the border of the frame fill the part above the playable part
+         yPosition = playableYTop + (playableYSize/Double(gridSize+1))
+         
+         while yPosition <= size.height + eps{
+             var xPosition = playableXLeft
+             if alt{
+                 xPosition += playableXSize/Double(gridSize+1)
+             }
+             while xPosition <= playableXRight + eps{
+                 let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1), duration: transitionTime / 2.0)
+     
+                 addChild(star)
+                
+                 xPosition += 2 * playableXSize/Double(gridSize+1)
+             }
+             
+             yPosition += (playableYSize/Double(gridSize+1))
+            
+             alt = (alt == false) // switches alt
+         }
+         if alt == false{
+             alt = true // check if alternating compared to the first row laid down
+             // first row is always alt = false
+         }
+         yPosition = playableYTop
+         while yPosition >= 0 - eps{
+             var xPosition = playableXLeft
+             if alt{
+                 xPosition += playableXSize/Double(gridSize+1)
+             }
+             while xPosition <= playableXRight + eps{
+                 let star = DOStarNode(position: CGPoint(x: xPosition - size.width/2, y: yPosition - size.height/2 - size.height), screenHeight: size.height, width:  playableXSize/Double(gridSize+1), height: playableYSize/Double(gridSize+1), slideAnimation: false)
+               
+                 addChild(star)
+                
+                 xPosition += 2 * playableXSize/Double(gridSize+1)
+             }
+             
+             yPosition -= (playableYSize/Double(gridSize+1))
+       
+             
+             alt = (alt == false) // switches alt
+            
+         }
+    
+       
+    }
+    
+    
 }

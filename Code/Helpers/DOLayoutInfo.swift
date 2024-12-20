@@ -17,8 +17,8 @@ class DOLayoutInfo {
   var playableXRight = 392.0  // above all powerups.
     var playableXSize:Double = 1.00 // right-left ,will be set in didmove
      var playableYSize:Double = 10.0// top - bottom will be set in didmove
-    var powerupRadius = 45.0 / 402.0 *  UIScreen.main.bounds.width
-    var powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
+    var powerupRadius = 38.0 / 402.0 *  UIScreen.main.bounds.width
+    var powerUpNodeRadius: CGFloat = 85 / 402.0 *  UIScreen.main.bounds.width
     var powerUpHeight: CGFloat = 133 / 402.0 *  UIScreen.main.bounds.width
     var offsetX: CGFloat = 0
     var offsetY: CGFloat = 0
@@ -47,8 +47,8 @@ class DOLayoutInfo {
         playableYTop = 535
         playableXRight = 355
         playableXLeft = 20
-        powerUpHeight = 93
-        powerupRadius = 40
+        powerUpHeight = 96
+        powerupRadius = 34
       
     }
     func setUpRegular(){
