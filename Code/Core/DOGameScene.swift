@@ -433,7 +433,7 @@ class DOGameScene: SKScene {
                         }
                         else{
                             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
-                            let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
+                            let soundAction = SKAction.playSoundFileNamed("DOlevelcompletion.mp3", waitForCompletion: false)
                             let sequence = SKAction.sequence([volumeAction, soundAction])
                             self.run(sequence)
                             //flashGreenBorder() // yay or nay?
@@ -522,7 +522,7 @@ class DOGameScene: SKScene {
                 
              
                 if dotCount > 1 {
-                    let soundAction = SKAction.playSoundFileNamed("hitsoundclick.m4a", waitForCompletion: false)
+                    let soundAction = SKAction.playSoundFileNamed("DOhitsoundclick.m4a", waitForCompletion: false)
                     self.run(soundAction)
                 }
 
@@ -652,7 +652,7 @@ class DOGameScene: SKScene {
             let scaleUp = SKAction.scale(to: 1.25, duration: 0.35)
             
             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
-            let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
+            let soundAction = SKAction.playSoundFileNamed("DOlevelcompletion.mp3", waitForCompletion: false)
             let sequence = SKAction.sequence([volumeAction, soundAction])
             self.run(sequence)
             
@@ -1100,7 +1100,7 @@ class DOGameScene: SKScene {
             return Int(cnt)
     }
     private func playBackgroundMusic() {
-        guard let url = Bundle.main.url(forResource: "backgroundmusic1", withExtension: "mp3") else {
+        guard let url = Bundle.main.url(forResource: "DObackgroundmusic", withExtension: "mp3") else {
             print("Cannot find backgroundmusic.mp3")
             return
         }
