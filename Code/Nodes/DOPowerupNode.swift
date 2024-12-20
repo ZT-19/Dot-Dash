@@ -158,7 +158,7 @@ class DOPowerUpNode: SKNode {
         
         self.run(fullSequence)
         
-        if let scene = self.scene as? GameSKScene {
+        if let scene = self.scene as? DOGameScene {
             scene.activePowerUp = self
         }
     }
