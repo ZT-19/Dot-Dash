@@ -272,6 +272,9 @@ class DOGameScene: SKScene {
         gameInfo.level = 1
         difficulty = 1
         gridSize = startingGridSize
+    
+        backgroundMusicPlayer?.stop()
+        backgroundMusicPlayer = nil
         
         // Remove all existing nodes
         self.removeAllChildren()
@@ -399,12 +402,18 @@ class DOGameScene: SKScene {
             return
             
         }
+        // powerup handling
         for i in 0..<n_powerups{
             if let cpow = powerUpArray[i]{
                 if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive() && !isPlayerAnimating){
                         
+                        // prevent other powerups from being used when one (just freeze for now) is active
+                        if (findActiveFreeze()) {
+                            return
+                        }
+                        
                         for j in 0..<n_powerups{
-                            if i != j, let npow = powerUpArray[j] {
+                            if i != j && cpow.isFreezeTime(), let npow = powerUpArray[j] {
                                 npow.fadeOutPart()
                             }
                         }
@@ -427,7 +436,7 @@ class DOGameScene: SKScene {
                             levelLoad(restart: false)
                         }
                     
-                    return
+                        return
                 }
             }
            
@@ -828,7 +837,7 @@ class DOGameScene: SKScene {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(1)//TEST
         }
     }
     
@@ -951,7 +960,7 @@ class DOGameScene: SKScene {
 
         // create a player and add it to the scene
         playerNode = DOPlayerNode(size: CGSize(width:dotSpacingX * 0.8,height: dotSpacingY*0.8),
-            position:coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
+        position:coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         playerstart = DOplayerStart(size: CGSize(width:dotSpacingX * 0.4,height: dotSpacingX*0.4), position: coordCalculate(indices: CGPoint(x: i,y: j)))
        
         self.addChild(playerstart)

@@ -136,19 +136,34 @@ class DOPowerUpNode: SKNode {
             drainAction
         ])
         
-        // 3. Remove action with pop
+        // 3.remove action with pop
         let removeAction = SKAction.sequence([
             createPopAnimation(),
             SKAction.removeFromParent()
         ])
         
+        
+        
         // combine
+        let fullSequence: SKAction
+        if self.type == .skipLevel {
+            // Skip steps 1 and 2
+            fullSequence = removeAction
+        } else {
+            // Include steps 1, 2, and 3
+            fullSequence = SKAction.sequence([
+                popSequence,
+                drainGroup,
+                removeAction
+            ])
+        }
+        /*
         let fullSequence = SKAction.sequence([
             popSequence,
             drainGroup,
             removeAction
         ])
-        /*
+        
         if (self.type == .skipLevel) {
             fullSequence = SKAction.sequence([
                 removeAction
@@ -201,14 +216,12 @@ class DOPowerUpNode: SKNode {
     }
     func fadeIn(){
         self.setScale(0)
-    
-    // Scale up to normal size
-    let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
-    
-    // Optional: Add easing for smoother animation
-    scaleAction.timingMode = .easeOut
-    
-    self.run(scaleAction)
+        
+        print("Fading out \(self.type)")
+        let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
+        scaleAction.timingMode = .easeOut
+        
+        self.run(scaleAction)
         
     }
     
@@ -218,16 +231,14 @@ class DOPowerUpNode: SKNode {
         
         shadeOverlay?.removeFromParent()
             
-            // Create new shade
-            let shade = SKShapeNode(circleOfRadius: radius)
-            shade.fillColor = .black
-            shade.strokeColor = .clear
-            shade.alpha = 0.7
-            shade.position = .zero
-            
-            // Store reference and add to node
-            shadeOverlay = shade
-            self.addChild(shade)
+        let shade = SKShapeNode(circleOfRadius: radius)
+        shade.fillColor = .black
+        shade.strokeColor = .clear
+        shade.alpha = 0.7
+        shade.position = .zero
+
+        shadeOverlay = shade
+        self.addChild(shade)
     }
 
     func fadeInPart() {
