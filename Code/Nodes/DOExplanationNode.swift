@@ -65,7 +65,7 @@ class DOExplanationNode: SKNode {
         toplabel.fontSize = 30
      toplabel.fontName="Arial"
   
-        toplabel.fontColor = .white
+        toplabel.fontColor =  UIColor(red: 247/255.0, green: 229/255.0, blue: 205/255.0, alpha: 1.0)
         toplabel.horizontalAlignmentMode = .center
         toplabel.position = CGPoint(x: point.x, y: point.y * 1.3)
      toplabel.zPosition = 31
@@ -84,7 +84,7 @@ class DOExplanationNode: SKNode {
             label.fontName="Arial Rounded MT Bold"
             if index >= 1 {
                 label.fontName = "Arial-ItalicMT"
-                label.fontSize = 20
+                label.fontSize = 25
             }
          
                label.fontColor = .white
@@ -131,12 +131,11 @@ class DOExplanationNode: SKNode {
         let click2continue = SKLabelNode(text: "Tap anywhere to continue.")
         let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.8)
         let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.8)
-        click2continue.fontSize = 20
+        click2continue.fontSize = 15
        
         click2continue.fontName="Arial"
   
         click2continue.fontColor = .white
-        click2continue.fontSize = 20
         click2continue.position = CGPoint(x: point.x, y: yPosition)
         let flashingSequence = SKAction.sequence([fadeOut, fadeIn])
         click2continue.zPosition = 31

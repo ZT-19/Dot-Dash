@@ -10,7 +10,7 @@ import SpriteKit
 class DOStarNode: SKNode {
     private var starSprite: SKSpriteNode
     
-    init(position: CGPoint, screenHeight: CGFloat, width:CGFloat = 5, height:CGFloat = 5, color: UIColor =  UIColor(red: 0.8274, green: 0.69804, blue: 0.6157, alpha: 1), duration:Double = 0.7) {
+    init(position: CGPoint, screenHeight: CGFloat, width:CGFloat = 5, height:CGFloat = 5, color: UIColor =  UIColor(red: 0.8274, green: 0.69804, blue: 0.6157, alpha: 1), duration:Double = 0.7, slideAnimation:Bool = true) {
         //starSprite = SKSpriteNode(imageNamed: "backgroundstar3x")
         starSprite = SKSpriteNode(color:color, size: CGSize(width: width, height: height))
         //starSprite.size = CGSize(width: width, height: height)
@@ -19,9 +19,11 @@ class DOStarNode: SKNode {
         super.init()
         
         addChild(starSprite)
-        
-        let slideDown = SKAction.moveBy(x: 0, y: -screenHeight, duration: duration) // Match duration
-        starSprite.run(slideDown)
+        if slideAnimation{
+            let slideDown = SKAction.moveBy(x: 0, y: -screenHeight, duration: duration) // Match duration
+            starSprite.run(slideDown)
+        }
+       
     }
     func useEdgeTexture(){
         starSprite.texture = SKTexture(imageNamed: "boardedge")

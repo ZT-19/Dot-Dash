@@ -162,8 +162,8 @@ class DOGameScene: SKScene {
     
     func startGame(){
         backgroundNode.removeAllChildren()
-        backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
         backgroundNode.changeGridSize(new: startingGridSize)
+        backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
         gameOverNode.removeAllChildren()
         gameOverNode.setup(screenSize: size)
         
@@ -307,13 +307,17 @@ class DOGameScene: SKScene {
                     }
                     // timerNode.addTime(existingPowerup.getTimeStart(),stealth: true)
                     if !frozen{
+                        if timerNode.timerStarted() == false{
+                            timerNode.start()
+                        }
                         timerNode.resume()
+                        
                         timerNode.freezeEffect(active: false)
                     }
                     
                     for j in 0..<n_powerups {
                         if (i != j) {
-                            print("DEBUG: \(j)")
+                            //print("DEBUG: \(j)")
                             powerUpArray[j]?.fadeInPart()
                         }
                     }
@@ -369,6 +373,11 @@ class DOGameScene: SKScene {
     
     private func handleTouchEnd(_ touch: UITouch) {
         lastPosition = touch.location(in: self)
+        if !isTouchEnabled || isPlayerAnimating{
+            lastPosition = CGPoint(x: -1, y: -1)
+            return
+        }
+    
         if gameOverScreen{
             if lastPosition.x >= size.width/6 && lastPosition.x <= size.width/6*5 && lastPosition.y <= size.height/16*5 && lastPosition.y >= size.height/16*3{
                 print("registered")
@@ -377,11 +386,7 @@ class DOGameScene: SKScene {
             }
            
         }
-        if !isTouchEnabled{
-            lastPosition = CGPoint(x: -1, y: -1)
-            return
-        }
-        
+       
         if inIntermission{
             onscreentext!.resetText()
             onscreentext!.removeFromParent()
@@ -411,7 +416,7 @@ class DOGameScene: SKScene {
                         if (cpow.isFreezeTime()){
                             timerNode.pause()
                             timerNode.freezeEffect(active: true)
-                            print("freezenode activated")
+                            //print("freezenode activated")
                         }
                         else{
                             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
@@ -623,6 +628,7 @@ class DOGameScene: SKScene {
               
                 levelLoad(restart: true,powerupEligible: powerupEligible)
             }
+            
         }
         
         else if dotCount == 0 {
@@ -699,7 +705,10 @@ class DOGameScene: SKScene {
             
             dotSpacingX = (playableXSize)/Double(gridSize+1)
             dotSpacingY = (playableYSize)/Double(gridSize+1)
+           
             backgroundNode.setDeterminedTexture()
+            
+         
             
             gameInfo.level += 1
            
@@ -718,10 +727,8 @@ class DOGameScene: SKScene {
 
            // gameInfo.score += Int(100)
           
-     
-            timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
-                
             timerNode.pause()
+            timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
             for i in 0..<n_powerups{
                 if let cpow = powerUpArray[i]{
                     if (cpow.isActive() && cpow.isFreezeTime() ){
@@ -800,21 +807,19 @@ class DOGameScene: SKScene {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
             self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
-            if !restart && !inIntermission{
-                timerNode.start()
-            }
-           
-            //print("level timer start")
-         
-        
+            var frozen = false
             for i in 0..<n_powerups{
                 if let cpow = powerUpArray[i]{
                     if (cpow.isActive() && cpow.isFreezeTime() ){
-                        timerNode.pause()
+                        //timerNode.pause()
                         timerNode.freezeEffect(active: true)
-                        print("freezenode still active")
+                        //print("freezenode still active")
+                        frozen = true
                     }
                 }
+            }
+            if !restart && !inIntermission && !frozen{
+                timerNode.start()
             }
             if (!isTouchEnabled){
                 isTouchEnabled = true
@@ -824,7 +829,7 @@ class DOGameScene: SKScene {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(1.2)
         }
     }
     
@@ -934,7 +939,7 @@ class DOGameScene: SKScene {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-       print(String(i)+" "+String(j))
+       //print(String(i)+" "+String(j))
         
     }
 
