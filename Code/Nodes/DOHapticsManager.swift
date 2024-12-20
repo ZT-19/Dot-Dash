@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum HapticType {
+enum DOHapticType {
     case levelComplete
     case powerUpUsed
     case timeLow
@@ -23,7 +23,7 @@ class DOHapticsManager {
     
     private init() {}
     
-    func trigger(_ type: HapticType) {
+    func trigger(_ type: DOHapticType) {
         switch type {
         case .levelComplete:
             // success notification for ios

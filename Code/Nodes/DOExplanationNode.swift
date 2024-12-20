@@ -65,7 +65,7 @@ class DOExplanationNode: SKNode {
         toplabel.fontSize = 30
      toplabel.fontName="Arial"
   
-        toplabel.fontColor = .white
+        toplabel.fontColor =  UIColor(red: 247/255.0, green: 229/255.0, blue: 205/255.0, alpha: 1.0)
         toplabel.horizontalAlignmentMode = .center
         toplabel.position = CGPoint(x: point.x, y: point.y * 1.3)
      toplabel.zPosition = 31
@@ -106,10 +106,16 @@ class DOExplanationNode: SKNode {
             picture.position = CGPoint(x:point.x,y:point.y * 1.10)
             picture.zPosition = 31
             addChild(picture)
+            picture.setScale(0.0)
+            if size.width<376{ // SE accommodation
+                picture.run( SKAction.scale(to: 0.8, duration: 0.4))
+            }
            // picture.alpha = 0
            // picture.run(fadeInAni)
-            picture.setScale(0.0)
-            picture.run(scaleUp)
+            else{
+                picture.run(scaleUp)
+            }
+           
            
         }
         else if code == 1 {
@@ -118,11 +124,18 @@ class DOExplanationNode: SKNode {
             picture.zPosition = 31
             addChild(picture)
             picture.setScale(0.0)
-            picture.run(scaleUp)
+            if size.width<376{ // SE accommodation
+                picture.run( SKAction.scale(to: 0.8, duration: 0.4))
+            }
+        
+            else{
+                picture.run(scaleUp)
+            }
             
         
             
         }
+        
         else if code == 0{
             overlay.removeFromParent()
        
@@ -131,13 +144,12 @@ class DOExplanationNode: SKNode {
         let click2continue = SKLabelNode(text: "Tap anywhere to continue.")
         let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.8)
         let fadeOut =  SKAction.fadeAlpha(to: 0.0, duration: 0.8)
-        click2continue.fontSize = 20
+        click2continue.fontSize = 15
        
         click2continue.fontName="Arial"
   
         click2continue.fontColor = .white
-        click2continue.fontSize = 20
-        click2continue.position = CGPoint(x: point.x, y: yPosition)
+        click2continue.position = CGPoint(x: point.x, y: yPosition * 0.8)
         let flashingSequence = SKAction.sequence([fadeOut, fadeIn])
         click2continue.zPosition = 31
         addChild(click2continue)

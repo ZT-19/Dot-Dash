@@ -1,7 +1,7 @@
 //
 //  DOplayerStart.swift
 //  Dot-Dash
-//
+// (the small brown dot below the player)
 //  Created by Justin Chen on 12/9/24.
 //
 import SpriteKit

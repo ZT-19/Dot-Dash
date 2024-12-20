@@ -1,7 +1,7 @@
 import SpriteKit
 import UIKit
 
-enum PowerUpType {
+enum DOPowerUpType {
     case freezeTime
     case skipLevel
     case inactive
@@ -15,7 +15,7 @@ class DOPowerUpNode: SKNode {
     private let radius: CGFloat
     
     private var countdownDuration: TimeInterval
-    private var type: PowerUpType
+    private var type: DOPowerUpType
     private var remainingTime: TimeInterval
     let attributes: [NSAttributedString.Key: Any] = [
         .foregroundColor: UIColor.white,
@@ -28,13 +28,13 @@ class DOPowerUpNode: SKNode {
     private let cropNode: SKCropNode = SKCropNode()
     private var shadeOverlay: SKShapeNode?
 
-    init(radius: CGFloat, type: PowerUpType, position: CGPoint, duration: TimeInterval = 15.0) {
+    init(radius: CGFloat, type: DOPowerUpType, position: CGPoint, duration: TimeInterval = 15.0) {
         self.type = type
         self.countdownDuration = duration
         self.remainingTime = self.countdownDuration
         self.maskHeight = radius * 2
                
-        if (type==PowerUpType.skipLevel){
+        if (type==DOPowerUpType.skipLevel){
             countdownDuration = 0.05
             self.remainingTime = countdownDuration
         }
@@ -136,19 +136,34 @@ class DOPowerUpNode: SKNode {
             drainAction
         ])
         
-        // 3. Remove action with pop
+        // 3.remove action with pop
         let removeAction = SKAction.sequence([
             createPopAnimation(),
             SKAction.removeFromParent()
         ])
         
+        
+        
         // combine
+        let fullSequence: SKAction
+        if self.type == .skipLevel {
+            // this works now as long as full sequence is defined as a sequence with only one item
+            fullSequence = removeAction
+        }
+        else {
+            fullSequence = SKAction.sequence([
+                popSequence,
+                drainGroup,
+                removeAction
+            ])
+        }
+        /*
         let fullSequence = SKAction.sequence([
             popSequence,
             drainGroup,
             removeAction
         ])
-        /*
+        
         if (self.type == .skipLevel) {
             fullSequence = SKAction.sequence([
                 removeAction
@@ -201,14 +216,12 @@ class DOPowerUpNode: SKNode {
     }
     func fadeIn(){
         self.setScale(0)
-    
-    // Scale up to normal size
-    let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
-    
-    // Optional: Add easing for smoother animation
-    scaleAction.timingMode = .easeOut
-    
-    self.run(scaleAction)
+        
+        print("Fading out \(self.type)")
+        let scaleAction = SKAction.scale(to: 1.0, duration: 0.5)
+        scaleAction.timingMode = .easeOut
+        
+        self.run(scaleAction)
         
     }
     
@@ -218,16 +231,14 @@ class DOPowerUpNode: SKNode {
         
         shadeOverlay?.removeFromParent()
             
-            // Create new shade
-            let shade = SKShapeNode(circleOfRadius: radius)
-            shade.fillColor = .black
-            shade.strokeColor = .clear
-            shade.alpha = 0.7
-            shade.position = .zero
-            
-            // Store reference and add to node
-            shadeOverlay = shade
-            self.addChild(shade)
+        let shade = SKShapeNode(circleOfRadius: radius)
+        shade.fillColor = .black
+        shade.strokeColor = .clear
+        shade.alpha = 0.7
+        shade.position = .zero
+
+        shadeOverlay = shade
+        self.addChild(shade)
     }
 
     func fadeInPart() {

@@ -18,6 +18,7 @@ class DOTimer: SKSpriteNode {
     private var isTimerPaused = false
     private var timeFreeze: Date
     private var timeFrozenCompensation:Double = 0
+    private var timerStartedVar: Bool
 
     public var hasEnded: Bool = false
     private(set) var playedTick: Bool = false
@@ -43,6 +44,7 @@ class DOTimer: SKSpriteNode {
         self.totalTime = levelTime
         self.remainingTime = totalTime
         self.timeFreeze = Date()
+        timerStartedVar = false
 
         super.init(texture: nil, color: .clear, size: CGSize(width: radius*2, height: radius*2))
         timerService = DOTimerTrackerService(circleSize: CGSize(width: radius*2, height: radius*2)) { [weak self] in
@@ -55,11 +57,13 @@ class DOTimer: SKSpriteNode {
             completion()
         }
         setupTimerAppearance(radius: radius)
+        
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
 
     private func setupTimerAppearance(radius: CGFloat, currTime: Int = 20) {
        
@@ -101,7 +105,7 @@ class DOTimer: SKSpriteNode {
         } else {
             pendingStart = true
         }
-      
+        
     }
     
     private func startAnimation() {
@@ -110,8 +114,8 @@ class DOTimer: SKSpriteNode {
             print("Warning: Timer textures array is empty")
             return
         }
-
-        let totalDuration = TimeInterval(remainingTime-1) // so the timer is completely empty at t=0 
+        timerStartedVar = true
+        let totalDuration = TimeInterval(remainingTime-1) // so the timer is completely empty at t=0
 
         let animation = SKAction.animate(with: textures, timePerFrame: totalDuration / TimeInterval(textures.count))
         textureNode.run(animation, withKey: "countdownAnimation")
@@ -130,7 +134,8 @@ class DOTimer: SKSpriteNode {
         let countdownSequence = SKAction.sequence([updateTimeAction, waitAction])
         let countdownAction = SKAction.repeat(countdownSequence, count: remainingTime)
         self.run(countdownAction, withKey: "countdownTimer")
-
+       
+        
         resume()
     }
 
@@ -167,6 +172,7 @@ class DOTimer: SKSpriteNode {
     func stop() {
         hasEnded = true
         print("stop time")
+        timerStartedVar = false
         NotificationCenter.default.post(name: NSNotification.Name("TimerEnded"), object: nil)
         self.removeAction(forKey: "countdownTimer")
         textureNode.removeAction(forKey: "countdownAnimation")
@@ -193,6 +199,7 @@ class DOTimer: SKSpriteNode {
         timeLabel.fontColor = .white
         innerCircle.fillColor = darkcolor
         // If timer should auto-start
+        timerStartedVar = false
         if !isTimerPaused {
             startAnimation()
         }
@@ -201,7 +208,7 @@ class DOTimer: SKSpriteNode {
         func endSound() {
             if (endSfx) {
                 let volumeAction = SKAction.changeVolume(to: 0.3, duration: 0)
-                let soundAction = SKAction.playSoundFileNamed("gameover8.mp3", waitForCompletion: false)
+                let soundAction = SKAction.playSoundFileNamed("DOgameover.mp3", waitForCompletion: false)
                 let sequence = SKAction.sequence([volumeAction, soundAction])
                 self.run(sequence)
                 
@@ -221,7 +228,7 @@ class DOTimer: SKSpriteNode {
                 innerCircle.fillColor = red
                 
                 if (remainingTime != 0) {
-                    let warningSound = SKAction.playSoundFileNamed("tick.mp3", waitForCompletion: false)
+                    let warningSound = SKAction.playSoundFileNamed("DOtick.mp3", waitForCompletion: false)
                     self.run(warningSound)
                 }
                 
@@ -238,6 +245,8 @@ class DOTimer: SKSpriteNode {
                 // timeLabel.fontColor = isTimerPaused ? .gray : .white
             }
         }
-    
+    func timerStarted()->Bool{
+        return timerStartedVar
+    }
     
 }

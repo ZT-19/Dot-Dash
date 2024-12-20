@@ -96,7 +96,7 @@ class DOGameScene: SKScene {
     var powerUpNodeRadius: CGFloat = 68 / 402.0 *  UIScreen.main.bounds.width
     var powerupHeight: CGFloat = 133 / 402.0 *  UIScreen.main.bounds.width
 
-    private let powerupTypes: [PowerUpType] = [
+    private let powerupTypes: [DOPowerUpType] = [
     //    .doubleDotScore,
     //    .levelScoreBonus,
         .freezeTime,
@@ -105,7 +105,7 @@ class DOGameScene: SKScene {
     ]
     private var powerupEligible = true
     private var powerupNotificationLabel: SKLabelNode?
-    private var powerupCurr = PowerUpType.freezeTime
+    private var powerupCurr = DOPowerUpType.freezeTime
     private var n_powerups = 0
     private var max_powerUps = 3
     public var activePowerUp: DOPowerUpNode? 
@@ -162,8 +162,8 @@ class DOGameScene: SKScene {
     
     func startGame(){
         backgroundNode.removeAllChildren()
-        backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
         backgroundNode.changeGridSize(new: startingGridSize)
+        backgroundNode.setup(screenSize: size,ytop:playableYTop,ybottom: playableYBottom,xleft: playableXLeft,xright: playableXRight)
         gameOverNode.removeAllChildren()
         gameOverNode.setup(screenSize: size)
         
@@ -272,8 +272,15 @@ class DOGameScene: SKScene {
         gameInfo.level = 1
         difficulty = 1
         gridSize = startingGridSize
+    
+        backgroundMusicPlayer?.stop()
+        backgroundMusicPlayer = nil
         
-        // Remove all existing nodes
+        // remove all existing nodes
+        if let restartButton = self.childNode(withName: "restartButton") {
+            print("DEBUG: restart game")
+            restartButton.removeFromParent()
+        }
         self.removeAllChildren()
         
         // Reset powerups
@@ -307,13 +314,17 @@ class DOGameScene: SKScene {
                     }
                     // timerNode.addTime(existingPowerup.getTimeStart(),stealth: true)
                     if !frozen{
+                        if timerNode.timerStarted() == false{
+                            timerNode.start()
+                        }
                         timerNode.resume()
+                        
                         timerNode.freezeEffect(active: false)
                     }
                     
                     for j in 0..<n_powerups {
                         if (i != j) {
-                            print("DEBUG: \(j)")
+                            //print("DEBUG: \(j)")
                             powerUpArray[j]?.fadeInPart()
                         }
                     }
@@ -369,6 +380,11 @@ class DOGameScene: SKScene {
     
     private func handleTouchEnd(_ touch: UITouch) {
         lastPosition = touch.location(in: self)
+        if !isTouchEnabled || isPlayerAnimating{
+            lastPosition = CGPoint(x: -1, y: -1)
+            return
+        }
+    
         if gameOverScreen{
             if lastPosition.x >= size.width/6 && lastPosition.x <= size.width/6*5 && lastPosition.y <= size.height/16*5 && lastPosition.y >= size.height/16*3{
                 print("registered")
@@ -377,11 +393,7 @@ class DOGameScene: SKScene {
             }
            
         }
-        if !isTouchEnabled{
-            lastPosition = CGPoint(x: -1, y: -1)
-            return
-        }
-        
+       
         if inIntermission{
             onscreentext!.resetText()
             onscreentext!.removeFromParent()
@@ -394,12 +406,18 @@ class DOGameScene: SKScene {
             return
             
         }
+        // powerup handling
         for i in 0..<n_powerups{
             if let cpow = powerUpArray[i]{
                 if (lastPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&lastPosition.x >= (cpow.position.x-powerupRadius)&&lastPosition.y <= (cpow.position.y+powerupRadius)&&lastPosition.y >= (cpow.position.y-powerupRadius) && firstPosition.x <= ((cpow.position.x)+CGFloat(powerupRadius))&&firstPosition.x >= (cpow.position.x-powerupRadius)&&firstPosition.y <= (cpow.position.y+powerupRadius)&&firstPosition.y >= (cpow.position.y-powerupRadius) && !cpow.isActive() && !isPlayerAnimating){
                         
+                        // prevent other powerups from being used when one (just freeze for now) is active
+                        if (findActiveFreeze()) {
+                            return
+                        }
+                        
                         for j in 0..<n_powerups{
-                            if i != j, let npow = powerUpArray[j] {
+                            if i != j && cpow.isFreezeTime(), let npow = powerUpArray[j] {
                                 npow.fadeOutPart()
                             }
                         }
@@ -411,18 +429,18 @@ class DOGameScene: SKScene {
                         if (cpow.isFreezeTime()){
                             timerNode.pause()
                             timerNode.freezeEffect(active: true)
-                            print("freezenode activated")
+                            //print("freezenode activated")
                         }
                         else{
                             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
-                            let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
+                            let soundAction = SKAction.playSoundFileNamed("DOlevelcompletion.mp3", waitForCompletion: false)
                             let sequence = SKAction.sequence([volumeAction, soundAction])
                             self.run(sequence)
                             //flashGreenBorder() // yay or nay?
                             levelLoad(restart: false)
                         }
                     
-                    return
+                        return
                 }
             }
            
@@ -504,7 +522,7 @@ class DOGameScene: SKScene {
                 
              
                 if dotCount > 1 {
-                    let soundAction = SKAction.playSoundFileNamed("hitsoundclick.m4a", waitForCompletion: false)
+                    let soundAction = SKAction.playSoundFileNamed("DOhitsoundclick.m4a", waitForCompletion: false)
                     self.run(soundAction)
                 }
 
@@ -545,12 +563,13 @@ class DOGameScene: SKScene {
                     child.removeFromParent()
                 }
             }
+            isPlayerAnimating = true
             if yv == 0 && xv == 1 {
                 // slide right offscreen
                 let rightEdge = UIScreen.main.bounds.width + playerNode.frame.width
                 let slideRight = SKAction.moveTo(x: rightEdge, duration: 0.25)
                 slideRight.timingMode = .easeIn
-                isPlayerAnimating = true
+              
                 playerNode.run(slideRight) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -567,7 +586,7 @@ class DOGameScene: SKScene {
                 let leftEdge = -playerNode.frame.width
                 let slideLeft = SKAction.moveTo(x: leftEdge, duration: 0.25)
                 slideLeft.timingMode = .easeIn
-                isPlayerAnimating = true
+              
                 playerNode.run(slideLeft) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -584,7 +603,7 @@ class DOGameScene: SKScene {
                 let topEdge = UIScreen.main.bounds.height + playerNode.frame.height
                 let slideUp = SKAction.moveTo(y: topEdge, duration: 0.25)
                 slideUp.timingMode = .easeIn
-                isPlayerAnimating = true
+               
                 playerNode.run(slideUp) { [weak self] in
                     guard let self = self else { return }
                     self.isPlayerAnimating = false
@@ -623,6 +642,7 @@ class DOGameScene: SKScene {
               
                 levelLoad(restart: true,powerupEligible: powerupEligible)
             }
+            
         }
         
         else if dotCount == 0 {
@@ -632,7 +652,7 @@ class DOGameScene: SKScene {
             let scaleUp = SKAction.scale(to: 1.25, duration: 0.35)
             
             let volumeAction = SKAction.changeVolume(to: 0.1, duration: 0)
-            let soundAction = SKAction.playSoundFileNamed("levelcompletion.mp3", waitForCompletion: false)
+            let soundAction = SKAction.playSoundFileNamed("DOlevelcompletion.mp3", waitForCompletion: false)
             let sequence = SKAction.sequence([volumeAction, soundAction])
             self.run(sequence)
             
@@ -699,7 +719,10 @@ class DOGameScene: SKScene {
             
             dotSpacingX = (playableXSize)/Double(gridSize+1)
             dotSpacingY = (playableYSize)/Double(gridSize+1)
+           
             backgroundNode.setDeterminedTexture()
+            
+         
             
             gameInfo.level += 1
            
@@ -718,10 +741,8 @@ class DOGameScene: SKScene {
 
            // gameInfo.score += Int(100)
           
-     
-            timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
-                
             timerNode.pause()
+            timerNode.resetTimer(timeLeft: difficultyToTime(difficulty))
             for i in 0..<n_powerups{
                 if let cpow = powerUpArray[i]{
                     if (cpow.isActive() && cpow.isFreezeTime() ){
@@ -800,25 +821,21 @@ class DOGameScene: SKScene {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + waitForTransition) { [self] in
             self.placeDotsFromGrid(grid: grid) // place player and dots from 2D integer array
-            if !restart && !inIntermission{
-                timerNode.start()
-            }
-           
-            //print("level timer start")
-         
-        
+            var frozen = false
             for i in 0..<n_powerups{
                 if let cpow = powerUpArray[i]{
                     if (cpow.isActive() && cpow.isFreezeTime() ){
-                        timerNode.pause()
+                        //timerNode.pause()
                         timerNode.freezeEffect(active: true)
-                        print("freezenode still active")
+                        //print("freezenode still active")
+                        frozen = true
                     }
                 }
             }
-            if (!isTouchEnabled){
-                isTouchEnabled = true
+            if !restart && !inIntermission && !frozen{
+                timerNode.start()
             }
+            
         }
        
 
@@ -934,7 +951,7 @@ class DOGameScene: SKScene {
             position: coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         dotNode.name = "DotNode" + String(i) + " " + String(j)
         self.addChild(dotNode)
-       print(String(i)+" "+String(j))
+       //print(String(i)+" "+String(j))
         
     }
 
@@ -947,14 +964,16 @@ class DOGameScene: SKScene {
 
         // create a player and add it to the scene
         playerNode = DOPlayerNode(size: CGSize(width:dotSpacingX * 0.8,height: dotSpacingY*0.8),
-            position:coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
+        position:coordCalculate(indices: CGPoint(x: i,y: j)), gridPosition: CGPoint(x: i, y: j))
         playerstart = DOplayerStart(size: CGSize(width:dotSpacingX * 0.4,height: dotSpacingX*0.4), position: coordCalculate(indices: CGPoint(x: i,y: j)))
        
         self.addChild(playerstart)
         
         playerNode.name = "player"
         self.addChild(playerNode)
-        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            self.isTouchEnabled = true
+        }
     }
 
     private func showPowerupNotification() {
@@ -1081,7 +1100,7 @@ class DOGameScene: SKScene {
             return Int(cnt)
     }
     private func playBackgroundMusic() {
-        guard let url = Bundle.main.url(forResource: "backgroundmusic1", withExtension: "mp3") else {
+        guard let url = Bundle.main.url(forResource: "DObackgroundmusic", withExtension: "mp3") else {
             print("Cannot find backgroundmusic.mp3")
             return
         }
