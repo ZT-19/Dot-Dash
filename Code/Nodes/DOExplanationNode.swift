@@ -106,10 +106,16 @@ class DOExplanationNode: SKNode {
             picture.position = CGPoint(x:point.x,y:point.y * 1.10)
             picture.zPosition = 31
             addChild(picture)
+            picture.setScale(0.0)
+            if size.width<376{ // SE accommodation
+                picture.run( SKAction.scale(to: 0.8, duration: 0.4))
+            }
            // picture.alpha = 0
            // picture.run(fadeInAni)
-            picture.setScale(0.0)
-            picture.run(scaleUp)
+            else{
+                picture.run(scaleUp)
+            }
+           
            
         }
         else if code == 1 {
@@ -118,11 +124,18 @@ class DOExplanationNode: SKNode {
             picture.zPosition = 31
             addChild(picture)
             picture.setScale(0.0)
-            picture.run(scaleUp)
+            if size.width<376{ // SE accommodation
+                picture.run( SKAction.scale(to: 0.8, duration: 0.4))
+            }
+        
+            else{
+                picture.run(scaleUp)
+            }
             
         
             
         }
+        
         else if code == 0{
             overlay.removeFromParent()
        

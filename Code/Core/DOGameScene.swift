@@ -828,7 +828,7 @@ class DOGameScene: SKScene {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(1.2)
+            progressBar.increaseProgress(0.2)
         }
     }
     
