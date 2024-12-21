@@ -35,7 +35,7 @@ class DOOnscreenTutorial: SKNode {
         reset()
         addChild(finger)
         
-        finger.position = CGPoint(x:size.width * 0.25, y:size.height * 0.45)
+        finger.position = CGPoint(x:size.width * 0.25, y:size.height * 0.4)
         finger.alpha = 1.0
         finger.zPosition = 10
         let travel2x = SKAction.move(by: CGVector(dx:size.width*0.66,dy:0), duration: 0.7)

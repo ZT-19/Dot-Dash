@@ -177,6 +177,7 @@ class DOGameScene: SKScene {
         addChild(progressBar)
         onscreentext = DOExplanationNode(size:size)
         onscreenimage = DOOnscreenTutorial(size:size)
+        onscreenimage?.removeFromParent()
         
         self.camera = cameraNode
         self.addChild(cameraNode)
@@ -244,7 +245,6 @@ class DOGameScene: SKScene {
               
                  addChild(onscreenimage!)
              //   onscreenimage?.alpha = 0.0
-        
                  onscreenimage?.firstLevel()
             }
            
@@ -771,6 +771,7 @@ class DOGameScene: SKScene {
             
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5.0){ [self] in
                     if gameInfo.level == 2{
+                        onscreenimage?.removeFromParent()
                         addChild(onscreenimage!)
                         onscreenimage?.secondLevel()
                 }
