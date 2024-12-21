@@ -58,7 +58,7 @@ class DOFrameNode: SKNode {
  
             placeholder.size = CGSize(width: powerUpRadius*2 - 3, height: powerUpRadius * 2 - 3)
             placeholder.position = CGPoint(x:xpos,y:powerupHeight - frameSprite.size.height/2)
-            print(i)
+            placeholder.alpha = 0.3
             addChild(placeholder)
             xpos += (frameSprite.size.width/2-powerUpNodeRadius)
         }
