@@ -26,12 +26,12 @@ class DOHapticsManager {
     func trigger(_ type: DOHapticType) {
         switch type {
         case .levelComplete:
-            // success notification for ios
+            // success notification
             notification.notificationOccurred(.success)
             
         case .powerUpUsed:
             // custom pattern for power-up
-            //print("powerup haptic")
+            // print("powerup haptic")
             impact.prepare()
             impact.impactOccurred(intensity: 0.5)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
@@ -40,7 +40,7 @@ class DOHapticsManager {
             
         case .timeLow:
             // ticking pattern
-            print("lowtime haptic")
+            // print("lowtime haptic")
             impact.prepare()
             let tickCount = 3
             for i in 0..<tickCount {
