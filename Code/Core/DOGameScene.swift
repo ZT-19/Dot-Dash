@@ -842,7 +842,7 @@ class DOGameScene: SKScene {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(1)//TEST
         }
     }
     
@@ -1206,7 +1206,12 @@ class DOGameScene: SKScene {
         var x_powerUp_position = powerUpNodeRadius
         x_powerUp_position += (UIScreen.main.bounds.width/2 - powerUpNodeRadius) * CGFloat(n_powerups)
         
-       
+        // PowerupGained sfx
+        let volumeAction = SKAction.changeVolume(to: 0.3, duration: 0)
+        let soundAction = SKAction.playSoundFileNamed("DOPowerupGained.mp3", waitForCompletion: false)
+        let sequence = SKAction.sequence([volumeAction, soundAction])
+        self.run(sequence)
+        
         let position = CGPoint(x:x_powerUp_position, y: powerupHeight)
         powerupCurr = powerupTypes.randomElement(using: &rng)!
         /*

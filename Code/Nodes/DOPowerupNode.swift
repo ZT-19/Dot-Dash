@@ -115,7 +115,14 @@ class DOPowerUpNode: SKNode {
         print("Powerup countdown started")
         turnedOn = true
         self.remainingTime = countdownDuration
+        // haptic and sound effect
         DOHapticsManager.shared.trigger(.powerUpUsed)
+        if (self.isFreezeTime()) {
+            let volumeAction = SKAction.changeVolume(to: 0.5, duration: 0)
+            let soundAction = SKAction.playSoundFileNamed("DOFreeze.mp3", waitForCompletion: false)
+            let sequence = SKAction.sequence([volumeAction, soundAction])
+            self.run(sequence)
+        }
         
         // 1. pop animation
         let popSequence = createPopAnimation()
