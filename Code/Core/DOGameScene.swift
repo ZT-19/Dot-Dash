@@ -780,7 +780,7 @@ class DOGameScene: SKScene {
         }
         else {
             let volumeAction = SKAction.changeVolume(to: 0.5, duration: 0)
-            let soundAction = SKAction.playSoundFileNamed("restart1.mp3", waitForCompletion: false)
+            let soundAction = SKAction.playSoundFileNamed("DOrestart.mp3", waitForCompletion: false)
             let sequence = SKAction.sequence([volumeAction, soundAction])
             self.run(sequence)
             
