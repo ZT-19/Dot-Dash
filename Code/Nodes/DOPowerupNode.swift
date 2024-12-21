@@ -212,7 +212,13 @@ class DOPowerUpNode: SKNode {
     }
     
     func isSpent() -> Bool{
-        return remainingTime<=0&&turnedOn
+        if type == .skipLevel{
+            return turnedOn
+        }
+        else{
+            return remainingTime<=0.0&&turnedOn
+        }
+      
     }
     func fadeIn(){
         self.setScale(0)

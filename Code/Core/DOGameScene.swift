@@ -387,7 +387,7 @@ class DOGameScene: SKScene {
         }
     
         if gameOverScreen {
-            if lastPosition.x >= size.width/6 && lastPosition.x <= size.width/6*5 && lastPosition.y <= size.height/16*5 && lastPosition.y >= size.height/16*3{
+            if lastPosition.x >= size.width/6 && lastPosition.x <= size.width/6*5 && lastPosition.y <= size.height/4 + size.height/16 && lastPosition.y >= size.height/4 - size.height/16{
                 print("registered")
                 restartGame()
                 return
@@ -842,7 +842,7 @@ class DOGameScene: SKScene {
 
        // if powerupEligible && n_powerups < max_powerUps  {
         if !restart{
-            progressBar.increaseProgress(0.2)
+            progressBar.increaseProgress(1.2)
         }
     }
     
