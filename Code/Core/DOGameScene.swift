@@ -286,7 +286,8 @@ class DOGameScene: SKScene {
         // Reset powerups
         n_powerups = 0
         powerUpArray = Array(repeating: nil, count: max_powerUps)
-         
+        
+        gameOverScreen = false
         startGame()
     }
     
@@ -385,7 +386,7 @@ class DOGameScene: SKScene {
             return
         }
     
-        if gameOverScreen{
+        if gameOverScreen {
             if lastPosition.x >= size.width/6 && lastPosition.x <= size.width/6*5 && lastPosition.y <= size.height/16*5 && lastPosition.y >= size.height/16*3{
                 print("registered")
                 restartGame()
