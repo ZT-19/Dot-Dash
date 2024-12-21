@@ -21,6 +21,10 @@ class DOHapticsManager {
     private let notification = UINotificationFeedbackGenerator()
     private let selection = UISelectionFeedbackGenerator()
     
+    private let softImpact = UIImpactFeedbackGenerator(style: .soft)
+    private let mediumImpact = UIImpactFeedbackGenerator(style: .medium)
+    private let rigidImpact = UIImpactFeedbackGenerator(style: .rigid)
+    
     private init() {}
     
     func trigger(_ type: DOHapticType) {
@@ -32,10 +36,30 @@ class DOHapticsManager {
         case .powerUpUsed:
             // custom pattern for power-up
             // print("powerup haptic")
-            impact.prepare()
-            impact.impactOccurred(intensity: 0.5)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-                self?.impact.impactOccurred(intensity: 0.8)
+
+            softImpact.prepare()
+            mediumImpact.prepare()
+            rigidImpact.prepare()
+            
+            // buildup
+            softImpact.impactOccurred(intensity: 0.5)
+            
+            // rising intensity sequence
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) { [weak self] in
+                self?.mediumImpact.impactOccurred(intensity: 0.7)
+            }
+            
+            // peak impact
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { [weak self] in
+                self?.rigidImpact.impactOccurred(intensity: 1.0)
+            }
+            
+            // falling sequence
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) { [weak self] in
+                self?.mediumImpact.impactOccurred(intensity: 0.6)
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.24) { [weak self] in
+                self?.softImpact.impactOccurred(intensity: 0.3)
             }
             
         case .timeLow:
