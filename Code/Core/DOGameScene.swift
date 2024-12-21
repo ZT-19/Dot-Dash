@@ -491,7 +491,7 @@ class DOGameScene: SKScene {
                 let slideAction = SKAction.move(to: newPlayerPosition, duration: 0.2)
                 slideAction.timingMode = .easeOut
                 
-                isPlayerAnimating = true
+               // isPlayerAnimating = true // comment out to enable super speed moving
                 
                 playerNode.gridX = currentX
                 playerNode.gridY = currentY
